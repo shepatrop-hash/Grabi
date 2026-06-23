@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import Home from './screens/Home.jsx'
 import Create from './screens/Create.jsx'
 import GrabiCompanion from './screens/GrabiCompanion.jsx'
+import Free from './screens/Free.jsx'
+import Premium from './screens/Premium.jsx'
+import Subscribe from './screens/Subscribe.jsx'
+import Settings from './screens/Settings.jsx'
 import Grabi from './components/Grabi.jsx'
 import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage } from './lib/api.js'
@@ -88,6 +92,7 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [story, setStory] = useState(null)
+  const [voice, setVoice] = useState('Douce')
 
   async function handleCreate() {
     const idea = storyText.trim()
@@ -133,11 +138,23 @@ export default function App() {
         />
       )}
       {screen === 'ready' && <Ready story={story} onBack={() => setScreen('home')} />}
-      {screen === 'free' && <Placeholder title="Histoires gratuites" onBack={() => setScreen('home')} />}
-      {screen === 'premium' && <Placeholder title="Histoires de la semaine" onBack={() => setScreen('home')} />}
+      {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={() => setScreen('reader')} />}
+      {screen === 'premium' && <Premium onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={() => setScreen('reader')} />}
+      {screen === 'subscribe' && <Subscribe onClose={() => setScreen('home')} onStart={() => setScreen('home')} />}
+      {screen === 'settings' && (
+        <Settings
+          voice={voice}
+          onVoice={setVoice}
+          onSubscribe={() => setScreen('subscribe')}
+          onHome={() => setScreen('home')}
+          onCommunity={() => setScreen('community')}
+          onCreate={() => setScreen('create')}
+          onMine={() => setScreen('mine')}
+        />
+      )}
       {screen === 'community' && <Placeholder title="Communauté" onBack={() => setScreen('home')} />}
       {screen === 'mine' && <Placeholder title="Mes histoires" onBack={() => setScreen('home')} />}
-      {screen === 'settings' && <Placeholder title="Paramètres" onBack={() => setScreen('home')} />}
+      {screen === 'reader' && <Placeholder title="Lecture" onBack={() => setScreen('home')} />}
       {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
     </div>
   )
