@@ -14,7 +14,7 @@ import MyStories from './screens/MyStories.jsx'
 import Published from './screens/Published.jsx'
 import Grabi from './components/Grabi.jsx'
 import RawSvg from './components/RawSvg.jsx'
-import { generateStory, generateImage } from './lib/api.js'
+import { generateStory, generateImage, generateQuestions } from './lib/api.js'
 import { buildQcm } from './lib/qcm.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
@@ -107,16 +107,27 @@ export default function App() {
   const [qcmQuestions, setQcmQuestions] = useState([])
   const [qcmIndex, setQcmIndex] = useState(0)
   const [qcmAnswers, setQcmAnswers] = useState({})
+  const [qcmLoading, setQcmLoading] = useState(false)
   const [readerType, setReaderType] = useState('free')
 
-  function startQcm() {
+  async function startQcm() {
     const idea = storyText.trim()
     if (!idea) return
-    setQcmQuestions(buildQcm(idea))
+    setError('')
     setQcmIndex(0)
     setQcmAnswers({})
-    setError('')
+    setQcmQuestions([])
+    setQcmLoading(true)
     setScreen('qcm')
+    try {
+      const data = await generateQuestions(idea)
+      setQcmQuestions(data?.questions?.length ? data.questions : buildQcm(idea))
+    } catch {
+      // Repli : questions pré-écrites (ex. en local sans clé API)
+      setQcmQuestions(buildQcm(idea))
+    } finally {
+      setQcmLoading(false)
+    }
   }
 
   function answerQcm(value) {
@@ -180,6 +191,7 @@ export default function App() {
           idea={storyText}
           questions={qcmQuestions}
           index={qcmIndex}
+          loading={qcmLoading}
           onBack={() => setScreen('create')}
           onAnswer={answerQcm}
         />
