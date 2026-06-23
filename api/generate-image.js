@@ -28,8 +28,6 @@ export default async function handler(req, res) {
     const result = await fal.subscribe(IMAGE_MODEL, {
       input: {
         prompt: `${prompt}. Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
-        image_size: 'square_hd',
-        num_images: 1,
       },
     })
 
@@ -42,6 +40,10 @@ export default async function handler(req, res) {
     res.status(200).json({ url })
   } catch (err) {
     console.error('generate-image error:', err)
-    res.status(500).json({ error: String(err?.message || err) })
+    res.status(500).json({
+      error: String(err?.message || err),
+      status: err?.status ?? null,
+      detail: err?.body?.detail ?? err?.body ?? null,
+    })
   }
 }
