@@ -35,7 +35,7 @@ function Ready({ story, onKeep, onPublish }) {
       if (persos.length) {
         const results = await Promise.all(
           persos.map((pr) =>
-            generateImage(`${pr.description}. Full body character reference, single character, centered, plain soft solid pastel background.`)
+            generateImage(`${pr.description}. Single character reference, centered, plain very light background, full body, children's picture book illustration, soft colors, no text.`)
               .then((d) => d.url)
               .catch(() => null),
           ),
