@@ -8,6 +8,7 @@ import Subscribe from './screens/Subscribe.jsx'
 import Settings from './screens/Settings.jsx'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
+import Reader from './screens/Reader.jsx'
 import Grabi from './components/Grabi.jsx'
 import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage } from './lib/api.js'
@@ -99,6 +100,7 @@ export default function App() {
   const [qcmQuestions, setQcmQuestions] = useState([])
   const [qcmIndex, setQcmIndex] = useState(0)
   const [qcmAnswers, setQcmAnswers] = useState({})
+  const [readerType, setReaderType] = useState('free')
 
   function startQcm() {
     const idea = storyText.trim()
@@ -138,6 +140,11 @@ export default function App() {
     }
   }
 
+  function openReader(type) {
+    setReaderType(type)
+    setScreen('reader')
+  }
+
   return (
     <div className="app-shell">
       {screen === 'home' && (
@@ -172,8 +179,8 @@ export default function App() {
       )}
       {screen === 'generating' && <Generating />}
       {screen === 'ready' && <Ready story={story} onBack={() => setScreen('home')} />}
-      {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={() => setScreen('reader')} />}
-      {screen === 'premium' && <Premium onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={() => setScreen('reader')} />}
+      {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={openReader} />}
+      {screen === 'premium' && <Premium onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={openReader} />}
       {screen === 'subscribe' && <Subscribe onClose={() => setScreen('home')} onStart={() => setScreen('home')} />}
       {screen === 'settings' && (
         <Settings
@@ -188,7 +195,7 @@ export default function App() {
       )}
       {screen === 'community' && <Placeholder title="Communauté" onBack={() => setScreen('home')} />}
       {screen === 'mine' && <Placeholder title="Mes histoires" onBack={() => setScreen('home')} />}
-      {screen === 'reader' && <Placeholder title="Lecture" onBack={() => setScreen('home')} />}
+      {screen === 'reader' && <Reader storyType={readerType} onClose={() => setScreen(readerType === 'weekly' ? 'premium' : 'free')} onSubscribe={() => setScreen('subscribe')} />}
       {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
     </div>
   )
