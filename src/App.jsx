@@ -9,6 +9,9 @@ import Settings from './screens/Settings.jsx'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
 import Reader from './screens/Reader.jsx'
+import Community from './screens/Community.jsx'
+import MyStories from './screens/MyStories.jsx'
+import Published from './screens/Published.jsx'
 import Grabi from './components/Grabi.jsx'
 import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage } from './lib/api.js'
@@ -24,7 +27,7 @@ function TopBack({ onBack }) {
   )
 }
 
-function Ready({ story, onBack }) {
+function Ready({ story, onBack, onPublish }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
 
   useEffect(() => {
@@ -70,6 +73,10 @@ function Ready({ story, onBack }) {
             </div>
           )
         })}
+      </div>
+      <div style={{ flex: 'none', display: 'flex', gap: 12, paddingTop: 14 }}>
+        <button onClick={onBack} style={{ flex: 1, background: '#fff', border: '2px solid #EDE7F5', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>Garder pour moi</button>
+        <button onClick={onPublish} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
       </div>
     </div>
   )
@@ -178,7 +185,7 @@ export default function App() {
         />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} onBack={() => setScreen('home')} />}
+      {screen === 'ready' && <Ready story={story} onBack={() => setScreen('home')} onPublish={() => setScreen('published')} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={openReader} />}
       {screen === 'premium' && <Premium onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={openReader} />}
       {screen === 'subscribe' && <Subscribe onClose={() => setScreen('home')} onStart={() => setScreen('home')} />}
@@ -193,8 +200,25 @@ export default function App() {
           onMine={() => setScreen('mine')}
         />
       )}
-      {screen === 'community' && <Placeholder title="Communauté" onBack={() => setScreen('home')} />}
-      {screen === 'mine' && <Placeholder title="Mes histoires" onBack={() => setScreen('home')} />}
+      {screen === 'community' && (
+        <Community
+          onOpenReader={openReader}
+          onHome={() => setScreen('home')}
+          onCreate={() => setScreen('create')}
+          onMine={() => setScreen('mine')}
+          onSettings={() => setScreen('settings')}
+        />
+      )}
+      {screen === 'mine' && (
+        <MyStories
+          onOpenReader={openReader}
+          onHome={() => setScreen('home')}
+          onCommunity={() => setScreen('community')}
+          onCreate={() => setScreen('create')}
+          onSettings={() => setScreen('settings')}
+        />
+      )}
+      {screen === 'published' && <Published onMine={() => setScreen('mine')} onHome={() => setScreen('home')} />}
       {screen === 'reader' && <Reader storyType={readerType} onClose={() => setScreen(readerType === 'weekly' ? 'premium' : 'free')} onSubscribe={() => setScreen('subscribe')} />}
       {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
     </div>
