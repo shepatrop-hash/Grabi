@@ -18,7 +18,9 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   const [page, setPage] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [paywall, setPaywall] = useState(false)
+  const [mutedHint, setMutedHint] = useState(false)
   const tokenRef = useRef(0)
+  const hintRef = useRef(null)
 
   const pageOf = (i) => {
     const p = pages[i]
@@ -67,6 +69,15 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
     }
   }
   const prev = () => page > 0 && setPage(page - 1)
+  const togglePlay = () => {
+    if (!soundOn) {
+      setMutedHint(true)
+      clearTimeout(hintRef.current)
+      hintRef.current = setTimeout(() => setMutedHint(false), 2600)
+      return
+    }
+    setPlaying((p) => !p)
+  }
   const progress = `${Math.round(((page + 1) / total) * 100)}%`
 
   const hero = cur.image ? (
@@ -98,11 +109,14 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
           <div style={{ height: 8, borderRadius: 4, background: '#EFEAF6', overflow: 'hidden' }}><div style={{ width: progress, height: '100%', background: 'var(--mint)', borderRadius: 4, transition: 'width .3s ease' }} /></div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, marginTop: 22 }}>
             <button onClick={prev} disabled={page === 0} style={{ width: 60, height: 60, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0.45 : 1 }}><RawSvg html={prevIcon} /></button>
-            <button onClick={() => setPlaying((p) => !p)} style={{ width: 86, height: 86, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 14px 26px -8px rgba(255,127,176,.65)' }}><RawSvg html={playing ? pauseSvg : playSvg} /></button>
+            <button onClick={togglePlay} style={{ width: 86, height: 86, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 14px 26px -8px rgba(255,127,176,.65)' }}><RawSvg html={playing ? pauseSvg : playSvg} /></button>
             <button onClick={next} style={{ width: 60, height: 60, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={nextIcon} /></button>
           </div>
           {!ttsSupported() && (
             <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--ink2)', fontWeight: 500, marginTop: 10 }}>Lecture audio non disponible sur ce navigateur.</div>
+          )}
+          {mutedHint && (
+            <div style={{ textAlign: 'center', fontSize: 13, color: '#C24A7A', fontWeight: 600, marginTop: 10 }}>Le son est coupé — active-le dans les Réglages 🔇</div>
           )}
         </div>
       </div>
