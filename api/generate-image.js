@@ -1,10 +1,9 @@
 import { fal } from '@fal-ai/client'
 
 // Fal.ai héberge Qwen-Image (et d'autres modèles). Modèle configurable.
-// Modèle texte→image par défaut. `fal-ai/qwen-image` est le modèle d'ÉDITION
-// (il exige image_urls) — si on le reçoit (ancienne valeur), on force le texte→image.
-let IMAGE_MODEL = process.env.IMAGE_MODEL || 'fal-ai/qwen-image-2/text-to-image'
-if (IMAGE_MODEL === 'fal-ai/qwen-image') IMAGE_MODEL = 'fal-ai/qwen-image-2/text-to-image'
+// Modèle texte→image, codé en dur pour ignorer toute ancienne variable IMAGE_MODEL
+// (ex. fal-ai/qwen-image, qui est le modèle d'ÉDITION et exige image_urls).
+const IMAGE_MODEL = 'fal-ai/qwen-image-2/text-to-image'
 
 // Laisse le temps à la génération d'image (sinon timeout serverless).
 export const config = { maxDuration: 60 }
@@ -40,12 +39,13 @@ export default async function handler(req, res) {
       return
     }
 
-    res.status(200).json({ url })
+    res.status(200).json({ url, model: IMAGE_MODEL })
   } catch (err) {
     console.error('generate-image error:', err)
     res.status(500).json({
       error: String(err?.message || err),
       status: err?.status ?? null,
+      model: IMAGE_MODEL,
       detail: err?.body?.detail ?? err?.body ?? null,
     })
   }
