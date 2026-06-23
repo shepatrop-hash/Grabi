@@ -1,0 +1,107 @@
+:root {
+  /* Palette reprise à l'identique du prototype Grabi */
+  --bg: #FFF7EC;
+  --ink: #4A3A66;
+  --ink2: #9789AE;
+  --yellow: #FFCC3E;
+  --yellow-soft: #FFEAAE;
+  --pink: #FF7FB0;
+  --pink-soft: #FFD6E6;
+  --sky: #56C7FF;
+  --sky-soft: #C8EDFF;
+  --mint: #3FD7B0;
+  --mint-soft: #C6F2E6;
+  --violet: #A98CFF;
+  --violet-soft: #E6DDFF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Fredoka, system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: #e7e5df;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Coquille de l'app : plein écran sur mobile, colonne centrée sur grand écran */
+.app-shell {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  color: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+input::placeholder {
+  color: #b9aecb;
+  font-weight: 500;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Animations reprises du prototype */
+@keyframes gn-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes grabi-bob {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+@keyframes grabi-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-26deg); }
+  60% { transform: rotate(-14deg); }
+}
+@keyframes gn-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+@keyframes gn-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+@keyframes gn-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes gn-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.45; }
+  50% { transform: scale(1.14); opacity: 0.75; }
+}
+@keyframes gn-dot {
+  0%, 75%, 100% { transform: translateY(0); opacity: 0.4; }
+  38% { transform: translateY(-11px); opacity: 1; }
+}
+@keyframes gn-rise {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-70px) scale(1.1); opacity: 0; }
+}
+@keyframes gn-pop {
+  0% { transform: scale(0.7); }
+  55% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+@keyframes gn-fall {
+  0% { transform: translateY(-20px) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(140px) rotate(220deg); opacity: 0; }
+}

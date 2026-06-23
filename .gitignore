@@ -1,0 +1,10 @@
+node_modules
+.claude/
+dist
+dist-ssr
+*.local
+.env
+.env.local
+.vercel
+.DS_Store
+npm-debug.log*
