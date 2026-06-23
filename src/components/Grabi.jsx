@@ -1,36 +1,22 @@
-import RawSvg from './RawSvg.jsx'
-
-// La mascotte Grabi, reprise telle quelle du prototype (Grabi.dc.html).
-// `size` = largeur en px. Les animations grabi-bob / grabi-wave sont dans theme.css.
+// La mascotte Grabi : illustration du nouveau design (public/grabi.png).
+// `size` = largeur/hauteur en px. L'animation grabi-bob est dans theme.css.
 export default function Grabi({ size = 110 }) {
-  const h = Math.round((size * 210) / 200)
-  const svg = `
-  <svg viewBox="0 0 200 210" width="${size}" height="${h}" style="overflow:visible; animation: grabi-bob 2.6s ease-in-out infinite; transform-origin:50% 80%;">
-    <ellipse cx="82" cy="160" rx="13" ry="9" fill="#3FD7B0"></ellipse>
-    <ellipse cx="120" cy="160" rx="13" ry="9" fill="#3FD7B0"></ellipse>
-    <path d="M52,116 C36,124 30,136 34,150" fill="none" stroke="#FF7FB0" stroke-width="9" stroke-linecap="round"></path>
-    <g style="transform-origin:150px 118px; animation: grabi-wave 1.1s ease-in-out infinite;">
-      <path d="M150,116 C168,108 176,92 172,76" fill="none" stroke="#56C7FF" stroke-width="9" stroke-linecap="round"></path>
-      <circle cx="172" cy="72" r="6" fill="#56C7FF"></circle>
-    </g>
-    <g fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M100,32 C138,30 172,66 170,104 C168,142 134,172 98,170 C62,168 30,134 32,98 C34,62 64,34 100,32 Z" stroke="#FF7FB0"></path>
-      <path d="M100,36 C140,38 166,62 168,102 C170,140 136,168 100,172 C60,170 34,138 30,100 C28,64 62,36 100,36 Z" stroke="#56C7FF" opacity="0.92"></path>
-      <path d="M98,30 C136,34 170,62 172,100 C174,138 132,174 98,172 C64,170 28,136 30,98 C32,60 62,28 98,30 Z" stroke="#3FD7B0" opacity="0.9"></path>
-      <path d="M102,34 C142,32 168,68 166,106 C164,144 132,170 96,168 C58,166 32,130 34,96 C36,60 66,36 102,34 Z" stroke="#FFCC3E" opacity="0.92"></path>
-    </g>
-    <path d="M100,52 C130,52 153,76 153,106 C153,134 130,156 100,156 C70,156 47,134 47,106 C47,76 70,52 100,52 Z" fill="#FFFDF7"></path>
-    <path d="M100,52 C95,44 105,40 100,32" fill="none" stroke="#A98CFF" stroke-width="4.5" stroke-linecap="round"></path>
-    <circle cx="100" cy="28" r="5.5" fill="#A98CFF"></circle>
-    <ellipse cx="73" cy="120" rx="9" ry="6" fill="#FF9FC4" opacity="0.85"></ellipse>
-    <ellipse cx="127" cy="120" rx="9" ry="6" fill="#FF9FC4" opacity="0.85"></ellipse>
-    <circle cx="84" cy="102" r="14" fill="#fff" stroke="#EBE3F2" stroke-width="2"></circle>
-    <circle cx="116" cy="102" r="14" fill="#fff" stroke="#EBE3F2" stroke-width="2"></circle>
-    <circle cx="86" cy="104" r="7.5" fill="#3B2D5A"></circle>
-    <circle cx="118" cy="104" r="7.5" fill="#3B2D5A"></circle>
-    <circle cx="83" cy="100" r="2.6" fill="#fff"></circle>
-    <circle cx="115" cy="100" r="2.6" fill="#fff"></circle>
-    <path d="M86,126 Q100,140 114,126" fill="none" stroke="#3B2D5A" stroke-width="4.5" stroke-linecap="round"></path>
-  </svg>`
-  return <RawSvg html={svg} />
+  return (
+    <span style={{ display: 'inline-block', lineHeight: 0 }}>
+      <img
+        src="/grabi.png"
+        alt="Grabi"
+        width={size}
+        height={size}
+        style={{
+          display: 'block',
+          width: size,
+          height: size,
+          objectFit: 'contain',
+          animation: 'grabi-bob 2.8s ease-in-out infinite',
+          transformOrigin: '50% 80%',
+        }}
+      />
+    </span>
+  )
 }
