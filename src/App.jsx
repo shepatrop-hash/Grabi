@@ -12,22 +12,13 @@ import Reader from './screens/Reader.jsx'
 import Community from './screens/Community.jsx'
 import MyStories from './screens/MyStories.jsx'
 import Published from './screens/Published.jsx'
-import Grabi from './components/Grabi.jsx'
-import RawSvg from './components/RawSvg.jsx'
+import TopBack from './components/BackButton.jsx'
 import { generateStory, generateImage, generateQuestions } from './lib/api.js'
 import { buildQcm } from './lib/qcm.js'
+import { load, save, newId } from './lib/store.js'
+import { SEED_COMMUNITY } from './lib/samples.js'
 
-const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
-
-function TopBack({ onBack }) {
-  return (
-    <button onClick={onBack} style={{ width: 48, height: 48, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
-      <RawSvg html={backIcon} />
-    </button>
-  )
-}
-
-function Ready({ story, onBack, onPublish }) {
+function Ready({ story, onKeep, onPublish }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
   const [phase, setPhase] = useState('refs') // 'refs' (personnages) | 'scenes'
 
@@ -71,10 +62,24 @@ function Ready({ story, onBack, onPublish }) {
     }
   }, [story])
 
+  const assemble = () => {
+    const pages = (story?.pages || []).map((p, i) => ({
+      text: p.texte,
+      image: images[i] && images[i] !== 'error' ? images[i] : null,
+    }))
+    return {
+      title: story?.titre || 'Mon histoire',
+      bg: 'linear-gradient(160deg,#C8EDFF,#E6DDFF)',
+      pages,
+      cover: pages.find((p) => p.image)?.image || null,
+      personnages: story?.personnages || [],
+    }
+  }
+
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', padding: 'calc(env(safe-area-inset-top, 14px) + 12px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <TopBack onBack={onBack} />
+        <TopBack onClick={() => onKeep(assemble())} />
         <div style={{ fontSize: 22, fontWeight: 700 }}>Ton histoire est prête</div>
       </div>
       <div style={{ fontSize: 26, fontWeight: 700, textAlign: 'center', marginTop: 10 }}>{story?.titre}</div>
@@ -99,23 +104,8 @@ function Ready({ story, onBack, onPublish }) {
         })}
       </div>
       <div style={{ flex: 'none', display: 'flex', gap: 12, paddingTop: 14 }}>
-        <button onClick={onBack} style={{ flex: 1, background: '#fff', border: '2px solid #EDE7F5', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>Garder pour moi</button>
-        <button onClick={onPublish} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
-      </div>
-    </div>
-  )
-}
-
-function Placeholder({ title, onBack }) {
-  return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', padding: 'calc(env(safe-area-inset-top, 14px) + 12px) 24px 24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <TopBack onBack={onBack} />
-        <div style={{ fontSize: 24, fontWeight: 700 }}>{title}</div>
-      </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, textAlign: 'center' }}>
-        <Grabi size={120} />
-        <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink2)', maxWidth: 240 }}>Cet écran arrive bientôt — on le construit juste après. 💛</div>
+        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: '#fff', border: '2px solid #EDE7F5', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>Garder pour moi</button>
+        <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
       </div>
     </div>
   )
@@ -124,16 +114,34 @@ function Placeholder({ title, onBack }) {
 export default function App() {
   const [screen, setScreen] = useState('home')
   const [storyText, setStoryText] = useState('')
-  const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [story, setStory] = useState(null)
-  const [voice, setVoice] = useState('Douce')
+  const [story, setStory] = useState(null) // histoire brute en cours (avant sauvegarde)
   const [qcmQuestions, setQcmQuestions] = useState([])
   const [qcmIndex, setQcmIndex] = useState(0)
   const [qcmAnswers, setQcmAnswers] = useState({})
   const [qcmLoading, setQcmLoading] = useState(false)
-  const [readerType, setReaderType] = useState('free')
+  const [reader, setReader] = useState(null) // { story, origin }
 
+  // --- Données persistées (localStorage) ---
+  const [stories, setStories] = useState(() => load('stories', []))
+  const [smiles, setSmiles] = useState(() => load('smiles', {}))
+  const [given, setGiven] = useState(() => load('given', {}))
+  const [voice, setVoice] = useState(() => load('voice', 'Douce'))
+  const [soundOn, setSoundOn] = useState(() => load('soundOn', true))
+  const [premium, setPremium] = useState(() => load('premium', false))
+  const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
+  const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
+
+  useEffect(() => save('stories', stories), [stories])
+  useEffect(() => save('smiles', smiles), [smiles])
+  useEffect(() => save('given', given), [given])
+  useEffect(() => save('voice', voice), [voice])
+  useEffect(() => save('soundOn', soundOn), [soundOn])
+  useEffect(() => save('premium', premium), [premium])
+  useEffect(() => save('child', child), [child])
+  useEffect(() => save('screenTime', screenTime), [screenTime])
+
+  // --- Création : QCM contextuel ---
   async function startQcm() {
     const idea = storyText.trim()
     if (!idea) return
@@ -147,7 +155,6 @@ export default function App() {
       const data = await generateQuestions(idea)
       setQcmQuestions(data?.questions?.length ? data.questions : buildQcm(idea))
     } catch {
-      // Repli : questions pré-écrites (ex. en local sans clé API)
       setQcmQuestions(buildQcm(idea))
     } finally {
       setQcmLoading(false)
@@ -175,22 +182,50 @@ export default function App() {
       setScreen('ready')
     } catch (e) {
       setError(
-        "La génération n'a pas marché. En local, le moteur d'histoires (Claude) ne tourne qu'avec « vercel dev » + ta clé API. Détail : " +
+        "La génération n'a pas marché. En local, le moteur d'histoires (Claude) ne tourne qu'avec une clé API. Détail : " +
           (e?.message || e),
       )
       setScreen('create')
     }
   }
 
-  function openReader(type) {
-    setReaderType(type)
+  // --- Bibliothèque ---
+  function saveStory(assembled, published) {
+    const id = newId()
+    const entry = { id, ...assembled, published: !!published, createdAt: Date.now() }
+    setStories((list) => [entry, ...list])
+    setSmiles((m) => ({ ...m, [id]: 0 }))
+    setStoryText('')
+    setStory(null)
+    setScreen(published ? 'published' : 'mine')
+  }
+
+  const smilesOf = (item) => smiles[item.id] ?? item.smiles ?? 0
+  function giveGrabi(item) {
+    if (given[item.id]) return
+    setGiven((g) => ({ ...g, [item.id]: true }))
+    setSmiles((m) => ({ ...m, [item.id]: smilesOf(item) + 1 }))
+  }
+
+  const communityList = [...stories.filter((s) => s.published), ...SEED_COMMUNITY]
+
+  // --- Lecteur ---
+  function openReader(storyObj, origin) {
+    if (!storyObj) return
+    setReader({ story: storyObj, origin: origin || 'home' })
     setScreen('reader')
+  }
+
+  function editChild() {
+    const name = window.prompt("Prénom de l'enfant ?", child.name)
+    if (name && name.trim()) setChild((c) => ({ ...c, name: name.trim() }))
   }
 
   return (
     <div className="app-shell">
       {screen === 'home' && (
         <Home
+          childName={child.name}
           onGoFree={() => setScreen('free')}
           onGoPremium={() => setScreen('premium')}
           onGoCreate={() => setScreen('create')}
@@ -201,34 +236,31 @@ export default function App() {
         />
       )}
       {screen === 'create' && (
-        <Create
-          storyText={storyText}
-          setStoryText={setStoryText}
-          onBack={() => setScreen('home')}
-          onCreate={startQcm}
-          busy={busy}
-          error={error}
-        />
+        <Create storyText={storyText} setStoryText={setStoryText} onBack={() => setScreen('home')} onCreate={startQcm} busy={false} error={error} />
       )}
       {screen === 'qcm' && (
-        <QCM
-          idea={storyText}
-          questions={qcmQuestions}
-          index={qcmIndex}
-          loading={qcmLoading}
-          onBack={() => setScreen('create')}
-          onAnswer={answerQcm}
-        />
+        <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} onBack={() => setScreen('home')} onPublish={() => setScreen('published')} />}
-      {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={openReader} />}
-      {screen === 'premium' && <Premium onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={openReader} />}
-      {screen === 'subscribe' && <Subscribe onClose={() => setScreen('home')} onStart={() => setScreen('home')} />}
+      {screen === 'ready' && <Ready story={story} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} />}
+      {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
+      {screen === 'premium' && (
+        <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
+      )}
+      {screen === 'subscribe' && (
+        <Subscribe onClose={() => setScreen('home')} onStart={() => { setPremium(true); setScreen('home') }} />
+      )}
       {screen === 'settings' && (
         <Settings
           voice={voice}
           onVoice={setVoice}
+          soundOn={soundOn}
+          onToggleSound={() => setSoundOn((s) => !s)}
+          premium={premium}
+          child={child}
+          onEditProfile={editChild}
+          screenTime={screenTime}
+          onCycleScreenTime={() => setScreenTime((t) => (t >= 60 ? 15 : t + 15))}
           onSubscribe={() => setScreen('subscribe')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
@@ -238,7 +270,11 @@ export default function App() {
       )}
       {screen === 'community' && (
         <Community
-          onOpenReader={openReader}
+          list={communityList}
+          smilesOf={smilesOf}
+          given={given}
+          onGive={giveGrabi}
+          onOpenReader={(s) => openReader(s, 'community')}
           onHome={() => setScreen('home')}
           onCreate={() => setScreen('create')}
           onMine={() => setScreen('mine')}
@@ -247,15 +283,26 @@ export default function App() {
       )}
       {screen === 'mine' && (
         <MyStories
-          onOpenReader={openReader}
+          stories={stories}
+          smilesOf={smilesOf}
+          onOpenReader={(s) => openReader(s, 'mine')}
+          onCreate={() => setScreen('create')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
-          onCreate={() => setScreen('create')}
           onSettings={() => setScreen('settings')}
         />
       )}
       {screen === 'published' && <Published onMine={() => setScreen('mine')} onHome={() => setScreen('home')} />}
-      {screen === 'reader' && <Reader storyType={readerType} onClose={() => setScreen(readerType === 'weekly' ? 'premium' : 'free')} onSubscribe={() => setScreen('subscribe')} />}
+      {screen === 'reader' && (
+        <Reader
+          story={reader?.story}
+          isPremium={premium}
+          voice={voice}
+          soundOn={soundOn}
+          onClose={() => setScreen(reader?.origin || 'home')}
+          onSubscribe={() => setScreen('subscribe')}
+        />
+      )}
       {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
     </div>
   )

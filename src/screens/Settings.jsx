@@ -16,11 +16,11 @@ const gearW = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" strok
 
 const VOICES = ['Douce', 'Rigolote', 'Magique', 'Robot']
 
-const rowStyle = { background: '#fff', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
+const rowStyle = { background: '#fff', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)', width: '100%', textAlign: 'left' }
 const iconBox = (bg) => ({ width: 42, height: 42, borderRadius: 14, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' })
 const navBtn = { width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 
-export default function Settings({ voice, onVoice, onSubscribe, onHome, onCommunity, onCreate, onMine }) {
+export default function Settings({ voice, onVoice, soundOn = true, onToggleSound, premium, child = { name: 'Léa', age: '5 ans' }, onEditProfile, screenTime = 30, onCycleScreenTime, onSubscribe, onHome, onCommunity, onCreate, onMine }) {
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, right: -40, width: 170, height: 170, borderRadius: '50%', background: 'var(--sky-soft)', opacity: 0.55 }} />
@@ -29,18 +29,18 @@ export default function Settings({ voice, onVoice, onSubscribe, onHome, onCommun
         <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500 }}>Réglages &amp; espace parents</div>
       </div>
 
-      <div style={{ margin: '16px 24px 0', background: '#fff', borderRadius: 26, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', position: 'relative', zIndex: 2 }}>
+      <button onClick={onEditProfile} style={{ margin: '16px 24px 0', background: '#fff', borderRadius: 26, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', position: 'relative', zIndex: 2, textAlign: 'left' }}>
         <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', overflow: 'hidden' }}><Grabi size={54} /></div>
-        <div style={{ flex: 1 }}><div style={{ fontSize: 18, fontWeight: 700 }}>Léa</div><div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>5 ans · profil enfant</div></div>
+        <div style={{ flex: 1 }}><div style={{ fontSize: 18, fontWeight: 700 }}>{child.name}</div><div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>{child.age} · profil enfant</div></div>
         <RawSvg html={chevron} />
-      </div>
+      </button>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 12px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 2 }}>
-        <div style={rowStyle}>
+        <button onClick={onToggleSound} style={rowStyle}>
           <span style={iconBox('var(--mint-soft)')}><RawSvg html={soundIcon} /></span>
           <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Son &amp; voix</div>
-          <span style={{ width: 46, height: 27, borderRadius: 14, background: 'var(--mint)', position: 'relative', flex: 'none' }}><span style={{ position: 'absolute', top: 3, right: 3, width: 21, height: 21, borderRadius: '50%', background: '#fff' }} /></span>
-        </div>
+          <span style={{ width: 46, height: 27, borderRadius: 14, background: soundOn ? 'var(--mint)' : '#D9D3E4', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: soundOn ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} /></span>
+        </button>
 
         <div style={{ background: '#fff', borderRadius: 22, padding: '14px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -57,31 +57,31 @@ export default function Settings({ voice, onVoice, onSubscribe, onHome, onCommun
           </div>
         </div>
 
-        <div style={rowStyle}>
+        <button onClick={onCycleScreenTime} style={rowStyle}>
           <span style={iconBox('var(--sky-soft)')}><RawSvg html={clockIcon} /></span>
           <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Temps d'écran</div>
-          <span style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 600, whiteSpace: 'nowrap' }}>30 min/j</span>
-          <RawSvg html={chevron} />
-        </div>
-
-        <button onClick={onSubscribe} style={{ ...rowStyle, textAlign: 'left' }}>
-          <span style={iconBox('var(--violet-soft)')}><RawSvg html={crownIcon} /></span>
-          <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Mon abonnement</div>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#7d5fc4', background: 'var(--violet-soft)', padding: '5px 10px', borderRadius: 14 }}>Gratuit</span>
+          <span style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 600, whiteSpace: 'nowrap' }}>{screenTime} min/j</span>
           <RawSvg html={chevron} />
         </button>
 
-        <div style={rowStyle}>
+        <button onClick={onSubscribe} style={rowStyle}>
+          <span style={iconBox('var(--violet-soft)')}><RawSvg html={crownIcon} /></span>
+          <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Mon abonnement</div>
+          <span style={{ fontSize: 12, fontWeight: 700, color: premium ? '#a07d2a' : '#7d5fc4', background: premium ? 'var(--yellow-soft)' : 'var(--violet-soft)', padding: '5px 10px', borderRadius: 14 }}>{premium ? 'Premium' : 'Gratuit'}</span>
+          <RawSvg html={chevron} />
+        </button>
+
+        <button onClick={onSubscribe} style={rowStyle}>
           <span style={iconBox('var(--yellow-soft)')}><RawSvg html={lockIcon} /></span>
           <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Espace parents</div>
           <RawSvg html={chevron} />
-        </div>
+        </button>
 
-        <div style={rowStyle}>
+        <a href="mailto:bonjour@grabi.app" style={{ ...rowStyle, textDecoration: 'none', color: 'inherit' }}>
           <span style={iconBox('var(--pink-soft)')}><RawSvg html={helpIcon} /></span>
           <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Aide &amp; contact</div>
           <RawSvg html={chevron} />
-        </div>
+        </a>
       </div>
 
       <div style={{ flex: 'none', padding: '8px 26px calc(env(safe-area-inset-bottom, 0px) + 20px)' }}>
