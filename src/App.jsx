@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Home from './screens/Home.jsx'
 import Create from './screens/Create.jsx'
+import GrabiCompanion from './screens/GrabiCompanion.jsx'
 import Grabi from './components/Grabi.jsx'
 import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage } from './lib/api.js'
@@ -117,6 +118,8 @@ export default function App() {
           onGoCreate={() => setScreen('create')}
           onGoCommunity={() => setScreen('community')}
           onGoMine={() => setScreen('mine')}
+          onGoSettings={() => setScreen('settings')}
+          onGoGrabi={() => setScreen('grabi')}
         />
       )}
       {screen === 'create' && (
@@ -134,6 +137,8 @@ export default function App() {
       {screen === 'premium' && <Placeholder title="Histoires de la semaine" onBack={() => setScreen('home')} />}
       {screen === 'community' && <Placeholder title="Communauté" onBack={() => setScreen('home')} />}
       {screen === 'mine' && <Placeholder title="Mes histoires" onBack={() => setScreen('home')} />}
+      {screen === 'settings' && <Placeholder title="Paramètres" onBack={() => setScreen('home')} />}
+      {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
     </div>
   )
 }
