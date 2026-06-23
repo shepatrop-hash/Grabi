@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
+import { load, save } from '../lib/store.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 
@@ -33,12 +34,15 @@ const TABS = [
 const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 l4 4 L19 6"></path></svg>`
 
 export default function GrabiCompanion({ onBack }) {
-  const [happiness, setHappiness] = useState(62)
+  const [happiness, setHappiness] = useState(() => load('happiness', 62))
   const [tab, setTab] = useState('caresser')
-  const [acc, setAcc] = useState({ hat: false, scarf: false, glasses: false, bow: false })
+  const [acc, setAcc] = useState(() => load('acc', { hat: false, scarf: false, glasses: false, bow: false }))
   const [reaction, setReaction] = useState('')
   const [petActive, setPetActive] = useState(false)
   const timer = useRef(null)
+
+  useEffect(() => save('happiness', happiness), [happiness])
+  useEffect(() => save('acc', acc), [acc])
 
   function react(text, bump) {
     setReaction(text)
