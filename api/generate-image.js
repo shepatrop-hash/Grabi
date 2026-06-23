@@ -1,7 +1,7 @@
 import { fal } from '@fal-ai/client'
 
 // Fal.ai héberge Qwen-Image (et d'autres modèles). Modèle configurable.
-const IMAGE_MODEL = process.env.IMAGE_MODEL || 'fal-ai/qwen-image'
+const IMAGE_MODEL = process.env.IMAGE_MODEL || 'fal-ai/qwen-image-2/text-to-image'
 
 // Laisse le temps à la génération d'image (sinon timeout serverless).
 export const config = { maxDuration: 60 }
