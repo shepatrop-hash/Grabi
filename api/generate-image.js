@@ -1,11 +1,11 @@
 import { fal } from '@fal-ai/client'
 
-// Fal.ai héberge Qwen-Image (et d'autres modèles). Modèle configurable.
-// Modèle texte→image, codé en dur pour ignorer toute ancienne variable IMAGE_MODEL
-// (ex. fal-ai/qwen-image, qui est le modèle d'ÉDITION et exige image_urls).
-const IMAGE_MODEL = 'fal-ai/qwen-image-2/text-to-image'
+// Deux modes :
+// - sans image de référence  -> texte→image (pour générer les références ET en repli)
+// - avec image(s) de référence -> édition multi-images (cohérence des personnages/éléments)
+const T2I_MODEL = 'fal-ai/qwen-image-2/text-to-image'
+const EDIT_MODEL = process.env.EDIT_MODEL || 'fal-ai/qwen-image-edit-2509'
 
-// Laisse le temps à la génération d'image (sinon timeout serverless).
 export const config = { maxDuration: 60 }
 
 export default async function handler(req, res) {
@@ -18,8 +18,12 @@ export default async function handler(req, res) {
     return
   }
 
+  const { prompt, image_urls } = req.body || {}
+  const refs = Array.isArray(image_urls) ? image_urls.filter((u) => typeof u === 'string' && u) : []
+  const useEdit = refs.length > 0
+  const model = useEdit ? EDIT_MODEL : T2I_MODEL
+
   try {
-    const { prompt } = req.body || {}
     if (!prompt || typeof prompt !== 'string') {
       res.status(400).json({ error: "Prompt d'illustration manquant." })
       return
@@ -27,25 +31,29 @@ export default async function handler(req, res) {
 
     fal.config({ credentials: process.env.FAL_KEY })
 
-    const result = await fal.subscribe(IMAGE_MODEL, {
-      input: {
-        prompt: `${prompt}. Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
-      },
-    })
+    const input = useEdit
+      ? {
+          prompt: `${prompt}. Keep EXACTLY the same characters, colors and art style as the reference image(s). Children's picture book illustration, soft warm colors, cute and gentle, no text.`,
+          image_urls: refs.slice(0, 4),
+        }
+      : {
+          prompt: `${prompt}. Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
+        }
 
+    const result = await fal.subscribe(model, { input })
     const url = result?.data?.images?.[0]?.url
     if (!url) {
-      res.status(502).json({ error: "Pas d'image renvoyée par Fal." })
+      res.status(502).json({ error: "Pas d'image renvoyée par Fal.", model })
       return
     }
 
-    res.status(200).json({ url, model: IMAGE_MODEL })
+    res.status(200).json({ url, model })
   } catch (err) {
     console.error('generate-image error:', err)
     res.status(500).json({
       error: String(err?.message || err),
       status: err?.status ?? null,
-      model: IMAGE_MODEL,
+      model,
       detail: err?.body?.detail ?? err?.body ?? null,
     })
   }

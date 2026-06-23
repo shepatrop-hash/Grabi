@@ -29,19 +29,43 @@ function TopBack({ onBack }) {
 
 function Ready({ story, onBack, onPublish }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
+  const [phase, setPhase] = useState('refs') // 'refs' (personnages) | 'scenes'
 
   useEffect(() => {
     if (!story?.pages) return
     let cancelled = false
-    story.pages.forEach((p, i) => {
-      generateImage(p.prompt_illustration)
-        .then(({ url }) => {
-          if (!cancelled) setImages((m) => ({ ...m, [i]: url || 'error' }))
-        })
-        .catch(() => {
-          if (!cancelled) setImages((m) => ({ ...m, [i]: 'error' }))
-        })
-    })
+    setImages({})
+    setPhase('refs')
+
+    ;(async () => {
+      // 1) Images de référence des personnages/éléments (texte→image) pour la cohérence
+      let refUrls = []
+      const persos = (story.personnages || []).slice(0, 3)
+      if (persos.length) {
+        const results = await Promise.all(
+          persos.map((pr) =>
+            generateImage(`${pr.description}. Single character reference, centered, plain very light background, full body, children's picture book illustration, soft colors, no text.`)
+              .then((d) => d.url)
+              .catch(() => null),
+          ),
+        )
+        refUrls = results.filter(Boolean)
+      }
+      if (cancelled) return
+      setPhase('scenes')
+
+      // 2) Chaque scène, en passant les références (mode édition) -> personnages cohérents
+      story.pages.forEach((p, i) => {
+        generateImage(p.prompt_illustration, refUrls)
+          .then(({ url }) => {
+            if (!cancelled) setImages((m) => ({ ...m, [i]: url || 'error' }))
+          })
+          .catch(() => {
+            if (!cancelled) setImages((m) => ({ ...m, [i]: 'error' }))
+          })
+      })
+    })()
+
     return () => {
       cancelled = true
     }
@@ -65,7 +89,7 @@ function Ready({ story, onBack, onPublish }) {
                 ) : img === 'error' ? (
                   <span style={{ fontSize: 13, color: 'var(--ink2)', padding: 12, textAlign: 'center' }}>Illustration indisponible</span>
                 ) : (
-                  <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600 }}>Grabi dessine… 🎨</span>
+                  <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600, textAlign: 'center', padding: 12 }}>{phase === 'refs' ? 'Grabi prépare les personnages… ✨' : 'Grabi dessine… 🎨'}</span>
                 )}
               </div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--violet)' }}>Page {i + 1}</div>

@@ -18,7 +18,12 @@ Règles strictes :
 
 Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS décrivant une illustration
 de livre jeunesse (style doux, coloré, rassurant), cohérent d'une scène à l'autre :
-même personnage principal, même style artistique tout au long de l'histoire.`
+même personnage principal, même style artistique tout au long de l'histoire.
+
+Fournis aussi "personnages" : 1 à 3 éléments clés (le héros principal, et au plus 1-2 personnages,
+objets ou lieux récurrents importants). Pour chacun : un "nom" court en français, et une "description"
+EN ANGLAIS très détaillée et CONSTANTE (apparence, couleurs, style d'illustration) — elle servira à
+générer une image de référence du personnage. Les "prompt_illustration" doivent réutiliser ces personnages.`
 
 // Schéma de sortie structurée : { titre, pages: [{ texte, prompt_illustration }] }
 const SCHEMA = {
@@ -26,6 +31,18 @@ const SCHEMA = {
   additionalProperties: false,
   properties: {
     titre: { type: 'string' },
+    personnages: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          nom: { type: 'string' },
+          description: { type: 'string' },
+        },
+        required: ['nom', 'description'],
+      },
+    },
     pages: {
       type: 'array',
       items: {
@@ -39,7 +56,7 @@ const SCHEMA = {
       },
     },
   },
-  required: ['titre', 'pages'],
+  required: ['titre', 'personnages', 'pages'],
 }
 
 export default async function handler(req, res) {

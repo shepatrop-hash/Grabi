@@ -19,12 +19,13 @@ export async function generateStory(idea, answers = {}) {
   return res.json()
 }
 
-// Génère une illustration (Fal.ai / Qwen Image 2) à partir du prompt d'une scène.
-export async function generateImage(prompt) {
+// Génère une illustration (Fal.ai / Qwen Image 2).
+// Sans imageUrls -> texte→image. Avec imageUrls (références) -> édition (cohérence des personnages).
+export async function generateImage(prompt, imageUrls) {
   const res = await fetch('/api/generate-image', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, image_urls: Array.isArray(imageUrls) ? imageUrls : [] }),
   })
   if (!res.ok) {
     let detail = ''
