@@ -6,9 +6,12 @@ import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
 import Subscribe from './screens/Subscribe.jsx'
 import Settings from './screens/Settings.jsx'
+import QCM from './screens/QCM.jsx'
+import Generating from './screens/Generating.jsx'
 import Grabi from './components/Grabi.jsx'
 import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage } from './lib/api.js'
+import { buildQcm } from './lib/qcm.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 
@@ -93,15 +96,37 @@ export default function App() {
   const [error, setError] = useState('')
   const [story, setStory] = useState(null)
   const [voice, setVoice] = useState('Douce')
+  const [qcmQuestions, setQcmQuestions] = useState([])
+  const [qcmIndex, setQcmIndex] = useState(0)
+  const [qcmAnswers, setQcmAnswers] = useState({})
 
-  async function handleCreate() {
+  function startQcm() {
     const idea = storyText.trim()
     if (!idea) return
-    setBusy(true)
+    setQcmQuestions(buildQcm(idea))
+    setQcmIndex(0)
+    setQcmAnswers({})
+    setError('')
+    setScreen('qcm')
+  }
+
+  function answerQcm(value) {
+    const q = qcmQuestions[qcmIndex]
+    const answers = { ...qcmAnswers, [q?.q || qcmIndex]: value }
+    setQcmAnswers(answers)
+    if (qcmIndex >= qcmQuestions.length - 1) {
+      runGenerate(storyText.trim(), answers)
+    } else {
+      setQcmIndex(qcmIndex + 1)
+    }
+  }
+
+  async function runGenerate(idea, answers) {
     setError('')
     setStory(null)
+    setScreen('generating')
     try {
-      const data = await generateStory(idea)
+      const data = await generateStory(idea, answers)
       setStory(data.story)
       setScreen('ready')
     } catch (e) {
@@ -109,8 +134,7 @@ export default function App() {
         "La génération n'a pas marché. En local, le moteur d'histoires (Claude) ne tourne qu'avec « vercel dev » + ta clé API. Détail : " +
           (e?.message || e),
       )
-    } finally {
-      setBusy(false)
+      setScreen('create')
     }
   }
 
@@ -132,11 +156,21 @@ export default function App() {
           storyText={storyText}
           setStoryText={setStoryText}
           onBack={() => setScreen('home')}
-          onCreate={handleCreate}
+          onCreate={startQcm}
           busy={busy}
           error={error}
         />
       )}
+      {screen === 'qcm' && (
+        <QCM
+          idea={storyText}
+          questions={qcmQuestions}
+          index={qcmIndex}
+          onBack={() => setScreen('create')}
+          onAnswer={answerQcm}
+        />
+      )}
+      {screen === 'generating' && <Generating />}
       {screen === 'ready' && <Ready story={story} onBack={() => setScreen('home')} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={() => setScreen('reader')} />}
       {screen === 'premium' && <Premium onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={() => setScreen('reader')} />}
