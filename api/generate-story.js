@@ -16,14 +16,20 @@ Règles strictes :
 - Toujours une fin rassurante et bienveillante.
 - Longueur totale ~400 à 500 mots (environ 3 minutes lues à voix haute), découpée en 5 à 6 scènes.
 
-Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS décrivant une illustration
-de livre jeunesse (style doux, coloré, rassurant), cohérent d'une scène à l'autre :
-même personnage principal, même style artistique tout au long de l'histoire.
+Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS, riche, imagé et joyeux, qui :
+- nomme chaque personnage présent par son trait/couleur clé ET son prénom, formulé EXACTEMENT pareil d'une
+  scène à l'autre (ex. "the sky-blue crocodile Trama and the small tortoise Gaston") ;
+- décrit l'action et le décor de façon précise, vivante et un peu drôle ;
+- se termine TOUJOURS par cette phrase exacte : "Soft pastel children's book illustration style, humorous and joyful mood, rounded shapes."
+
+Exemple de "prompt_illustration" attendu :
+"The sky-blue crocodile Trama and the small tortoise Gaston push together the enormous orange polka-dot sofa, which slides smoothly on round books used as rollers, heading toward the front door. Both characters laugh with delight. Soft pastel children's book illustration style, humorous and joyful mood, rounded shapes."
 
 Fournis aussi "personnages" : 1 à 3 éléments clés (le héros principal, et au plus 1-2 personnages,
 objets ou lieux récurrents importants). Pour chacun : un "nom" court en français, et une "description"
-EN ANGLAIS très détaillée et CONSTANTE (apparence, couleurs, style d'illustration) — elle servira à
-générer une image de référence du personnage. Les "prompt_illustration" doivent réutiliser ces personnages.`
+EN ANGLAIS très détaillée et CONSTANTE (espèce/type, couleur précise et stable, forme, détails distinctifs).
+Le descripteur court réutilisé dans chaque "prompt_illustration" (couleur + type + prénom) doit correspondre
+exactement à cette description, pour garder chaque personnage identique tout au long de l'histoire.`
 
 // Schéma de sortie structurée : { titre, pages: [{ texte, prompt_illustration }] }
 const SCHEMA = {
