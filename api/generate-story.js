@@ -16,14 +16,16 @@ Règles strictes :
 - Toujours une fin rassurante et bienveillante.
 - Longueur totale ~400 à 500 mots (environ 3 minutes lues à voix haute), découpée en 5 à 6 scènes.
 
-Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS décrivant une illustration
-de livre jeunesse (style doux, coloré, rassurant), cohérent d'une scène à l'autre :
-même personnage principal, même style artistique tout au long de l'histoire.
+Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS décrivant l'ACTION et le DÉCOR
+de la scène (qui fait quoi, où, ambiance), avec le même personnage principal d'une scène à l'autre.
+Ne précise PAS le style de rendu : il est appliqué automatiquement et identique partout.
 
 Fournis aussi "personnages" : 1 à 3 éléments clés (le héros principal, et au plus 1-2 personnages,
 objets ou lieux récurrents importants). Pour chacun : un "nom" court en français, et une "description"
-EN ANGLAIS très détaillée et CONSTANTE (apparence, couleurs, style d'illustration) — elle servira à
-générer une image de référence du personnage. Les "prompt_illustration" doivent réutiliser ces personnages.`
+EN ANGLAIS des traits PHYSIQUES, très détaillée et surtout CONSTANTE (espèce/type, forme, COULEUR
+précise et stable, grands yeux ronds expressifs, vêtements ou détails distinctifs) — elle sert d'image
+de référence pour garder le personnage identique. Ne décris PAS le style de rendu (il est fixé à part).
+Les "prompt_illustration" décrivent l'action et le décor de chaque scène en réutilisant ces personnages.`
 
 // Schéma de sortie structurée : { titre, pages: [{ texte, prompt_illustration }] }
 const SCHEMA = {
