@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BackButton from '../components/BackButton.jsx'
 import { load, save } from '../lib/store.js'
 import { ACCESSORIES, DEFAULT_ACC, VOICE_SAMPLE, DECORS, getDecor } from '../lib/grabiCustom.js'
-import { speak, ttsSupported } from '../lib/tts.js'
+import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
+import { generateAudio } from '../lib/api.js'
 
 const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 l4 4 L19 6"></path></svg>`
 const playMini = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#7d5fc4"><path d="M8 5 L19 12 L8 19 Z"></path></svg>`
@@ -21,15 +22,32 @@ const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', text
 
 export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice, decor = 'none', onDecor, nightMode = false, onToggleNight, onBack, onPlay }) {
   const [acc, setAcc] = useState(() => load('acc', DEFAULT_ACC))
+  const [previewing, setPreviewing] = useState('')
+  const audioRef = useRef(null)
   useEffect(() => save('acc', acc), [acc])
+  useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); stopSpeak() }, [])
 
   const toggleAcc = (key) => setAcc((a) => ({ ...a, [key]: !a[key] }))
   const d = getDecor(decor)
   const previewBg = d.bg !== 'transparent' ? d.bg : 'linear-gradient(180deg,#FBF7FF,#F1EBFA)'
 
-  const testVoice = (v) => {
+  // Aperçu de la VRAIE voix ElevenLabs (repli sur la voix du navigateur si indispo).
+  const testVoice = async (v) => {
     onVoice(v)
-    if (ttsSupported()) speak(VOICE_SAMPLE, v)
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+    stopSpeak()
+    setPreviewing(v)
+    try {
+      const data = await generateAudio(VOICE_SAMPLE, v)
+      const a = new Audio(data.url)
+      audioRef.current = a
+      a.onended = () => setPreviewing('')
+      a.onerror = () => { setPreviewing(''); if (ttsSupported()) speak(VOICE_SAMPLE, v) }
+      await a.play()
+    } catch {
+      setPreviewing('')
+      if (ttsSupported()) speak(VOICE_SAMPLE, v)
+    }
   }
 
   return (
@@ -105,7 +123,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
                   <span style={{ display: 'block', fontSize: 16, fontWeight: 700 }}>{v.key}</span>
                   <span style={{ display: 'block', fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>{v.desc}</span>
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: '#7d5fc4', flex: 'none' }}><RawSvg html={playMini} />Écouter</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: '#7d5fc4', flex: 'none', minWidth: 74, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>
               </button>
             )
           })}
