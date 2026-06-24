@@ -14,7 +14,9 @@ Règles strictes :
 - Public 3 à 7 ans : aucun contenu effrayant, violent, triste durablement, ni thème d'adulte.
 - Vocabulaire simple, phrases courtes, ton chaleureux et joueur.
 - Toujours une fin rassurante et bienveillante.
-- Longueur totale ~400 à 500 mots (environ 3 minutes lues à voix haute), découpée en 5 à 6 scènes.
+- Découpe l'histoire en 5 à 6 scènes. Chaque scène (page) = 2 à 3 phrases COURTES maximum
+  (environ 25 à 40 mots), simples à lire à voix haute pour un jeune enfant. Va droit au but,
+  évite les longs paragraphes : le texte doit tenir confortablement sous l'illustration.
 
 Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS, riche, imagé et joyeux, qui :
 - nomme chaque personnage présent par son trait/couleur clé ET son prénom, formulé EXACTEMENT pareil d'une

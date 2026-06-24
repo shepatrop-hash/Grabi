@@ -90,7 +90,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
 
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#fff', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
-      <div style={{ position: 'relative', height: 'min(52dvh, 540px)', flex: 'none', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 'min(46dvh, 480px)', flex: 'none', overflow: 'hidden' }}>
         {hero}
         <button onClick={close} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', left: 22, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)' }}><RawSvg html={backIcon} /></button>
         <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 26px)', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 7, padding: '0 70px', flexWrap: 'wrap' }}>
@@ -103,9 +103,9 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
         )}
       </div>
 
-      <div style={{ flex: 1, background: '#fff', borderRadius: '36px 36px 0 0', marginTop: -32, position: 'relative', zIndex: 2, padding: '30px 30px calc(env(safe-area-inset-bottom, 0px) + 26px)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ fontSize: 23, fontWeight: 600, lineHeight: 1.5, overflowY: 'auto' }}>{cur.text}</div>
-        <div style={{ marginTop: 'auto', paddingTop: 18 }}>
+      <div style={{ flex: 1, minHeight: 0, background: '#fff', borderRadius: '36px 36px 0 0', marginTop: -32, position: 'relative', zIndex: 2, padding: '26px 30px calc(env(safe-area-inset-bottom, 0px) + 22px)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.5, flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>{cur.text}</div>
+        <div style={{ flex: 'none', paddingTop: 16 }}>
           <div style={{ height: 8, borderRadius: 4, background: '#EFEAF6', overflow: 'hidden' }}><div style={{ width: progress, height: '100%', background: 'var(--mint)', borderRadius: 4, transition: 'width .3s ease' }} /></div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, marginTop: 22 }}>
             <button onClick={prev} disabled={page === 0} style={{ width: 60, height: 60, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0.45 : 1 }}><RawSvg html={prevIcon} /></button>
