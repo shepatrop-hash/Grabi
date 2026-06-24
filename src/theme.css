@@ -45,6 +45,24 @@ body {
   overflow: hidden;
 }
 
+/* Tablette & grand écran : colonne un peu plus large, encadrée comme un appareil. */
+@media (min-width: 700px) {
+  body {
+    background: #d7d3e6;
+  }
+  .app-shell {
+    max-width: 460px;
+    box-shadow: 0 24px 80px -16px rgba(74, 58, 102, 0.4);
+  }
+}
+
+/* Très grand écran (tablette posée, desktop) : un poil plus large encore. */
+@media (min-width: 1000px) {
+  .app-shell {
+    max-width: 500px;
+  }
+}
+
 input::placeholder {
   color: #b9aecb;
   font-weight: 500;
