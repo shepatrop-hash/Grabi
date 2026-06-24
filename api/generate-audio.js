@@ -2,13 +2,14 @@
 // Renvoie l'audio en data-URL base64 → le lecteur joue ça sans changement côté client.
 const MODEL = process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2'
 
-// Les 4 « voix de Grabi » -> voix ElevenLabs (premade) + réglages. Faciles à changer :
-// remplace les `id` par TES voix (ElevenLabs → Voices → ... → "Voice ID").
+// Voix de Grabi (créée via Voice Design ElevenLabs). Une seule voix « Grabi »,
+// déclinée en 4 humeurs via les réglages. Changeable via la variable GRABI_VOICE_ID.
+const GRABI = process.env.GRABI_VOICE_ID || 'w7wCAI1AvmPJFN5cZIu3'
 const VOICES = {
-  Douce: { id: 'EXAVITQu4vr4xnSDxMaL', settings: { stability: 0.55, similarity_boost: 0.8, style: 0.15, speed: 0.96, use_speaker_boost: true } }, // Sarah
-  Rigolote: { id: '9BWtsMINqrJLrRacOk9x', settings: { stability: 0.4, similarity_boost: 0.75, style: 0.5, speed: 1.05, use_speaker_boost: true } }, // Aria
-  Magique: { id: 'XB0fDUnXU5powFXDhCwa', settings: { stability: 0.5, similarity_boost: 0.8, style: 0.35, speed: 0.96, use_speaker_boost: true } }, // Charlotte
-  Robot: { id: 'JBFqnCBsd6RMkjVDRZzb', settings: { stability: 0.9, similarity_boost: 0.4, style: 0, speed: 0.92, use_speaker_boost: false } }, // George
+  Douce: { id: GRABI, settings: { stability: 0.6, similarity_boost: 0.8, style: 0.12, speed: 0.95, use_speaker_boost: true } },
+  Rigolote: { id: GRABI, settings: { stability: 0.35, similarity_boost: 0.8, style: 0.55, speed: 1.08, use_speaker_boost: true } },
+  Magique: { id: GRABI, settings: { stability: 0.5, similarity_boost: 0.85, style: 0.35, speed: 0.96, use_speaker_boost: true } },
+  Robot: { id: GRABI, settings: { stability: 0.95, similarity_boost: 0.5, style: 0, speed: 0.9, use_speaker_boost: false } },
 }
 
 export const config = { maxDuration: 60 }
