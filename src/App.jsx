@@ -22,6 +22,7 @@ import MyStories from './screens/MyStories.jsx'
 import Published from './screens/Published.jsx'
 import TopBack from './components/BackButton.jsx'
 import BackgroundMusic from './components/BackgroundMusic.jsx'
+import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage, generateQuestions } from './lib/api.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
@@ -29,6 +30,9 @@ import { load, save, newId } from './lib/store.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
+
+const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
+const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
 
 function Ready({ story, onKeep, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
@@ -452,6 +456,15 @@ export default function App() {
         />
       )}
       {screen === 'grabi' && <GrabiCompanion decor={decor} onBack={() => setScreen(grabiBack)} />}
+      {/* Couper / remettre la musique de fond — accessible depuis n'importe quel écran */}
+      <button
+        onClick={() => setMusicOn((s) => !s)}
+        aria-label={musicOn ? 'Couper la musique' : 'Remettre la musique'}
+        title={musicOn ? 'Couper la musique' : 'Remettre la musique'}
+        style={{ position: 'fixed', right: 'calc(env(safe-area-inset-right, 0px) + 14px)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 92px)', width: 42, height: 42, borderRadius: '50%', background: musicOn ? 'rgba(255,255,255,.92)' : 'rgba(255,224,233,.96)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(74,58,102,.22)', zIndex: 9998 }}
+      >
+        <RawSvg html={musicOn ? musicOnIcon : musicOffIcon} />
+      </button>
       {nightMode && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(42,28,66,.30)', mixBlendMode: 'multiply', pointerEvents: 'none', zIndex: 9999 }} />
       )}
