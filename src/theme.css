@@ -45,21 +45,33 @@ body {
   overflow: hidden;
 }
 
-/* Tablette & grand écran : colonne un peu plus large, encadrée comme un appareil. */
+/* Tablette & grand écran : on met TOUTE l'app à l'échelle (téléphone agrandi,
+   encadré comme un appareil) pour utiliser l'espace, sans toucher au design mobile.
+   Le facteur --app-scale est calculé en JS (main.jsx) selon la taille de l'écran. */
 @media (min-width: 700px) {
   body {
     background: #d7d3e6;
   }
-  .app-shell {
-    max-width: 460px;
-    box-shadow: 0 24px 80px -16px rgba(74, 58, 102, 0.4);
+  #root {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-}
-
-/* Très grand écran (tablette posée, desktop) : un poil plus large encore. */
-@media (min-width: 1000px) {
   .app-shell {
-    max-width: 500px;
+    width: 430px;
+    max-width: 430px;
+    height: 860px;
+    min-height: 0;
+    border-radius: 46px;
+    box-shadow: 0 34px 90px -18px rgba(74, 58, 102, 0.55);
+    transform: scale(var(--app-scale, 1));
+    transform-origin: center;
+  }
+  /* Les écrans posent height:100dvh en inline ; on les fait remplir le canevas. */
+  .app-shell > div {
+    height: 100% !important;
+    min-height: 100% !important;
   }
 }
 
