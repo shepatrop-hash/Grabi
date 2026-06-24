@@ -3,7 +3,7 @@ import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BackButton from '../components/BackButton.jsx'
 import { load, save } from '../lib/store.js'
-import { ACCESSORIES, DEFAULT_ACC, accOverlay, VOICE_SAMPLE } from '../lib/grabiCustom.js'
+import { ACCESSORIES, DEFAULT_ACC, VOICE_SAMPLE } from '../lib/grabiCustom.js'
 import { speak, ttsSupported } from '../lib/tts.js'
 
 const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 l4 4 L19 6"></path></svg>`
@@ -24,7 +24,6 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
   useEffect(() => save('acc', acc), [acc])
 
   const toggleAcc = (key) => setAcc((a) => ({ ...a, [key]: !a[key] }))
-  const overlay = accOverlay(acc)
 
   const testVoice = (v) => {
     onVoice(v)
@@ -45,10 +44,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
         {/* Aperçu de la mascotte avec ses accessoires */}
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 8 }}>
           <div style={{ position: 'relative', width: 150, height: 150 }}>
-            <Grabi size={150} />
-            {overlay && (
-              <RawSvg style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} html={`<svg width="150" height="150" viewBox="0 0 200 200">${overlay}</svg>`} />
-            )}
+            <Grabi size={150} acc={acc} />
           </div>
         </div>
 

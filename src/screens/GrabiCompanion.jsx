@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { load, save } from '../lib/store.js'
-import { ACCESSORIES, DEFAULT_ACC, accOverlay } from '../lib/grabiCustom.js'
+import { ACCESSORIES, DEFAULT_ACC } from '../lib/grabiCustom.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 
@@ -46,8 +46,6 @@ export default function GrabiCompanion({ onBack }) {
     react('Joli ! ✨', 2)
   }
 
-  const overlay = accOverlay(acc)
-
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#FFE9F2 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', display: 'flex', alignItems: 'center', gap: 14, position: 'relative', zIndex: 2 }}>
@@ -73,10 +71,7 @@ export default function GrabiCompanion({ onBack }) {
             <div style={{ position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)', background: '#fff', borderRadius: 18, padding: '8px 14px', fontSize: 15, fontWeight: 700, boxShadow: '0 6px 16px rgba(74,58,102,.16)', whiteSpace: 'nowrap', zIndex: 6 }}>{reaction}</div>
           )}
           <div style={{ position: 'relative', width: 200, height: 200 }}>
-            <Grabi size={200} />
-            {overlay && (
-              <RawSvg style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} html={`<svg width="200" height="200" viewBox="0 0 200 200">${overlay}</svg>`} />
-            )}
+            <Grabi size={200} acc={acc} />
           </div>
           {petActive && (
             <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
