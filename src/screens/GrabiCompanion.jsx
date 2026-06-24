@@ -2,28 +2,15 @@ import { useState, useRef, useEffect } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { load, save } from '../lib/store.js'
+import { ACCESSORIES, DEFAULT_ACC } from '../lib/grabiCustom.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
-
-// Accessoires (calques SVG par-dessus la mascotte), repris du design.
-const ACC_SVG = {
-  glasses: `<g><circle cx="74" cy="96" r="22" fill="rgba(120,180,220,0.18)" stroke="#3B2D5A" stroke-width="5"></circle><circle cx="126" cy="96" r="22" fill="rgba(120,180,220,0.18)" stroke="#3B2D5A" stroke-width="5"></circle><path d="M96,93 q4,-4 8,0" fill="none" stroke="#3B2D5A" stroke-width="5" stroke-linecap="round"></path><path d="M52,92 L41,86" stroke="#3B2D5A" stroke-width="5" stroke-linecap="round"></path><path d="M148,92 L159,86" stroke="#3B2D5A" stroke-width="5" stroke-linecap="round"></path></g>`,
-  scarf: `<g><path d="M56,166 Q100,150 144,166 Q150,176 142,184 Q100,166 58,184 Q50,176 56,166 Z" fill="#FF6FA6"></path><path d="M120,178 q16,6 14,28 q-2,8 -12,8 q-8,-2 -8,-10 q4,-14 -2,-24 z" fill="#E85C95"></path><path d="M70,170 L72,180 M88,166 L90,178 M108,166 L110,178 M128,170 L130,180" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".4"></path></g>`,
-  bow: `<g transform="translate(150,38)"><path d="M0,0 L-20,-13 L-20,13 Z" fill="#FF8FB6"></path><path d="M0,0 L20,-13 L20,13 Z" fill="#FF8FB6"></path><circle cx="0" cy="0" r="6" fill="#E85C95"></circle></g>`,
-  hat: `<g transform="rotate(-8 110 18)"><path d="M82,40 L116,-14 L140,36 Z" fill="#FF8FB6"></path><path d="M99,12 L121,8 M91,28 L131,24" stroke="#FFE08A" stroke-width="5" stroke-linecap="round"></path><ellipse cx="111" cy="37" rx="33" ry="7" fill="#9B7BF0"></ellipse><circle cx="116" cy="-16" r="8" fill="#FFCC3E"></circle></g>`,
-}
 
 const PET_REACTIONS = ['Hihi !', "Encore ! 🫶", 'Je t’aime fort 💖', 'Câlin ! 🤗', 'Trop bien !', 'Ronron… 😊']
 const FEED = [
   { key: 'fraise', emoji: '🍓', label: 'Fraise', reaction: 'Miam 🍓' },
   { key: 'gateau', emoji: '🧁', label: 'Gâteau', reaction: 'Délicieux ! 🧁' },
   { key: 'pomme', emoji: '🍎', label: 'Pomme', reaction: 'Croc croc 🍎' },
-]
-const ACCESSORIES = [
-  { key: 'hat', emoji: '🎩', label: 'Chapeau' },
-  { key: 'scarf', emoji: '🧣', label: 'Écharpe' },
-  { key: 'glasses', emoji: '🕶️', label: 'Lunettes' },
-  { key: 'bow', emoji: '🎀', label: 'Nœud' },
 ]
 const TABS = [
   { key: 'caresser', emoji: '🫶', label: 'Caresser', bg: 'var(--pink-soft)', color: '#b5527e' },
@@ -36,7 +23,7 @@ const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" 
 export default function GrabiCompanion({ onBack }) {
   const [happiness, setHappiness] = useState(() => load('happiness', 62))
   const [tab, setTab] = useState('caresser')
-  const [acc, setAcc] = useState(() => load('acc', { hat: false, scarf: false, glasses: false, bow: false }))
+  const [acc, setAcc] = useState(() => load('acc', DEFAULT_ACC))
   const [reaction, setReaction] = useState('')
   const [petActive, setPetActive] = useState(false)
   const timer = useRef(null)
@@ -58,11 +45,6 @@ export default function GrabiCompanion({ onBack }) {
     setAcc((a) => ({ ...a, [key]: !a[key] }))
     react('Joli ! ✨', 2)
   }
-
-  const accOverlay = Object.entries(acc)
-    .filter(([, on]) => on)
-    .map(([k]) => ACC_SVG[k])
-    .join('')
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#FFE9F2 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
@@ -89,10 +71,7 @@ export default function GrabiCompanion({ onBack }) {
             <div style={{ position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)', background: '#fff', borderRadius: 18, padding: '8px 14px', fontSize: 15, fontWeight: 700, boxShadow: '0 6px 16px rgba(74,58,102,.16)', whiteSpace: 'nowrap', zIndex: 6 }}>{reaction}</div>
           )}
           <div style={{ position: 'relative', width: 200, height: 200 }}>
-            <Grabi size={200} />
-            {accOverlay && (
-              <RawSvg style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} html={`<svg width="200" height="200" viewBox="0 0 200 200">${accOverlay}</svg>`} />
-            )}
+            <Grabi size={200} acc={acc} />
           </div>
           {petActive && (
             <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>

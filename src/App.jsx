@@ -6,6 +6,13 @@ import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
 import Subscribe from './screens/Subscribe.jsx'
 import Settings from './screens/Settings.jsx'
+import MonGrabi from './screens/MonGrabi.jsx'
+import EspaceParents from './screens/EspaceParents.jsx'
+import MonAbonnement from './screens/MonAbonnement.jsx'
+import EditProfile from './screens/EditProfile.jsx'
+import Legal from './screens/Legal.jsx'
+import Rewards from './screens/Rewards.jsx'
+import { ensurePermission, showNotification, msUntil } from './lib/notify.js'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
 import Reader from './screens/Reader.jsx'
@@ -18,7 +25,7 @@ import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 
-function Ready({ story, onKeep, onPublish }) {
+function Ready({ story, onKeep, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
 
   useEffect(() => {
@@ -82,9 +89,14 @@ function Ready({ story, onKeep, onPublish }) {
         })}
       </div>
       <div style={{ flex: 'none', display: 'flex', gap: 12, paddingTop: 14 }}>
-        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: '#fff', border: '2px solid #EDE7F5', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>Garder pour moi</button>
-        <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
+        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: allowPublish ? '#fff' : 'linear-gradient(135deg,#FF8FB6,#A98CFF)', border: allowPublish ? '2px solid #EDE7F5' : 'none', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: allowPublish ? 'var(--ink)' : '#fff' }}>Garder pour moi</button>
+        {allowPublish && (
+          <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
+        )}
       </div>
+      {!allowPublish && (
+        <div style={{ flex: 'none', textAlign: 'center', fontSize: 12, color: 'var(--ink2)', fontWeight: 500, paddingTop: 10 }}>La publication est désactivée dans l'Espace parents.</div>
+      )}
     </div>
   )
 }
@@ -99,27 +111,52 @@ export default function App() {
   const [qcmAnswers, setQcmAnswers] = useState({})
   const [qcmLoading, setQcmLoading] = useState(false)
   const [reader, setReader] = useState(null) // { story, origin }
+  const [grabiBack, setGrabiBack] = useState('home') // écran de retour depuis le compagnon
 
   // --- Données persistées (localStorage) ---
   const [stories, setStories] = useState(() => load('stories', []))
   const [smiles, setSmiles] = useState(() => load('smiles', {}))
   const [given, setGiven] = useState(() => load('given', {}))
   const [voice, setVoice] = useState(() => load('voice', 'Douce'))
-  const [soundOn, setSoundOn] = useState(() => load('soundOn', true))
+  // Deux réglages audio indépendants : la voix (narration des histoires) et les
+  // sons/effets. Migration depuis l'ancien réglage unique « soundOn ».
+  const [voiceOn, setVoiceOn] = useState(() => load('voiceOn', load('soundOn', true)))
+  const [effectsOn, setEffectsOn] = useState(() => load('effectsOn', true))
   const [premium, setPremium] = useState(() => load('premium', false))
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
+  const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
+  const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
 
   useEffect(() => save('stories', stories), [stories])
   useEffect(() => save('smiles', smiles), [smiles])
   useEffect(() => save('given', given), [given])
   useEffect(() => save('voice', voice), [voice])
-  useEffect(() => save('soundOn', soundOn), [soundOn])
+  useEffect(() => save('voiceOn', voiceOn), [voiceOn])
+  useEffect(() => save('effectsOn', effectsOn), [effectsOn])
   useEffect(() => save('premium', premium), [premium])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
   useEffect(() => save('favorites', favorites), [favorites])
+  useEffect(() => save('allowPublish', allowPublish), [allowPublish])
+  useEffect(() => save('reminder', reminder), [reminder])
+
+  // Rappel « histoire du soir » : tant que l'app est ouverte, on programme une
+  // notification douce à l'heure choisie (puis chaque jour). Sans backend, le
+  // rappel ne se déclenche pas application fermée.
+  useEffect(() => {
+    if (!reminder.on) return
+    let timer
+    const schedule = () => {
+      timer = setTimeout(() => {
+        showNotification('Grabi 💜', "C'est l'heure de l'histoire du soir !")
+        schedule()
+      }, msUntil(reminder.time))
+    }
+    schedule()
+    return () => clearTimeout(timer)
+  }, [reminder])
 
   // --- Création : QCM contextuel ---
   async function startQcm() {
@@ -211,9 +248,32 @@ export default function App() {
     setScreen('reader')
   }
 
-  function editChild() {
-    const name = window.prompt("Prénom de l'enfant ?", child.name)
-    if (name && name.trim()) setChild((c) => ({ ...c, name: name.trim() }))
+  function saveChild(next) {
+    setChild(next)
+    setScreen('settings')
+  }
+
+  async function toggleReminder() {
+    if (reminder.on) {
+      setReminder((r) => ({ ...r, on: false }))
+      return
+    }
+    const ok = await ensurePermission()
+    if (!ok) {
+      window.alert("Pour recevoir le rappel, autorise les notifications dans ton navigateur.")
+      return
+    }
+    setReminder((r) => ({ ...r, on: true }))
+  }
+
+  function resetData() {
+    if (!window.confirm("Effacer toutes les histoires et réglages de cet appareil ? Cette action est définitive.")) return
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith('grabi:'))
+        .forEach((k) => localStorage.removeItem(k))
+    } catch {}
+    window.location.reload()
   }
 
   return (
@@ -227,7 +287,7 @@ export default function App() {
           onGoCommunity={() => setScreen('community')}
           onGoMine={() => setScreen('mine')}
           onGoSettings={() => setScreen('settings')}
-          onGoGrabi={() => setScreen('grabi')}
+          onGoGrabi={() => { setGrabiBack('home'); setScreen('grabi') }}
         />
       )}
       {screen === 'create' && (
@@ -237,7 +297,7 @@ export default function App() {
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} />}
+      {screen === 'ready' && <Ready story={story} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
         <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
@@ -247,20 +307,61 @@ export default function App() {
       )}
       {screen === 'settings' && (
         <Settings
-          voice={voice}
-          onVoice={setVoice}
-          soundOn={soundOn}
-          onToggleSound={() => setSoundOn((s) => !s)}
           premium={premium}
           child={child}
-          onEditProfile={editChild}
-          screenTime={screenTime}
-          onCycleScreenTime={() => setScreenTime((t) => (t >= 60 ? 15 : t + 15))}
-          onSubscribe={() => setScreen('subscribe')}
+          onEditProfile={() => setScreen('edit-profile')}
+          onMonGrabi={() => setScreen('mon-grabi')}
+          onPlayGrabi={() => { setGrabiBack('settings'); setScreen('grabi') }}
+          onRewards={() => setScreen('rewards')}
+          onEspaceParents={() => setScreen('espace-parents')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
           onCreate={() => setScreen('create')}
           onMine={() => setScreen('mine')}
+        />
+      )}
+      {screen === 'edit-profile' && (
+        <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('settings')} />
+      )}
+      {screen === 'legal' && <Legal onBack={() => setScreen('espace-parents')} />}
+      {screen === 'rewards' && <Rewards child={child} stories={stories} smilesOf={smilesOf} onBack={() => setScreen('settings')} />}
+      {screen === 'mon-grabi' && (
+        <MonGrabi
+          voice={voice}
+          onVoice={setVoice}
+          voiceOn={voiceOn}
+          onToggleVoice={() => setVoiceOn((s) => !s)}
+          onBack={() => setScreen('settings')}
+          onPlay={() => { setGrabiBack('mon-grabi'); setScreen('grabi') }}
+        />
+      )}
+      {screen === 'espace-parents' && (
+        <EspaceParents
+          screenTime={screenTime}
+          onScreenTime={setScreenTime}
+          voiceOn={voiceOn}
+          onToggleVoice={() => setVoiceOn((s) => !s)}
+          effectsOn={effectsOn}
+          onToggleEffects={() => setEffectsOn((s) => !s)}
+          allowPublish={allowPublish}
+          onToggleAllowPublish={() => setAllowPublish((s) => !s)}
+          reminder={reminder}
+          onToggleReminder={toggleReminder}
+          onReminderTime={(t) => setReminder((r) => ({ ...r, time: t }))}
+          premium={premium}
+          onSubscribe={() => setScreen('mon-abonnement')}
+          onLegal={() => setScreen('legal')}
+          onResetData={resetData}
+          onBack={() => setScreen('settings')}
+        />
+      )}
+      {screen === 'mon-abonnement' && (
+        <MonAbonnement
+          premium={premium}
+          onSubscribe={() => setScreen('subscribe')}
+          onCancel={() => { if (window.confirm("Résilier ton abonnement Premium ?")) setPremium(false) }}
+          onRestore={() => window.alert(premium ? 'Tes achats sont déjà actifs ✨' : "Aucun achat à restaurer pour le moment.")}
+          onBack={() => setScreen('settings')}
         />
       )}
       {screen === 'community' && (
@@ -297,14 +398,14 @@ export default function App() {
           story={reader?.story}
           isPremium={premium}
           voice={voice}
-          soundOn={soundOn}
+          soundOn={voiceOn}
           isFavorite={!!favorites[reader?.story?.id]}
           onToggleFavorite={() => reader?.story?.id && toggleFavorite(reader.story.id)}
           onClose={() => setScreen(reader?.origin || 'home')}
           onSubscribe={() => setScreen('subscribe')}
         />
       )}
-      {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
+      {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen(grabiBack)} />}
     </div>
   )
 }
