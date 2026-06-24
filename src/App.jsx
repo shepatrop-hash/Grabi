@@ -128,6 +128,8 @@ export default function App() {
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
   const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
+  const [decor, setDecor] = useState(() => load('decor', 'none'))
+  const [nightMode, setNightMode] = useState(() => load('nightMode', false))
 
   useEffect(() => save('stories', stories), [stories])
   useEffect(() => save('smiles', smiles), [smiles])
@@ -141,6 +143,8 @@ export default function App() {
   useEffect(() => save('favorites', favorites), [favorites])
   useEffect(() => save('allowPublish', allowPublish), [allowPublish])
   useEffect(() => save('reminder', reminder), [reminder])
+  useEffect(() => save('decor', decor), [decor])
+  useEffect(() => save('nightMode', nightMode), [nightMode])
 
   // Rappel « histoire du soir » : tant que l'app est ouverte, on programme une
   // notification douce à l'heure choisie (puis chaque jour). Sans backend, le
@@ -331,6 +335,10 @@ export default function App() {
           onVoice={setVoice}
           voiceOn={voiceOn}
           onToggleVoice={() => setVoiceOn((s) => !s)}
+          decor={decor}
+          onDecor={setDecor}
+          nightMode={nightMode}
+          onToggleNight={() => setNightMode((n) => !n)}
           onBack={() => setScreen('settings')}
           onPlay={() => { setGrabiBack('mon-grabi'); setScreen('grabi') }}
         />
@@ -405,7 +413,10 @@ export default function App() {
           onSubscribe={() => setScreen('subscribe')}
         />
       )}
-      {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen(grabiBack)} />}
+      {screen === 'grabi' && <GrabiCompanion decor={decor} onBack={() => setScreen(grabiBack)} />}
+      {nightMode && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(42,28,66,.30)', mixBlendMode: 'multiply', pointerEvents: 'none', zIndex: 9999 }} />
+      )}
     </div>
   )
 }

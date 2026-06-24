@@ -3,7 +3,7 @@ import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BackButton from '../components/BackButton.jsx'
 import { load, save } from '../lib/store.js'
-import { ACCESSORIES, DEFAULT_ACC, VOICE_SAMPLE } from '../lib/grabiCustom.js'
+import { ACCESSORIES, DEFAULT_ACC, VOICE_SAMPLE, DECORS, getDecor } from '../lib/grabiCustom.js'
 import { speak, ttsSupported } from '../lib/tts.js'
 
 const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 l4 4 L19 6"></path></svg>`
@@ -19,11 +19,13 @@ const VOICES = [
 const card = { background: '#fff', borderRadius: 24, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
 
-export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice, onBack, onPlay }) {
+export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice, decor = 'none', onDecor, nightMode = false, onToggleNight, onBack, onPlay }) {
   const [acc, setAcc] = useState(() => load('acc', DEFAULT_ACC))
   useEffect(() => save('acc', acc), [acc])
 
   const toggleAcc = (key) => setAcc((a) => ({ ...a, [key]: !a[key] }))
+  const d = getDecor(decor)
+  const previewBg = d.bg !== 'transparent' ? d.bg : 'linear-gradient(180deg,#FBF7FF,#F1EBFA)'
 
   const testVoice = (v) => {
     onVoice(v)
@@ -36,16 +38,14 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
         <BackButton onClick={onBack} />
         <div>
           <div style={{ fontSize: 24, fontWeight: 700 }}>Mon Grabi</div>
-          <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>Apparence &amp; voix</div>
+          <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>Apparence, voix &amp; ambiance</div>
         </div>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px calc(env(safe-area-inset-bottom, 0px) + 20px)', display: 'flex', flexDirection: 'column', gap: 16, position: 'relative', zIndex: 2 }}>
-        {/* Aperçu de la mascotte avec ses accessoires */}
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 8 }}>
-          <div style={{ position: 'relative', width: 150, height: 150 }}>
-            <Grabi size={150} acc={acc} />
-          </div>
+        {/* Aperçu de la mascotte (avec accessoires) dans son décor */}
+        <div style={{ borderRadius: 26, background: previewBg, padding: '18px 0', display: 'flex', justifyContent: 'center', boxShadow: 'inset 0 2px 10px rgba(74,58,102,.08)' }}>
+          <Grabi size={150} acc={acc} />
         </div>
 
         {/* Apparence */}
@@ -61,6 +61,31 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
             </button>
           ))}
         </div>
+
+        {/* Décor */}
+        <div style={sectionTitle}>Décor</div>
+        <div style={{ ...card, display: 'flex', gap: 8, overflowX: 'auto' }}>
+          {DECORS.map((dec) => {
+            const active = decor === dec.key
+            return (
+              <button key={dec.key} onClick={() => onDecor(dec.key)} style={{ flex: 'none', width: 64, borderRadius: 16, padding: '10px 4px', textAlign: 'center', background: active ? 'var(--violet-soft)' : '#F6F3FB', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
+                <div style={{ fontSize: 24, lineHeight: 1 }}>{dec.emoji}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4 }}>{dec.label}</div>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Ambiance jour/nuit */}
+        <div style={sectionTitle}>Ambiance</div>
+        <button onClick={onToggleNight} style={{ ...card, display: 'flex', alignItems: 'center', gap: 13, width: '100%', textAlign: 'left' }}>
+          <span style={{ fontSize: 26, flex: 'none' }}>{nightMode ? '🌙' : '☀️'}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>{nightMode ? 'Mode nuit' : 'Mode jour'}</div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Un écran plus doux le soir</div>
+          </div>
+          <span style={{ width: 46, height: 27, borderRadius: 14, background: nightMode ? 'var(--violet)' : '#D9D3E4', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: nightMode ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} /></span>
+        </button>
 
         {/* Voix */}
         <div style={{ ...sectionTitle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

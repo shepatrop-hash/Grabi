@@ -46,16 +46,25 @@ export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, on
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 8, marginLeft: 4 }}>Âge</label>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {AGES.map((a) => {
-              const active = age === a
-              return (
-                <button key={a} onClick={() => setAge(a)} style={{ flex: 1, background: active ? 'var(--violet)' : '#fff', color: active ? '#fff' : 'var(--ink)', borderRadius: 18, padding: '14px 0', fontSize: 18, fontWeight: 700, boxShadow: active ? '0 8px 18px -10px rgba(169,140,255,.7)' : '0 6px 16px -12px rgba(74,58,102,.3)', transition: 'background .15s ease' }}>{a}</button>
-              )
-            })}
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14, marginLeft: 4, marginRight: 4 }}>
+            <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Âge</label>
+            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--violet)' }}>{age} ans</span>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500, marginTop: 8, marginLeft: 4 }}>Grabi adapte ses histoires à l'âge de l'enfant.</div>
+          <input
+            type="range"
+            className="age-slider"
+            min={AGES[0]}
+            max={AGES[AGES.length - 1]}
+            step={1}
+            value={age}
+            onChange={(e) => setAge(parseInt(e.target.value, 10))}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, padding: '0 2px' }}>
+            {AGES.map((a) => (
+              <span key={a} style={{ fontSize: 13, fontWeight: 700, color: age === a ? 'var(--violet)' : 'var(--ink2)' }}>{a}</span>
+            ))}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500, marginTop: 12, marginLeft: 4 }}>Glisse Grabi pour choisir l'âge. Il adapte ses histoires en conséquence.</div>
         </div>
       </div>
 

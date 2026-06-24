@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { load, save } from '../lib/store.js'
-import { ACCESSORIES, DEFAULT_ACC } from '../lib/grabiCustom.js'
+import { ACCESSORIES, DEFAULT_ACC, getDecor } from '../lib/grabiCustom.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 
@@ -20,7 +20,7 @@ const TABS = [
 
 const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 l4 4 L19 6"></path></svg>`
 
-export default function GrabiCompanion({ onBack }) {
+export default function GrabiCompanion({ onBack, decor = 'none' }) {
   const [happiness, setHappiness] = useState(() => load('happiness', 62))
   const [tab, setTab] = useState('caresser')
   const [acc, setAcc] = useState(() => load('acc', DEFAULT_ACC))
@@ -30,6 +30,8 @@ export default function GrabiCompanion({ onBack }) {
 
   useEffect(() => save('happiness', happiness), [happiness])
   useEffect(() => save('acc', acc), [acc])
+
+  const companionDecor = getDecor(decor)
 
   function react(text, bump) {
     setReaction(text)
@@ -66,7 +68,7 @@ export default function GrabiCompanion({ onBack }) {
       </div>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-        <div onClick={caresser} style={{ cursor: 'pointer', position: 'relative', width: 210, height: 210, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div onClick={caresser} style={{ cursor: 'pointer', position: 'relative', width: 250, height: 250, borderRadius: '50%', background: companionDecor.bg !== 'transparent' ? companionDecor.bg : 'transparent', boxShadow: companionDecor.bg !== 'transparent' ? 'inset 0 4px 18px rgba(74,58,102,.18)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {petActive && (
             <div style={{ position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)', background: '#fff', borderRadius: 18, padding: '8px 14px', fontSize: 15, fontWeight: 700, boxShadow: '0 6px 16px rgba(74,58,102,.16)', whiteSpace: 'nowrap', zIndex: 6 }}>{reaction}</div>
           )}
