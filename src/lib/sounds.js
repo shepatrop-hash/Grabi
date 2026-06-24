@@ -33,13 +33,14 @@ export function playGrabiSound() {
 }
 
 // Musiques de fond en boucle : 'app' (fond par défaut) + une par humeur d'histoire.
+// Fichiers bg-* = vraies musiques (API ElevenLabs Music). Noms neufs = pas de cache.
 export const MUSIC = {
-  app: '/music/app.mp3',
-  cozy: '/music/mood-cozy.mp3',
-  dreamy: '/music/mood-dreamy.mp3',
-  adventure: '/music/mood-adventure.mp3',
-  funny: '/music/mood-funny.mp3',
-  calm: '/music/mood-calm.mp3',
+  app: '/music/bg-app.mp3',
+  cozy: '/music/bg-cozy.mp3',
+  dreamy: '/music/bg-dreamy.mp3',
+  adventure: '/music/bg-adventure.mp3',
+  funny: '/music/bg-funny.mp3',
+  calm: '/music/bg-calm.mp3',
 }
 
 // Renvoie la piste de fond pour une humeur donnée (repli sur la musique de l'app).
