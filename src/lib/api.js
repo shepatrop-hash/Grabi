@@ -84,3 +84,22 @@ export async function generateQuestions(idea) {
   }
   return res.json()
 }
+
+// Génère la narration audio d'un texte (ElevenLabs via Fal). Renvoie { url }.
+export async function generateAudio(text, voice) {
+  const res = await fetch('/api/generate-audio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, voice }),
+  })
+  if (!res.ok) {
+    let detail = ''
+    try {
+      detail = (await res.json()).error || ''
+    } catch {
+      detail = `HTTP ${res.status}`
+    }
+    throw new Error(detail || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
