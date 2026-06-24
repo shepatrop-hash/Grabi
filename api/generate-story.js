@@ -18,6 +18,14 @@ Règles strictes :
   (environ 25 à 40 mots), simples à lire à voix haute pour un jeune enfant. Va droit au but,
   évite les longs paragraphes : le texte doit tenir confortablement sous l'illustration.
 
+Narration vivante (voix ElevenLabs v3) : tu PEUX glisser dans le "texte" quelques balises
+d'émotion entre crochets, EN ANGLAIS, placées juste avant le mot ou la phrase concernée.
+AVEC PARCIMONIE : 0 à 2 par page maximum, seulement quand ça apporte vraiment. Choisis parmi :
+[softly], [gently], [happily], [excited], [curious], [giggles], [laughs], [whispers], [gasps],
+[yawns], [sighs]. Ces balises ne sont PAS prononcées (elles guident l'intonation) et sont
+masquées à l'écran : le texte doit rester naturel et parfaitement lisible si on les retire.
+Exemple : "[whispers] Doucement, le petit lapin s'approcha du terrier. [excited] Surprise !"
+
 Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS, riche, imagé et joyeux, qui :
 - nomme chaque personnage présent par son trait/couleur clé ET son prénom, formulé EXACTEMENT pareil d'une
   scène à l'autre (ex. "the sky-blue crocodile Trama and the small tortoise Gaston") ;

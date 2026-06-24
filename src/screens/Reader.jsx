@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import { speak, stopSpeak, ttsSupported } from '../lib/tts.js'
 import { generateAudio } from '../lib/api.js'
+import { audioKey, getCachedAudio, putCachedAudio } from '../lib/audioCache.js'
+
+// Retire les balises d'émotion v3 [..] (ex. [softly]) pour l'AFFICHAGE et la voix du
+// navigateur. La vraie voix ElevenLabs v3, elle, reçoit le texte AVEC les balises.
+const cleanText = (t) => (t || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s{2,}/g, ' ').trim()
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B2D5A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 const prevIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#6E5FA0"><path d="M17 5 L9 12 L17 19 Z"></path><rect x="6" y="5" width="3.5" height="14" rx="1.5"></rect></svg>`
@@ -71,20 +76,26 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       else setPlaying(false)
     }
     const fallbackTTS = () => {
-      if (!cancelled && tokenRef.current === myToken && ttsSupported()) speak(cur.text, voice, { onend: advance })
+      if (!cancelled && tokenRef.current === myToken && ttsSupported()) speak(cleanText(cur.text), voice, { onend: advance })
       else advance()
     }
     ;(async () => {
       let url = cur.audio || null
       if (!url) {
-        setLoadingAudio(true)
-        try {
-          const d = await generateAudio(cur.text, voice)
-          url = d?.url || null
-        } catch {
-          url = null
+        const key = audioKey(cur.text, voice)
+        url = await getCachedAudio(key) // déjà narré ? -> instantané, 0 crédit
+        if (cancelled || tokenRef.current !== myToken) return
+        if (!url) {
+          setLoadingAudio(true)
+          try {
+            const d = await generateAudio(cur.text, voice)
+            url = d?.url || null
+            if (url) putCachedAudio(key, url) // on garde pour les prochaines fois
+          } catch {
+            url = null
+          }
+          if (!cancelled && tokenRef.current === myToken) setLoadingAudio(false)
         }
-        if (!cancelled && tokenRef.current === myToken) setLoadingAudio(false)
       }
       if (cancelled || tokenRef.current !== myToken) return
       if (url) {
@@ -158,7 +169,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       </div>
 
       <div style={{ flex: 1, minHeight: 0, background: '#fff', borderRadius: '36px 36px 0 0', marginTop: -32, position: 'relative', zIndex: 2, padding: '26px 30px calc(env(safe-area-inset-bottom, 0px) + 22px)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.5, flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>{cur.text}</div>
+        <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.5, flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>{cleanText(cur.text)}</div>
         <div style={{ flex: 'none', paddingTop: 16 }}>
           <div style={{ height: 8, borderRadius: 4, background: '#EFEAF6', overflow: 'hidden' }}><div style={{ width: progress, height: '100%', background: 'var(--mint)', borderRadius: 4, transition: 'width .3s ease' }} /></div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, marginTop: 22 }}>
