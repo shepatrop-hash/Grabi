@@ -9,7 +9,10 @@ const playSvg = `<svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><pa
 const pauseSvg = `<svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4.5" height="14" rx="2"></rect><rect x="13.5" y="5" width="4.5" height="14" rx="2"></rect></svg>`
 const lockBig = `<svg width="56" height="62" viewBox="0 0 40 46"><path d="M11,20 V14 a9,9 0 0 1 18,0 V20" fill="none" stroke="#A98CFF" stroke-width="4.5" stroke-linecap="round"></path><rect x="6" y="19" width="28" height="22" rx="7" fill="#A98CFF"></rect><circle cx="20" cy="28" r="3.6" fill="#fff"></circle><rect x="18.3" y="29" width="3.4" height="8" rx="1.6" fill="#fff"></rect></svg>`
 
-export default function Reader({ story, isPremium, voice = 'Douce', soundOn = true, onClose, onSubscribe }) {
+const heartFull = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#FF5C9A"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
+const heartLine = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C6F95" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
+
+export default function Reader({ story, isPremium, voice = 'Douce', soundOn = true, onClose, onSubscribe, isFavorite, onToggleFavorite }) {
   const pages = story?.pages || []
   const total = pages.length || 1
   const locked = !!story?.premium && !isPremium
@@ -93,6 +96,9 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       <div style={{ position: 'relative', height: 'min(46dvh, 480px)', flex: 'none', overflow: 'hidden' }}>
         {hero}
         <button onClick={close} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', left: 22, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)' }}><RawSvg html={backIcon} /></button>
+        {onToggleFavorite && (
+          <button onClick={onToggleFavorite} aria-label={isFavorite ? 'Retirer des favoris' : 'Mettre en favori'} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', right: 22, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)', transition: 'transform .15s ease', transform: isFavorite ? 'scale(1.08)' : 'scale(1)' }}><RawSvg html={isFavorite ? heartFull : heartLine} /></button>
+        )}
         <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 26px)', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 7, padding: '0 70px', flexWrap: 'wrap' }}>
           {pages.map((_, i) => (
             <span key={i} style={{ width: i === page ? 22 : 7, height: 7, borderRadius: 4, background: i === page ? '#fff' : 'rgba(255,255,255,.6)', transition: 'width .25s ease' }} />
