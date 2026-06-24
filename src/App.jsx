@@ -23,7 +23,7 @@ import TopBack from './components/BackButton.jsx'
 import { generateStory, generateImage, generateQuestions } from './lib/api.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
-import { SEED_COMMUNITY } from './lib/samples.js'
+import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 
 function Ready({ story, onKeep, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
@@ -125,6 +125,7 @@ export default function App() {
   const [premium, setPremium] = useState(() => load('premium', false))
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
+  const [favorites, setFavorites] = useState(() => load('favorites', {}))
   const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
 
@@ -137,6 +138,7 @@ export default function App() {
   useEffect(() => save('premium', premium), [premium])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
+  useEffect(() => save('favorites', favorites), [favorites])
   useEffect(() => save('allowPublish', allowPublish), [allowPublish])
   useEffect(() => save('reminder', reminder), [reminder])
 
@@ -223,6 +225,21 @@ export default function App() {
   }
 
   const communityList = [...stories.filter((s) => s.published), ...SEED_COMMUNITY]
+  const favoriteStories = [...stories, ...FREE_STORIES, WEEKLY_STORY, ...SEED_COMMUNITY].filter((s) => favorites[s.id])
+
+  function toggleFavorite(id) {
+    if (!id) return
+    setFavorites((f) => ({ ...f, [id]: !f[id] }))
+  }
+
+  function deleteStory(item) {
+    if (!item?.id) return
+    if (!window.confirm(`Supprimer « ${item.title} » ?`)) return
+    setStories((list) => list.filter((s) => s.id !== item.id))
+    setFavorites((f) => { const n = { ...f }; delete n[item.id]; return n })
+    setSmiles((m) => { const n = { ...m }; delete n[item.id]; return n })
+    setGiven((g) => { const n = { ...g }; delete n[item.id]; return n })
+  }
 
   // --- Lecteur ---
   function openReader(storyObj, origin) {
@@ -363,6 +380,10 @@ export default function App() {
       {screen === 'mine' && (
         <MyStories
           stories={stories}
+          favoriteStories={favoriteStories}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
+          onDelete={deleteStory}
           smilesOf={smilesOf}
           onOpenReader={(s) => openReader(s, 'mine')}
           onCreate={() => setScreen('create')}
@@ -378,6 +399,8 @@ export default function App() {
           isPremium={premium}
           voice={voice}
           soundOn={voiceOn}
+          isFavorite={!!favorites[reader?.story?.id]}
+          onToggleFavorite={() => reader?.story?.id && toggleFavorite(reader.story.id)}
           onClose={() => setScreen(reader?.origin || 'home')}
           onSubscribe={() => setScreen('subscribe')}
         />
