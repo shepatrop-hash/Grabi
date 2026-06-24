@@ -10,6 +10,8 @@ import MonGrabi from './screens/MonGrabi.jsx'
 import EspaceParents from './screens/EspaceParents.jsx'
 import MonAbonnement from './screens/MonAbonnement.jsx'
 import EditProfile from './screens/EditProfile.jsx'
+import Legal from './screens/Legal.jsx'
+import { ensurePermission, showNotification, msUntil } from './lib/notify.js'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
 import Reader from './screens/Reader.jsx'
@@ -22,7 +24,7 @@ import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { SEED_COMMUNITY } from './lib/samples.js'
 
-function Ready({ story, onKeep, onPublish }) {
+function Ready({ story, onKeep, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
 
   useEffect(() => {
@@ -86,9 +88,14 @@ function Ready({ story, onKeep, onPublish }) {
         })}
       </div>
       <div style={{ flex: 'none', display: 'flex', gap: 12, paddingTop: 14 }}>
-        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: '#fff', border: '2px solid #EDE7F5', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>Garder pour moi</button>
-        <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
+        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: allowPublish ? '#fff' : 'linear-gradient(135deg,#FF8FB6,#A98CFF)', border: allowPublish ? '2px solid #EDE7F5' : 'none', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: allowPublish ? 'var(--ink)' : '#fff' }}>Garder pour moi</button>
+        {allowPublish && (
+          <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
+        )}
       </div>
+      {!allowPublish && (
+        <div style={{ flex: 'none', textAlign: 'center', fontSize: 12, color: 'var(--ink2)', fontWeight: 500, paddingTop: 10 }}>La publication est désactivée dans l'Espace parents.</div>
+      )}
     </div>
   )
 }
@@ -116,6 +123,8 @@ export default function App() {
   const [premium, setPremium] = useState(() => load('premium', false))
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
+  const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
+  const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
 
   useEffect(() => save('stories', stories), [stories])
   useEffect(() => save('smiles', smiles), [smiles])
@@ -126,6 +135,24 @@ export default function App() {
   useEffect(() => save('premium', premium), [premium])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
+  useEffect(() => save('allowPublish', allowPublish), [allowPublish])
+  useEffect(() => save('reminder', reminder), [reminder])
+
+  // Rappel « histoire du soir » : tant que l'app est ouverte, on programme une
+  // notification douce à l'heure choisie (puis chaque jour). Sans backend, le
+  // rappel ne se déclenche pas application fermée.
+  useEffect(() => {
+    if (!reminder.on) return
+    let timer
+    const schedule = () => {
+      timer = setTimeout(() => {
+        showNotification('Grabi 💜', "C'est l'heure de l'histoire du soir !")
+        schedule()
+      }, msUntil(reminder.time))
+    }
+    schedule()
+    return () => clearTimeout(timer)
+  }, [reminder])
 
   // --- Création : QCM contextuel ---
   async function startQcm() {
@@ -207,6 +234,19 @@ export default function App() {
     setScreen('settings')
   }
 
+  async function toggleReminder() {
+    if (reminder.on) {
+      setReminder((r) => ({ ...r, on: false }))
+      return
+    }
+    const ok = await ensurePermission()
+    if (!ok) {
+      window.alert("Pour recevoir le rappel, autorise les notifications dans ton navigateur.")
+      return
+    }
+    setReminder((r) => ({ ...r, on: true }))
+  }
+
   function resetData() {
     if (!window.confirm("Effacer toutes les histoires et réglages de cet appareil ? Cette action est définitive.")) return
     try {
@@ -238,7 +278,7 @@ export default function App() {
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} />}
+      {screen === 'ready' && <Ready story={story} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
         <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
@@ -253,7 +293,6 @@ export default function App() {
           onEditProfile={() => setScreen('edit-profile')}
           onMonGrabi={() => setScreen('mon-grabi')}
           onEspaceParents={() => setScreen('espace-parents')}
-          onAbonnement={() => setScreen('mon-abonnement')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
           onCreate={() => setScreen('create')}
@@ -263,6 +302,7 @@ export default function App() {
       {screen === 'edit-profile' && (
         <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('settings')} />
       )}
+      {screen === 'legal' && <Legal onBack={() => setScreen('espace-parents')} />}
       {screen === 'mon-grabi' && (
         <MonGrabi
           voice={voice}
@@ -281,8 +321,14 @@ export default function App() {
           onToggleVoice={() => setVoiceOn((s) => !s)}
           effectsOn={effectsOn}
           onToggleEffects={() => setEffectsOn((s) => !s)}
+          allowPublish={allowPublish}
+          onToggleAllowPublish={() => setAllowPublish((s) => !s)}
+          reminder={reminder}
+          onToggleReminder={toggleReminder}
+          onReminderTime={(t) => setReminder((r) => ({ ...r, time: t }))}
           premium={premium}
           onSubscribe={() => setScreen('mon-abonnement')}
+          onLegal={() => setScreen('legal')}
           onResetData={resetData}
           onBack={() => setScreen('settings')}
         />

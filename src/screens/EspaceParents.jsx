@@ -7,6 +7,9 @@ const voiceIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" s
 const soundIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f9e7a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 H8 L13 5 V19 L8 15 H4 Z"></path><path d="M17 9 a4 4 0 0 1 0 6"></path></svg>`
 const crownIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#8B6FE0"><path d="M3 7 l4 5 5-7 5 7 4-5 -2 12 H5 Z"></path></svg>`
 const helpIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.2 9.2 a2.8 2.8 0 0 1 5.2 1.3 c0 1.8-2.4 2.2-2.4 3.7"></path><circle cx="12" cy="17.2" r="0.6" fill="#C24A7A"></circle></svg>`
+const communityIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="9" cy="11" r="1"></circle><circle cx="15" cy="11" r="1"></circle><path d="M9 15 q3 2.4 6 0"></path></svg>`
+const bellIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C79A2E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9 a6 6 0 0 1 12 0 c0 5 2 6 2 6 H4 s2 -1 2 -6"></path><path d="M10 20 a2 2 0 0 0 4 0"></path></svg>`
+const docIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A8AC0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3 H14 L19 8 V21 H7 Z"></path><path d="M14 3 V8 H19 M10 13 H16 M10 17 H16"></path></svg>`
 const trashIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7 H19 M9 7 V5 a1 1 0 0 1 1-1 h4 a1 1 0 0 1 1 1 V7 M7 7 l1 12 a1 1 0 0 0 1 1 h6 a1 1 0 0 0 1-1 l1-12"></path></svg>`
 const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 L15 12 L9 18"></path></svg>`
 const lockBig = `<svg width="40" height="46" viewBox="0 0 40 46"><path d="M11,20 V14 a9,9 0 0 1 18,0 V20" fill="none" stroke="#A98CFF" stroke-width="4.5" stroke-linecap="round"></path><rect x="6" y="19" width="28" height="22" rx="7" fill="#A98CFF"></rect><circle cx="20" cy="28" r="3.6" fill="#fff"></circle><rect x="18.3" y="29" width="3.4" height="8" rx="1.6" fill="#fff"></rect></svg>`
@@ -56,7 +59,7 @@ function ParentGate({ onUnlock, onBack }) {
   )
 }
 
-export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, premium, onSubscribe, onResetData, onBack }) {
+export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, allowPublish = true, onToggleAllowPublish, reminder = { on: false, time: '20:00' }, onToggleReminder, onReminderTime, premium, onSubscribe, onLegal, onResetData, onBack }) {
   const [unlocked, setUnlocked] = useState(false)
   if (!unlocked) return <ParentGate onUnlock={() => setUnlocked(true)} onBack={onBack} />
 
@@ -110,6 +113,36 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn =
           <Toggle on={effectsOn} />
         </button>
 
+        {/* Confidentialité */}
+        <div style={sectionTitle}>Confidentialité</div>
+        <button onClick={onToggleAllowPublish} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--violet-soft)')}><RawSvg html={communityIcon} /></span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Publication communauté</div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>{allowPublish ? "L'enfant peut publier ses histoires" : 'Publication bloquée'}</div>
+          </div>
+          <Toggle on={allowPublish} />
+        </button>
+
+        {/* Rappel */}
+        <div style={sectionTitle}>Rappel</div>
+        <div style={{ background: '#fff', borderRadius: 22, padding: '13px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+          <button onClick={onToggleReminder} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', textAlign: 'left' }}>
+            <span style={iconBox('var(--yellow-soft)')}><RawSvg html={bellIcon} /></span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 16, fontWeight: 600 }}>Histoire du soir</div>
+              <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Un petit rappel pour lire ensemble</div>
+            </div>
+            <Toggle on={reminder.on} />
+          </button>
+          {reminder.on && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, paddingTop: 12, borderTop: '1px solid #F1EEF8' }}>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Heure du rappel</span>
+              <input type="time" value={reminder.time} onChange={(e) => onReminderTime(e.target.value)} style={{ background: '#F1EEF8', border: 'none', borderRadius: 14, padding: '9px 14px', fontSize: 16, fontWeight: 700, fontFamily: 'inherit', color: 'var(--ink)' }} />
+            </div>
+          )}
+        </div>
+
         {/* Compte */}
         <div style={sectionTitle}>Compte</div>
         <button onClick={onSubscribe} style={{ ...card, width: '100%', textAlign: 'left' }}>
@@ -123,6 +156,11 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn =
           <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Aide &amp; contact</div>
           <RawSvg html={chevron} />
         </a>
+        <button onClick={onLegal} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--sky-soft)')}><RawSvg html={docIcon} /></span>
+          <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Confidentialité &amp; CGU</div>
+          <RawSvg html={chevron} />
+        </button>
 
         {/* Données */}
         <div style={sectionTitle}>Données</div>
