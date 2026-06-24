@@ -16,8 +16,10 @@ export default function Free({ onBack, onOpenReader }) {
       <div style={{ flex: 1, overflowY: 'auto', padding: '6px 22px 22px', position: 'relative', zIndex: 2, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignContent: 'start' }}>
         {FREE_STORIES.map((s) => (
           <button key={s.id} onClick={() => onOpenReader(s)} style={{ background: s.bg, borderRadius: 28, padding: 14, textAlign: 'center' }}>
-            <div style={{ height: 104, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={s.svg} /></div>
-            <div style={{ fontSize: 16, fontWeight: 600, marginTop: 6 }}>{s.title}</div>
+            <div style={{ height: 116, borderRadius: 18, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {s.cover ? <img src={s.cover} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : s.svg ? <RawSvg html={s.svg} /> : null}
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 600, marginTop: 8 }}>{s.title}</div>
             <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>{s.sub}</div>
           </button>
         ))}
