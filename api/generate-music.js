@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     return
   }
   try {
-    const { prompt, ms } = req.body || {}
+    const { prompt, ms, force_instrumental } = req.body || {}
     if (!prompt || typeof prompt !== 'string') {
       res.status(400).json({ error: 'Prompt de la musique manquant.' })
       return
@@ -21,7 +21,11 @@ export default async function handler(req, res) {
     const r = await fetch('https://api.elevenlabs.io/v1/music', {
       method: 'POST',
       headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-      body: JSON.stringify({ prompt: prompt.slice(0, 800), music_length_ms: Math.min(120000, Math.max(10000, ms || 30000)) }),
+      body: JSON.stringify({
+        prompt: prompt.slice(0, 800),
+        music_length_ms: Math.min(120000, Math.max(10000, ms || 30000)),
+        force_instrumental: force_instrumental !== false, // défaut: instrumental, AUCUNE parole
+      }),
     })
     if (!r.ok) {
       const detail = await r.text().catch(() => '')
