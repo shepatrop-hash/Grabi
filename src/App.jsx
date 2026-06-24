@@ -11,6 +11,7 @@ import EspaceParents from './screens/EspaceParents.jsx'
 import MonAbonnement from './screens/MonAbonnement.jsx'
 import EditProfile from './screens/EditProfile.jsx'
 import Legal from './screens/Legal.jsx'
+import Rewards from './screens/Rewards.jsx'
 import { ensurePermission, showNotification, msUntil } from './lib/notify.js'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
@@ -110,6 +111,7 @@ export default function App() {
   const [qcmAnswers, setQcmAnswers] = useState({})
   const [qcmLoading, setQcmLoading] = useState(false)
   const [reader, setReader] = useState(null) // { story, origin }
+  const [grabiBack, setGrabiBack] = useState('home') // écran de retour depuis le compagnon
 
   // --- Données persistées (localStorage) ---
   const [stories, setStories] = useState(() => load('stories', []))
@@ -268,7 +270,7 @@ export default function App() {
           onGoCommunity={() => setScreen('community')}
           onGoMine={() => setScreen('mine')}
           onGoSettings={() => setScreen('settings')}
-          onGoGrabi={() => setScreen('grabi')}
+          onGoGrabi={() => { setGrabiBack('home'); setScreen('grabi') }}
         />
       )}
       {screen === 'create' && (
@@ -292,6 +294,8 @@ export default function App() {
           child={child}
           onEditProfile={() => setScreen('edit-profile')}
           onMonGrabi={() => setScreen('mon-grabi')}
+          onPlayGrabi={() => { setGrabiBack('settings'); setScreen('grabi') }}
+          onRewards={() => setScreen('rewards')}
           onEspaceParents={() => setScreen('espace-parents')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
@@ -303,6 +307,7 @@ export default function App() {
         <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('settings')} />
       )}
       {screen === 'legal' && <Legal onBack={() => setScreen('espace-parents')} />}
+      {screen === 'rewards' && <Rewards child={child} stories={stories} smilesOf={smilesOf} onBack={() => setScreen('settings')} />}
       {screen === 'mon-grabi' && (
         <MonGrabi
           voice={voice}
@@ -310,7 +315,7 @@ export default function App() {
           voiceOn={voiceOn}
           onToggleVoice={() => setVoiceOn((s) => !s)}
           onBack={() => setScreen('settings')}
-          onPlay={() => setScreen('grabi')}
+          onPlay={() => { setGrabiBack('mon-grabi'); setScreen('grabi') }}
         />
       )}
       {screen === 'espace-parents' && (
@@ -377,7 +382,7 @@ export default function App() {
           onSubscribe={() => setScreen('subscribe')}
         />
       )}
-      {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen('home')} />}
+      {screen === 'grabi' && <GrabiCompanion onBack={() => setScreen(grabiBack)} />}
     </div>
   )
 }
