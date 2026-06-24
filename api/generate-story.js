@@ -39,7 +39,11 @@ Fournis aussi "personnages" : 1 à 3 éléments clés (le héros principal, et a
 objets ou lieux récurrents importants). Pour chacun : un "nom" court en français, et une "description"
 EN ANGLAIS très détaillée et CONSTANTE (espèce/type, couleur précise et stable, forme, détails distinctifs).
 Le descripteur court réutilisé dans chaque "prompt_illustration" (couleur + type + prénom) doit correspondre
-exactement à cette description, pour garder chaque personnage identique tout au long de l'histoire.`
+exactement à cette description, pour garder chaque personnage identique tout au long de l'histoire.
+
+Choisis enfin "mood" : l'ambiance musicale de fond la plus adaptée à l'histoire, parmi EXACTEMENT ces
+valeurs : cozy (douillet, tendre), dreamy (féérique, magique), adventure (petite aventure douce),
+funny (rigolo, espiègle), calm (très calme, apaisant).`
 
 // Schéma de sortie structurée : { titre, pages: [{ texte, prompt_illustration }] }
 const SCHEMA = {
@@ -47,6 +51,7 @@ const SCHEMA = {
   additionalProperties: false,
   properties: {
     titre: { type: 'string' },
+    mood: { type: 'string', enum: ['cozy', 'dreamy', 'adventure', 'funny', 'calm'] },
     personnages: {
       type: 'array',
       items: {
@@ -72,7 +77,7 @@ const SCHEMA = {
       },
     },
   },
-  required: ['titre', 'personnages', 'pages'],
+  required: ['titre', 'mood', 'personnages', 'pages'],
 }
 
 export default async function handler(req, res) {

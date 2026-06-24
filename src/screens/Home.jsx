@@ -1,5 +1,6 @@
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
+import { playGrabiSound } from '../lib/sounds.js'
 
 const iconBooks = `<svg width="48" height="48" viewBox="0 0 46 46"><rect x="8" y="27" width="30" height="9" rx="3.5" fill="#FF7FB0"></rect><rect x="6" y="17.5" width="34" height="9" rx="3.5" fill="#56C7FF"></rect><rect x="10" y="8" width="26" height="9" rx="3.5" fill="#3FD7B0"></rect></svg>`
 const iconStar = `<svg width="50" height="50" viewBox="0 0 50 50"><path d="M25,6 L31,20 L46,21 L34,31 L38,46 L25,38 L12,46 L16,31 L4,21 L19,20 Z" fill="#FFCC3E"></path><circle cx="20" cy="25" r="2.4" fill="#3B2D5A"></circle><circle cx="30" cy="25" r="2.4" fill="#3B2D5A"></circle><path d="M21,31 Q25,35 29,31" stroke="#3B2D5A" stroke-width="2.2" fill="none" stroke-linecap="round"></path></svg>`
@@ -48,7 +49,7 @@ export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCr
         </div>
         <div style={{ position: 'relative' }}>
           <div style={{ position: 'absolute', top: -22, left: -46, background: '#fff', borderRadius: '18px 18px 4px 18px', padding: '8px 13px', fontSize: 14, fontWeight: 600, boxShadow: '0 6px 16px rgba(74,58,102,.14)', whiteSpace: 'nowrap' }}>On joue&nbsp;?</div>
-          <div onClick={onGoGrabi} style={{ cursor: 'pointer' }}><Grabi size={104} /></div>
+          <div onClick={() => { playGrabiSound(); onGoGrabi() }} style={{ cursor: 'pointer' }}><Grabi size={104} /></div>
         </div>
       </div>
 

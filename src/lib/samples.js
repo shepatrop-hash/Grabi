@@ -9,12 +9,14 @@ const robot = `<svg width="110" height="92" viewBox="0 0 120 100"><circle cx="60
 
 // Histoires gratuites : générées par les API (texte Claude + illustrations Fal),
 // chaque page a son image dans public/free/. (id, title, sub, bg, cover, pages:[{text,image}])
-export const FREE_STORIES = freeStories
+// Humeur musicale par histoire (ordre : Flamby, Lyra, Doudou, Étincelle, Croco, souris).
+const FREE_MOODS = ['funny', 'calm', 'cozy', 'dreamy', 'cozy', 'dreamy']
+export const FREE_STORIES = freeStories.map((s, i) => ({ ...s, mood: s.mood || FREE_MOODS[i] || 'calm' }))
 
 // Histoire premium de la semaine : la 1ère page est libre, la suite demande Premium.
 export const WEEKLY_STORY = {
   id: 'weekly-chateau', title: 'Le château dans les nuages', bg: 'linear-gradient(160deg,#C7B4FF,#FFD6EA)', svg: castle,
-  premium: true, freePages: 1,
+  premium: true, freePages: 1, mood: 'dreamy',
   pages: [
     'Tout là-haut, au-dessus des nuages, se cachait un château argenté. Plume, la petite souris, poussa la grande porte dorée et entra sur la pointe des pattes…',
     'À l’intérieur, des centaines de bougies dansaient toutes seules dans les airs.',
@@ -26,7 +28,7 @@ export const WEEKLY_STORY = {
 // Histoires de la communauté (graine). Les histoires publiées par l'enfant s'y ajoutent.
 export const SEED_COMMUNITY = [
   {
-    id: 'com-baleine', title: 'La baleine qui chante', author: 'par Maya, 6 ans', bg: 'var(--sky-soft)', svg: whale, smiles: 27,
+    id: 'com-baleine', title: 'La baleine qui chante', author: 'par Maya, 6 ans', bg: 'var(--sky-soft)', svg: whale, smiles: 27, mood: 'calm',
     pages: [
       'Au fond de l’océan vivait une baleine qui chantait de jolies berceuses.',
       'Les petits poissons venaient de partout pour l’écouter, blottis les uns contre les autres.',
@@ -34,7 +36,7 @@ export const SEED_COMMUNITY = [
     ],
   },
   {
-    id: 'com-robot', title: 'Le robot jardinier', author: 'par Tom, 5 ans', bg: 'var(--violet-soft)', svg: robot, smiles: 12,
+    id: 'com-robot', title: 'Le robot jardinier', author: 'par Tom, 5 ans', bg: 'var(--violet-soft)', svg: robot, smiles: 12, mood: 'cozy',
     pages: [
       'Robi le robot adorait s’occuper de son jardin.',
       'Il arrosait les fleurs avec des petites gouttes de pluie qu’il fabriquait lui-même.',

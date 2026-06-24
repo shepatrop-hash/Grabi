@@ -21,7 +21,9 @@ import Community from './screens/Community.jsx'
 import MyStories from './screens/MyStories.jsx'
 import Published from './screens/Published.jsx'
 import TopBack from './components/BackButton.jsx'
+import BackgroundMusic from './components/BackgroundMusic.jsx'
 import { generateStory, generateImage, generateQuestions } from './lib/api.js'
+import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 
@@ -61,6 +63,7 @@ function Ready({ story, onKeep, onPublish, allowPublish = true }) {
       pages,
       cover: pages.find((p) => p.image)?.image || null,
       personnages: story?.personnages || [],
+      mood: story?.mood || 'calm',
     }
   }
 
@@ -125,6 +128,7 @@ export default function App() {
   // sons/effets. Migration depuis l'ancien réglage unique « soundOn ».
   const [voiceOn, setVoiceOn] = useState(() => load('voiceOn', load('soundOn', true)))
   const [effectsOn, setEffectsOn] = useState(() => load('effectsOn', true))
+  const [musicOn, setMusicOn] = useState(() => load('musicOn', true))
   const [premium, setPremium] = useState(() => load('premium', false))
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
@@ -145,6 +149,8 @@ export default function App() {
   useEffect(() => save('voice', voice), [voice])
   useEffect(() => save('voiceOn', voiceOn), [voiceOn])
   useEffect(() => save('effectsOn', effectsOn), [effectsOn])
+  useEffect(() => save('musicOn', musicOn), [musicOn])
+  useEffect(() => setEffectsEnabled(effectsOn), [effectsOn])
   useEffect(() => save('premium', premium), [premium])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
@@ -305,8 +311,12 @@ export default function App() {
     window.location.reload()
   }
 
+  // Musique de fond : ambiance de l'histoire dans le lecteur, sinon musique de l'app.
+  const musicTrack = screen === 'reader' ? musicFor(reader?.story?.mood) : MUSIC.app
+
   return (
     <div className="app-shell">
+      <BackgroundMusic track={musicTrack} enabled={musicOn} />
       {screen === 'home' && (
         <Home
           childName={child.name}
@@ -377,6 +387,8 @@ export default function App() {
           onToggleVoice={() => setVoiceOn((s) => !s)}
           effectsOn={effectsOn}
           onToggleEffects={() => setEffectsOn((s) => !s)}
+          musicOn={musicOn}
+          onToggleMusic={() => setMusicOn((s) => !s)}
           allowPublish={allowPublish}
           onToggleAllowPublish={() => setAllowPublish((s) => !s)}
           reminder={reminder}
