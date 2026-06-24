@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import { speak, stopSpeak, ttsSupported } from '../lib/tts.js'
+import { generateAudio } from '../lib/api.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B2D5A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 const prevIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#6E5FA0"><path d="M17 5 L9 12 L17 19 Z"></path><rect x="6" y="5" width="3.5" height="14" rx="1.5"></rect></svg>`
@@ -22,8 +23,22 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   const [playing, setPlaying] = useState(false)
   const [paywall, setPaywall] = useState(false)
   const [mutedHint, setMutedHint] = useState(false)
+  const [loadingAudio, setLoadingAudio] = useState(false)
   const tokenRef = useRef(0)
   const hintRef = useRef(null)
+  const audioRef = useRef(null)
+
+  // Coupe tout son en cours (audio ElevenLabs + voix du navigateur).
+  const stopAll = () => {
+    const a = audioRef.current
+    if (a) {
+      a.onended = null
+      a.onerror = null
+      a.pause()
+      audioRef.current = null
+    }
+    stopSpeak()
+  }
 
   const pageOf = (i) => {
     const p = pages[i]
@@ -36,38 +51,71 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
     setPage(0)
     setPlaying(false)
     setPaywall(false)
-    stopSpeak()
+    stopAll()
   }, [story?.id])
 
-  // Audio : lit la page courante puis enchaîne automatiquement la suivante.
+  // Audio : joue la narration de la page courante (vraie voix ElevenLabs si dispo —
+  // soit pré-générée `page.audio`, soit générée à la volée — sinon repli sur la voix
+  // du navigateur), puis enchaîne automatiquement la page suivante.
   useEffect(() => {
-    if (!playing || !soundOn || !ttsSupported() || paywall) {
-      stopSpeak()
+    if (!playing || !soundOn || paywall) {
+      stopAll()
+      setLoadingAudio(false)
       return
     }
     const myToken = ++tokenRef.current
-    speak(cur.text, voice, {
-      onend: () => {
-        if (tokenRef.current !== myToken) return
-        if (page < maxPage) setPage((p) => p + 1)
-        else setPlaying(false)
-      },
-    })
+    let cancelled = false
+    const advance = () => {
+      if (cancelled || tokenRef.current !== myToken) return
+      if (page < maxPage) setPage((p) => p + 1)
+      else setPlaying(false)
+    }
+    const fallbackTTS = () => {
+      if (!cancelled && tokenRef.current === myToken && ttsSupported()) speak(cur.text, voice, { onend: advance })
+      else advance()
+    }
+    ;(async () => {
+      let url = cur.audio || null
+      if (!url) {
+        setLoadingAudio(true)
+        try {
+          const d = await generateAudio(cur.text, voice)
+          url = d?.url || null
+        } catch {
+          url = null
+        }
+        if (!cancelled && tokenRef.current === myToken) setLoadingAudio(false)
+      }
+      if (cancelled || tokenRef.current !== myToken) return
+      if (url) {
+        const a = new Audio(url)
+        audioRef.current = a
+        a.onended = advance
+        a.onerror = fallbackTTS
+        a.play().catch(fallbackTTS)
+      } else {
+        fallbackTTS()
+      }
+    })()
+    return () => {
+      cancelled = true
+      stopAll()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, page, voice, soundOn, paywall])
 
   // Coupe l'audio en quittant le lecteur.
-  useEffect(() => () => stopSpeak(), [])
+  useEffect(() => () => stopAll(), [])
 
   const close = () => {
-    stopSpeak()
+    stopAll()
     onClose && onClose()
   }
   const next = () => {
     if (page < maxPage) setPage(page + 1)
     else if (locked) {
       setPlaying(false)
-      stopSpeak()
+      stopAll()
       setPaywall(true)
     }
   }
@@ -118,8 +166,8 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
             <button onClick={togglePlay} style={{ width: 86, height: 86, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 14px 26px -8px rgba(255,127,176,.65)' }}><RawSvg html={playing ? pauseSvg : playSvg} /></button>
             <button onClick={next} style={{ width: 60, height: 60, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={nextIcon} /></button>
           </div>
-          {!ttsSupported() && (
-            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--ink2)', fontWeight: 500, marginTop: 10 }}>Lecture audio non disponible sur ce navigateur.</div>
+          {loadingAudio && (
+            <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--violet)', fontWeight: 600, marginTop: 10 }}>🎙️ Grabi prépare sa voix…</div>
           )}
           {mutedHint && (
             <div style={{ textAlign: 'center', fontSize: 13, color: '#C24A7A', fontWeight: 600, marginTop: 10 }}>Le son est coupé — active-le dans les Réglages 🔇</div>
