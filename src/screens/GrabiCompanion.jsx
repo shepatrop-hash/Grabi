@@ -3,6 +3,7 @@ import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { load, save } from '../lib/store.js'
 import { ACCESSORIES, DEFAULT_ACC, getDecor } from '../lib/grabiCustom.js'
+import { playGrabiSound } from '../lib/sounds.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 
@@ -34,6 +35,7 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
   const companionDecor = getDecor(decor)
 
   function react(text, bump) {
+    playGrabiSound() // petit bruit mignon de Grabi
     setReaction(text)
     setPetActive(true)
     setHappiness((h) => Math.max(0, Math.min(100, h + bump)))

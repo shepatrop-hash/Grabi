@@ -5,6 +5,7 @@ import BackButton from '../components/BackButton.jsx'
 const clockIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A8AC0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7 V12 L15 14"></path></svg>`
 const voiceIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11 a7 7 0 0 0 14 0 M12 18 V21"></path></svg>`
 const soundIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f9e7a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 H8 L13 5 V19 L8 15 H4 Z"></path><path d="M17 9 a4 4 0 0 1 0 6"></path></svg>`
+const musicIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C77DBB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const crownIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#8B6FE0"><path d="M3 7 l4 5 5-7 5 7 4-5 -2 12 H5 Z"></path></svg>`
 const helpIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.2 9.2 a2.8 2.8 0 0 1 5.2 1.3 c0 1.8-2.4 2.2-2.4 3.7"></path><circle cx="12" cy="17.2" r="0.6" fill="#C24A7A"></circle></svg>`
 const communityIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="9" cy="11" r="1"></circle><circle cx="15" cy="11" r="1"></circle><path d="M9 15 q3 2.4 6 0"></path></svg>`
@@ -59,7 +60,7 @@ function ParentGate({ onUnlock, onBack }) {
   )
 }
 
-export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin = 0, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, allowPublish = true, onToggleAllowPublish, reminder = { on: false, time: '20:00' }, onToggleReminder, onReminderTime, premium, onSubscribe, onLegal, onResetData, onBack }) {
+export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin = 0, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, musicOn = true, onToggleMusic, allowPublish = true, onToggleAllowPublish, reminder = { on: false, time: '20:00' }, onToggleReminder, onReminderTime, premium, onSubscribe, onLegal, onResetData, onBack }) {
   const [unlocked, setUnlocked] = useState(false)
   if (!unlocked) return <ParentGate onUnlock={() => setUnlocked(true)} onBack={onBack} />
 
@@ -114,6 +115,14 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin =
             <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Bruitages et réactions de Grabi</div>
           </div>
           <Toggle on={effectsOn} />
+        </button>
+        <button onClick={onToggleMusic} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--pink-soft)')}><RawSvg html={musicIcon} /></span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Musique de fond</div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Ambiance douce en boucle</div>
+          </div>
+          <Toggle on={musicOn} />
         </button>
 
         {/* Confidentialité */}
