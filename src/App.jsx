@@ -6,6 +6,10 @@ import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
 import Subscribe from './screens/Subscribe.jsx'
 import Settings from './screens/Settings.jsx'
+import MonGrabi from './screens/MonGrabi.jsx'
+import EspaceParents from './screens/EspaceParents.jsx'
+import MonAbonnement from './screens/MonAbonnement.jsx'
+import EditProfile from './screens/EditProfile.jsx'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
 import Reader from './screens/Reader.jsx'
@@ -105,7 +109,10 @@ export default function App() {
   const [smiles, setSmiles] = useState(() => load('smiles', {}))
   const [given, setGiven] = useState(() => load('given', {}))
   const [voice, setVoice] = useState(() => load('voice', 'Douce'))
-  const [soundOn, setSoundOn] = useState(() => load('soundOn', true))
+  // Deux réglages audio indépendants : la voix (narration des histoires) et les
+  // sons/effets. Migration depuis l'ancien réglage unique « soundOn ».
+  const [voiceOn, setVoiceOn] = useState(() => load('voiceOn', load('soundOn', true)))
+  const [effectsOn, setEffectsOn] = useState(() => load('effectsOn', true))
   const [premium, setPremium] = useState(() => load('premium', false))
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
@@ -114,7 +121,8 @@ export default function App() {
   useEffect(() => save('smiles', smiles), [smiles])
   useEffect(() => save('given', given), [given])
   useEffect(() => save('voice', voice), [voice])
-  useEffect(() => save('soundOn', soundOn), [soundOn])
+  useEffect(() => save('voiceOn', voiceOn), [voiceOn])
+  useEffect(() => save('effectsOn', effectsOn), [effectsOn])
   useEffect(() => save('premium', premium), [premium])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
@@ -194,9 +202,19 @@ export default function App() {
     setScreen('reader')
   }
 
-  function editChild() {
-    const name = window.prompt("Prénom de l'enfant ?", child.name)
-    if (name && name.trim()) setChild((c) => ({ ...c, name: name.trim() }))
+  function saveChild(next) {
+    setChild(next)
+    setScreen('settings')
+  }
+
+  function resetData() {
+    if (!window.confirm("Effacer toutes les histoires et réglages de cet appareil ? Cette action est définitive.")) return
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith('grabi:'))
+        .forEach((k) => localStorage.removeItem(k))
+    } catch {}
+    window.location.reload()
   }
 
   return (
@@ -230,20 +248,52 @@ export default function App() {
       )}
       {screen === 'settings' && (
         <Settings
-          voice={voice}
-          onVoice={setVoice}
-          soundOn={soundOn}
-          onToggleSound={() => setSoundOn((s) => !s)}
           premium={premium}
           child={child}
-          onEditProfile={editChild}
-          screenTime={screenTime}
-          onCycleScreenTime={() => setScreenTime((t) => (t >= 60 ? 15 : t + 15))}
-          onSubscribe={() => setScreen('subscribe')}
+          onEditProfile={() => setScreen('edit-profile')}
+          onMonGrabi={() => setScreen('mon-grabi')}
+          onEspaceParents={() => setScreen('espace-parents')}
+          onAbonnement={() => setScreen('mon-abonnement')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
           onCreate={() => setScreen('create')}
           onMine={() => setScreen('mine')}
+        />
+      )}
+      {screen === 'edit-profile' && (
+        <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('settings')} />
+      )}
+      {screen === 'mon-grabi' && (
+        <MonGrabi
+          voice={voice}
+          onVoice={setVoice}
+          voiceOn={voiceOn}
+          onToggleVoice={() => setVoiceOn((s) => !s)}
+          onBack={() => setScreen('settings')}
+          onPlay={() => setScreen('grabi')}
+        />
+      )}
+      {screen === 'espace-parents' && (
+        <EspaceParents
+          screenTime={screenTime}
+          onScreenTime={setScreenTime}
+          voiceOn={voiceOn}
+          onToggleVoice={() => setVoiceOn((s) => !s)}
+          effectsOn={effectsOn}
+          onToggleEffects={() => setEffectsOn((s) => !s)}
+          premium={premium}
+          onSubscribe={() => setScreen('mon-abonnement')}
+          onResetData={resetData}
+          onBack={() => setScreen('settings')}
+        />
+      )}
+      {screen === 'mon-abonnement' && (
+        <MonAbonnement
+          premium={premium}
+          onSubscribe={() => setScreen('subscribe')}
+          onCancel={() => { if (window.confirm("Résilier ton abonnement Premium ?")) setPremium(false) }}
+          onRestore={() => window.alert(premium ? 'Tes achats sont déjà actifs ✨' : "Aucun achat à restaurer pour le moment.")}
+          onBack={() => setScreen('settings')}
         />
       )}
       {screen === 'community' && (
@@ -276,7 +326,7 @@ export default function App() {
           story={reader?.story}
           isPremium={premium}
           voice={voice}
-          soundOn={soundOn}
+          soundOn={voiceOn}
           onClose={() => setScreen(reader?.origin || 'home')}
           onSubscribe={() => setScreen('subscribe')}
         />

@@ -1,0 +1,141 @@
+import { useState, useMemo } from 'react'
+import RawSvg from '../components/RawSvg.jsx'
+import BackButton from '../components/BackButton.jsx'
+
+const clockIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A8AC0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7 V12 L15 14"></path></svg>`
+const voiceIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11 a7 7 0 0 0 14 0 M12 18 V21"></path></svg>`
+const soundIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f9e7a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 H8 L13 5 V19 L8 15 H4 Z"></path><path d="M17 9 a4 4 0 0 1 0 6"></path></svg>`
+const crownIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#8B6FE0"><path d="M3 7 l4 5 5-7 5 7 4-5 -2 12 H5 Z"></path></svg>`
+const helpIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.2 9.2 a2.8 2.8 0 0 1 5.2 1.3 c0 1.8-2.4 2.2-2.4 3.7"></path><circle cx="12" cy="17.2" r="0.6" fill="#C24A7A"></circle></svg>`
+const trashIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7 H19 M9 7 V5 a1 1 0 0 1 1-1 h4 a1 1 0 0 1 1 1 V7 M7 7 l1 12 a1 1 0 0 0 1 1 h6 a1 1 0 0 0 1-1 l1-12"></path></svg>`
+const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 L15 12 L9 18"></path></svg>`
+const lockBig = `<svg width="40" height="46" viewBox="0 0 40 46"><path d="M11,20 V14 a9,9 0 0 1 18,0 V20" fill="none" stroke="#A98CFF" stroke-width="4.5" stroke-linecap="round"></path><rect x="6" y="19" width="28" height="22" rx="7" fill="#A98CFF"></rect><circle cx="20" cy="28" r="3.6" fill="#fff"></circle><rect x="18.3" y="29" width="3.4" height="8" rx="1.6" fill="#fff"></rect></svg>`
+
+const card = { background: '#fff', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
+const iconBox = (bg) => ({ width: 42, height: 42, borderRadius: 14, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' })
+const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
+
+const SCREEN_OPTIONS = [15, 30, 45, 60, 0] // 0 = illimité
+const fmtTime = (t) => (t === 0 ? 'Illimité' : `${t} min`)
+
+function Toggle({ on }) {
+  return (
+    <span style={{ width: 46, height: 27, borderRadius: 14, background: on ? 'var(--mint)' : '#D9D3E4', position: 'relative', flex: 'none', transition: 'background .2s ease' }}>
+      <span style={{ position: 'absolute', top: 3, left: on ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} />
+    </span>
+  )
+}
+
+// Porte parentale : une addition simple à résoudre par un adulte.
+function ParentGate({ onUnlock, onBack }) {
+  const { a, b } = useMemo(() => ({ a: 2 + Math.floor(Math.random() * 7), b: 2 + Math.floor(Math.random() * 7) }), [])
+  const answer = a + b
+  const options = useMemo(() => {
+    const set = new Set([answer])
+    while (set.size < 3) set.add(answer + (Math.floor(Math.random() * 7) - 3) || answer + 1)
+    return [...set].sort(() => Math.random() - 0.5)
+  }, [answer])
+  const [wrong, setWrong] = useState(false)
+
+  return (
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#F4EEFF 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+      <div style={{ padding: '6px 24px 0', flex: 'none' }}><BackButton onClick={onBack} /></div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 32px', textAlign: 'center' }}>
+        <RawSvg html={lockBig} />
+        <div style={{ fontSize: 24, fontWeight: 700, marginTop: 14 }}>Espace parents</div>
+        <div style={{ fontSize: 15, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45, marginTop: 8 }}>Pour les grands&nbsp;! Réponds à la question pour entrer.</div>
+        <div style={{ fontSize: 30, fontWeight: 700, marginTop: 26 }}>{a} + {b} = ?</div>
+        <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
+          {options.map((o) => (
+            <button key={o} onClick={() => (o === answer ? onUnlock() : setWrong(true))} style={{ width: 72, height: 72, borderRadius: 22, background: '#fff', fontSize: 24, fontWeight: 700, color: 'var(--ink)', boxShadow: '0 8px 18px -12px rgba(74,58,102,.35)' }}>{o}</button>
+          ))}
+        </div>
+        {wrong && <div style={{ fontSize: 14, color: '#C24A7A', fontWeight: 600, marginTop: 18 }}>Oups, ce n'est pas ça. Réessaie&nbsp;!</div>}
+      </div>
+    </div>
+  )
+}
+
+export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, premium, onSubscribe, onResetData, onBack }) {
+  const [unlocked, setUnlocked] = useState(false)
+  if (!unlocked) return <ParentGate onUnlock={() => setUnlocked(true)} onBack={onBack} />
+
+  return (
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+      <div style={{ padding: '6px 24px 0', display: 'flex', alignItems: 'center', gap: 14, flex: 'none' }}>
+        <BackButton onClick={onBack} />
+        <div>
+          <div style={{ fontSize: 24, fontWeight: 700 }}>Espace parents</div>
+          <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>Contrôles &amp; sécurité</div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px calc(env(safe-area-inset-bottom, 0px) + 20px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {/* Temps d'écran */}
+        <div style={sectionTitle}>Temps d'écran</div>
+        <div style={{ background: '#fff', borderRadius: 22, padding: '14px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span style={iconBox('var(--sky-soft)')}><RawSvg html={clockIcon} /></span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 16, fontWeight: 600 }}>Limite quotidienne</div>
+              <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>{screenTime === 0 ? 'Aucune limite' : `${screenTime} minutes par jour`}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+            {SCREEN_OPTIONS.map((t) => {
+              const active = screenTime === t
+              return (
+                <button key={t} onClick={() => onScreenTime(t)} style={{ background: active ? 'var(--sky)' : '#F1F6FB', color: active ? '#fff' : 'var(--ink2)', padding: '8px 14px', borderRadius: 16, fontSize: 14, fontWeight: 700 }}>{fmtTime(t)}</button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Audio — deux réglages séparés */}
+        <div style={sectionTitle}>Audio</div>
+        <button onClick={onToggleVoice} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--violet-soft)')}><RawSvg html={voiceIcon} /></span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Voix de Grabi</div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Lecture audio des histoires</div>
+          </div>
+          <Toggle on={voiceOn} />
+        </button>
+        <button onClick={onToggleEffects} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--mint-soft)')}><RawSvg html={soundIcon} /></span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Sons &amp; effets</div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Bruitages et réactions de Grabi</div>
+          </div>
+          <Toggle on={effectsOn} />
+        </button>
+
+        {/* Compte */}
+        <div style={sectionTitle}>Compte</div>
+        <button onClick={onSubscribe} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--violet-soft)')}><RawSvg html={crownIcon} /></span>
+          <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Abonnement &amp; achats</div>
+          <span style={{ fontSize: 12, fontWeight: 700, color: premium ? '#a07d2a' : '#7d5fc4', background: premium ? 'var(--yellow-soft)' : 'var(--violet-soft)', padding: '5px 10px', borderRadius: 14 }}>{premium ? 'Premium' : 'Gratuit'}</span>
+          <RawSvg html={chevron} />
+        </button>
+        <a href="mailto:bonjour@grabi.app" style={{ ...card, textDecoration: 'none', color: 'inherit' }}>
+          <span style={iconBox('var(--pink-soft)')}><RawSvg html={helpIcon} /></span>
+          <div style={{ flex: 1, fontSize: 16, fontWeight: 600 }}>Aide &amp; contact</div>
+          <RawSvg html={chevron} />
+        </a>
+
+        {/* Données */}
+        <div style={sectionTitle}>Données</div>
+        <button onClick={onResetData} style={{ ...card, width: '100%', textAlign: 'left' }}>
+          <span style={iconBox('var(--pink-soft)')}><RawSvg html={trashIcon} /></span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: '#C24A7A' }}>Réinitialiser l'application</div>
+            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Efface histoires &amp; réglages de cet appareil</div>
+          </div>
+        </button>
+
+        <div style={{ fontSize: 11, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', padding: '6px 12px 0', lineHeight: 1.4 }}>Les données sont enregistrées uniquement sur cet appareil. Grabi v1.0</div>
+      </div>
+    </div>
+  )
+}
