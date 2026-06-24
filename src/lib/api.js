@@ -21,22 +21,49 @@ export async function generateStory(idea, answers = {}) {
 
 // Génère une illustration (Fal.ai / Qwen Image 2).
 // Sans imageUrls -> texte→image. Avec imageUrls (références) -> édition (cohérence des personnages).
+// Asynchrone : soumet le job à la file Fal puis interroge le statut jusqu'à l'image
+// (évite le timeout 60s des fonctions serverless quand le modèle d'édition est lent).
 export async function generateImage(prompt, imageUrls) {
-  const res = await fetch('/api/generate-image', {
+  const sub = await fetch('/api/generate-image', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt, image_urls: Array.isArray(imageUrls) ? imageUrls : [] }),
   })
-  if (!res.ok) {
+  if (!sub.ok) {
     let detail = ''
     try {
-      detail = (await res.json()).error || ''
+      detail = (await sub.json()).error || ''
     } catch {
-      detail = `HTTP ${res.status}`
+      detail = `HTTP ${sub.status}`
     }
-    throw new Error(detail || `HTTP ${res.status}`)
+    throw new Error(detail || `HTTP ${sub.status}`)
   }
-  return res.json()
+  const submitted = await sub.json()
+  if (submitted.url) return submitted // image renvoyée directement (cas rare)
+  const { request_id, model } = submitted
+  if (!request_id) throw new Error("La soumission de l'illustration a échoué.")
+
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+  const deadline = Date.now() + 170000 // ~3 min max par image
+  while (Date.now() < deadline) {
+    await sleep(3000)
+    let st
+    try {
+      st = await fetch('/api/image-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request_id, model }),
+      })
+    } catch {
+      continue // souci réseau ponctuel -> on réessaie
+    }
+    if (!st.ok) continue
+    const data = await st.json()
+    if (data.url) return { url: data.url, model: data.model }
+    if (data.error) throw new Error(data.error)
+    // sinon IN_QUEUE / IN_PROGRESS -> on continue d'interroger
+  }
+  throw new Error("Délai dépassé pour l'illustration.")
 }
 
 // Génère des questions de personnalisation adaptées au contexte de l'idée (via Claude).
