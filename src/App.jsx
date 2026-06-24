@@ -18,72 +18,23 @@ import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { SEED_COMMUNITY } from './lib/samples.js'
 
-// Nom commun "tête" d'une description anglaise ("An orange fluffy sofa with..." -> "sofa").
-function headNoun(desc) {
-  if (!desc) return ''
-  let chunk = String(desc).split(/\bwith\b|\bthat\b|\bwho\b|\bwhich\b|\bhaving\b|,/i)[0].trim()
-  chunk = chunk.replace(/^(an?|the)\s+/i, '')
-  const words = chunk.split(/\s+/).filter(Boolean)
-  return (words[words.length - 1] || '').toLowerCase().replace(/[^a-zà-ÿ-]/gi, '')
-}
-
-// Un personnage est-il réellement présent dans le prompt de la scène ?
-// (par son prénom — ex. "Trama" — OU par son type — ex. "sofa", "crocodile")
-function refInScene(ref, lowerPrompt) {
-  const nom = (ref.nom || '').toLowerCase()
-  if (nom && lowerPrompt.includes(nom)) return true
-  if (nom) {
-    const first = nom.replace(/^(le|la|les|l'|un|une|des)\s+/i, '').split(/\s+/)[0]
-    if (first.length >= 3 && lowerPrompt.includes(first)) return true
-  }
-  return !!ref.head && ref.head.length >= 3 && lowerPrompt.includes(ref.head)
-}
-
 function Ready({ story, onKeep, onPublish }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
-  const [phase, setPhase] = useState('refs') // 'refs' (personnages) | 'scenes'
 
   useEffect(() => {
     if (!story?.pages) return
     let cancelled = false
     setImages({})
-    setPhase('refs')
-
-    ;(async () => {
-      // 1) Une image de référence par personnage (texte→image), en gardant nom + type + url
-      const persos = (story.personnages || []).slice(0, 3)
-      const built = await Promise.all(
-        persos.map((pr) =>
-          generateImage(`${pr.description}. Single character reference, centered, plain very light background, full body, children's picture book illustration, soft colors, no text.`)
-            .then((d) => ({ nom: pr.nom, head: headNoun(pr.description), url: d.url }))
-            .catch(() => null),
-        ),
-      )
-      const refs = built.filter((r) => r && r.url)
-      if (cancelled) return
-      setPhase('scenes')
-
-      // 2) Pour chaque scène : ne mettre en référence QUE les personnages réellement
-      //    présents dans son prompt (sinon le modèle force des persos absents).
-      const perScene = story.pages.map((p) => {
-        const lower = (p.prompt_illustration || '').toLowerCase()
-        return refs.filter((r) => refInScene(r, lower)).map((r) => r.url)
-      })
-      // Filet de sécurité : si rien n'a matché nulle part, on garde toutes les réfs.
-      const anyMatch = perScene.some((arr) => arr.length > 0)
-
-      story.pages.forEach((p, i) => {
-        const sceneRefs = anyMatch ? perScene[i] : refs.map((r) => r.url)
-        generateImage(p.prompt_illustration, sceneRefs)
-          .then(({ url }) => {
-            if (!cancelled) setImages((m) => ({ ...m, [i]: url || 'error' }))
-          })
-          .catch(() => {
-            if (!cancelled) setImages((m) => ({ ...m, [i]: 'error' }))
-          })
-      })
-    })()
-
+    // Une illustration par scène, directement en texte→image (simple et rapide).
+    story.pages.forEach((p, i) => {
+      generateImage(p.prompt_illustration)
+        .then(({ url }) => {
+          if (!cancelled) setImages((m) => ({ ...m, [i]: url || 'error' }))
+        })
+        .catch(() => {
+          if (!cancelled) setImages((m) => ({ ...m, [i]: 'error' }))
+        })
+    })
     return () => {
       cancelled = true
     }
@@ -121,7 +72,7 @@ function Ready({ story, onKeep, onPublish }) {
                 ) : img === 'error' ? (
                   <span style={{ fontSize: 13, color: 'var(--ink2)', padding: 12, textAlign: 'center' }}>Illustration indisponible</span>
                 ) : (
-                  <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600, textAlign: 'center', padding: 12 }}>{phase === 'refs' ? 'Grabi prépare les personnages… ✨' : 'Grabi dessine… 🎨'}</span>
+                  <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600, textAlign: 'center', padding: 12 }}>Grabi dessine… 🎨</span>
                 )}
               </div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--violet)' }}>Page {i + 1}</div>
