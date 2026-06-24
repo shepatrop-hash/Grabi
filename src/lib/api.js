@@ -44,7 +44,7 @@ export async function generateImage(prompt, imageUrls) {
   if (!request_id) throw new Error("La soumission de l'illustration a échoué.")
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
-  const deadline = Date.now() + 170000 // ~3 min max par image
+  const deadline = Date.now() + 240000 // ~4 min max par image (absorbe les pics de file Fal)
   while (Date.now() < deadline) {
     await sleep(3000)
     let st
