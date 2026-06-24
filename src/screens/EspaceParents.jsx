@@ -59,7 +59,7 @@ function ParentGate({ onUnlock, onBack }) {
   )
 }
 
-export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, allowPublish = true, onToggleAllowPublish, reminder = { on: false, time: '20:00' }, onToggleReminder, onReminderTime, premium, onSubscribe, onLegal, onResetData, onBack }) {
+export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin = 0, voiceOn = true, onToggleVoice, effectsOn = true, onToggleEffects, allowPublish = true, onToggleAllowPublish, reminder = { on: false, time: '20:00' }, onToggleReminder, onReminderTime, premium, onSubscribe, onLegal, onResetData, onBack }) {
   const [unlocked, setUnlocked] = useState(false)
   if (!unlocked) return <ParentGate onUnlock={() => setUnlocked(true)} onBack={onBack} />
 
@@ -83,6 +83,9 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, voiceOn =
               <div style={{ fontSize: 16, fontWeight: 600 }}>Limite quotidienne</div>
               <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>{screenTime === 0 ? 'Aucune limite' : `${screenTime} minutes par jour`}</div>
             </div>
+            {screenTime > 0 && (
+              <span style={{ fontSize: 12, fontWeight: 700, color: usedMin >= screenTime ? '#C24A7A' : '#1f9e7a', background: usedMin >= screenTime ? 'var(--pink-soft)' : 'var(--mint-soft)', padding: '5px 10px', borderRadius: 14, whiteSpace: 'nowrap' }}>{usedMin} min aujourd'hui</span>
+            )}
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
             {SCREEN_OPTIONS.map((t) => {

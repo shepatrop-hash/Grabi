@@ -12,6 +12,7 @@ import MonAbonnement from './screens/MonAbonnement.jsx'
 import EditProfile from './screens/EditProfile.jsx'
 import Legal from './screens/Legal.jsx'
 import Rewards from './screens/Rewards.jsx'
+import ScreenLock from './screens/ScreenLock.jsx'
 import { ensurePermission, showNotification, msUntil } from './lib/notify.js'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
@@ -23,6 +24,8 @@ import TopBack from './components/BackButton.jsx'
 import { generateStory, generateImage, generateQuestions } from './lib/api.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
+
+const todayKey = () => new Date().toISOString().slice(0, 10)
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 
 function Ready({ story, onKeep, onPublish, allowPublish = true }) {
@@ -130,6 +133,11 @@ export default function App() {
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
   const [decor, setDecor] = useState(() => load('decor', 'none'))
   const [nightMode, setNightMode] = useState(() => load('nightMode', false))
+  // Suivi du temps d'écran du jour : { date, seconds (utilisées), bonus (min ajoutées par un parent) }
+  const [usage, setUsage] = useState(() => {
+    const u = load('usage', { date: todayKey(), seconds: 0, bonus: 0 })
+    return u.date === todayKey() ? u : { date: todayKey(), seconds: 0, bonus: 0 }
+  })
 
   useEffect(() => save('stories', stories), [stories])
   useEffect(() => save('smiles', smiles), [smiles])
@@ -145,6 +153,23 @@ export default function App() {
   useEffect(() => save('reminder', reminder), [reminder])
   useEffect(() => save('decor', decor), [decor])
   useEffect(() => save('nightMode', nightMode), [nightMode])
+  useEffect(() => save('usage', usage), [usage])
+
+  // Compte le temps passé dans l'app (par tranches de 20 s), avec remise à zéro
+  // quotidienne. Sert à appliquer réellement la limite de temps d'écran.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setUsage((u) => {
+        const today = todayKey()
+        if (u.date !== today) return { date: today, seconds: 0, bonus: 0 }
+        return { ...u, seconds: u.seconds + 20 }
+      })
+    }, 20000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Limite atteinte ? (screenTime en minutes, 0 = illimité ; bonus parent ajouté)
+  const screenLocked = screenTime > 0 && usage.date === todayKey() && usage.seconds >= (screenTime + usage.bonus) * 60
 
   // Rappel « histoire du soir » : tant que l'app est ouverte, on programme une
   // notification douce à l'heure choisie (puis chaque jour). Sans backend, le
@@ -347,6 +372,7 @@ export default function App() {
         <EspaceParents
           screenTime={screenTime}
           onScreenTime={setScreenTime}
+          usedMin={Math.floor(usage.seconds / 60)}
           voiceOn={voiceOn}
           onToggleVoice={() => setVoiceOn((s) => !s)}
           effectsOn={effectsOn}
@@ -416,6 +442,9 @@ export default function App() {
       {screen === 'grabi' && <GrabiCompanion decor={decor} onBack={() => setScreen(grabiBack)} />}
       {nightMode && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(42,28,66,.30)', mixBlendMode: 'multiply', pointerEvents: 'none', zIndex: 9999 }} />
+      )}
+      {screenLocked && (
+        <ScreenLock onGrantMore={() => setUsage((u) => ({ ...u, bonus: u.bonus + 15 }))} />
       )}
     </div>
   )
