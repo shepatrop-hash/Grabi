@@ -1,12 +1,15 @@
 import { fal } from '@fal-ai/client'
 
 // Deux modes :
-// - sans image de référence  -> texte→image (pour générer les références ET en repli)
-// - avec image(s) de référence -> édition multi-images (cohérence des personnages/éléments)
+// - sans image de référence  -> texte→image (références + repli)
+// - avec image(s) de référence -> édition multi-images (cohérence des personnages)
 const T2I_MODEL = 'fal-ai/qwen-image-2/text-to-image'
 const EDIT_MODEL = process.env.EDIT_MODEL || 'fal-ai/qwen-image-edit-2509'
 
-export const config = { maxDuration: 60 }
+// Soumission rapide : on met le job dans la file Fal et on répond aussitôt
+// (le client interroge ensuite /api/image-status). Évite le timeout 60s de Vercel
+// quand le modèle d'édition est lent.
+export const config = { maxDuration: 30 }
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -40,16 +43,11 @@ export default async function handler(req, res) {
           prompt: `${prompt}. Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
         }
 
-    const result = await fal.subscribe(model, { input })
-    const url = result?.data?.images?.[0]?.url
-    if (!url) {
-      res.status(502).json({ error: "Pas d'image renvoyée par Fal.", model })
-      return
-    }
-
-    res.status(200).json({ url, model })
+    // Soumission asynchrone à la file Fal -> renvoie un request_id immédiatement.
+    const submitted = await fal.queue.submit(model, { input })
+    res.status(200).json({ request_id: submitted.request_id, model })
   } catch (err) {
-    console.error('generate-image error:', err)
+    console.error('generate-image submit error:', err)
     res.status(500).json({
       error: String(err?.message || err),
       status: err?.status ?? null,
