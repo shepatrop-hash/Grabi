@@ -6,7 +6,7 @@
 const DB_NAME = 'grabi-audio'
 const STORE = 'clips'
 const MAX_CLIPS = 200 // au-delà, on évince les plus anciens (~26 Mo max)
-const VERSION = 'g1'  // change-le pour invalider tout le cache si la voix change
+const VERSION = 'g2'  // change-le pour invalider tout le cache si la voix change
 
 let dbPromise = null
 function openDb() {
