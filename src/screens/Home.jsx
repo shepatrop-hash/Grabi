@@ -21,8 +21,8 @@ function Card({ onClick, bg, title, subtitle, subColor, shadow, icon }) {
     <button
       onClick={onClick}
       style={{
-        width: '100%', textAlign: 'left', flex: 1, background: bg, borderRadius: 34,
-        padding: '22px 24px', display: 'flex', alignItems: 'center',
+        width: '100%', textAlign: 'left', flex: 'none', height: 148, background: bg, borderRadius: 34,
+        padding: '18px 22px', display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', boxShadow: shadow,
       }}
     >
@@ -37,7 +37,7 @@ function Card({ onClick, bg, title, subtitle, subColor, shadow, icon }) {
 
 export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoMine, onGoSettings, onGoGrabi }) {
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 34px)' }}>
       <div style={{ position: 'absolute', top: -60, right: -50, width: 200, height: 200, borderRadius: '50%', background: 'var(--yellow-soft)', opacity: 0.7 }} />
       <div style={{ position: 'absolute', bottom: 130, left: -70, width: 200, height: 200, borderRadius: '50%', background: 'var(--sky-soft)', opacity: 0.55 }} />
 
