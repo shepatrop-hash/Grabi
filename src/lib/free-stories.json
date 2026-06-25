@@ -8,27 +8,33 @@
     "pages": [
       {
         "text": "Flamby est un petit dragon vert tout doux. Il ne crache pas de feu… il crache des étincelles de sucre ! Son rêve ? Faire des crêpes dorées et bien rondes.",
-        "image": "/free/dragon-1.jpg"
+        "image": "/free/dragon-1.jpg",
+        "audio": "/free/dragon-1.mp3"
       },
       {
         "text": "Ce matin, Flamby attrape la grande poêle magique. Elle brille et sourit ! Ensemble, ils vont préparer la meilleure pâte à crêpes du monde.",
-        "image": "/free/dragon-2.jpg"
+        "image": "/free/dragon-2.jpg",
+        "audio": "/free/dragon-2.mp3"
       },
       {
         "text": "Flamby mélange la farine, les œufs et le lait. Plouf, plouf, plouf ! La pâte fait des bulles rigolotes. Flamby éclate de rire.",
-        "image": "/free/dragon-3.jpg"
+        "image": "/free/dragon-3.jpg",
+        "audio": "/free/dragon-3.mp3"
       },
       {
         "text": "La première crêpe saute très haut dans les airs ! Elle fait un grand tour et retombe pile dans la poêle. Flamby bat des ailes de joie.",
-        "image": "/free/dragon-4.jpg"
+        "image": "/free/dragon-4.jpg",
+        "audio": "/free/dragon-4.mp3"
       },
       {
         "text": "Flamby saupoudre plein de sucre sur sa crêpe dorée. Croutch, croutch ! C'est croustillant, sucré et délicieux. Il se lèche les babines.",
-        "image": "/free/dragon-5.jpg"
+        "image": "/free/dragon-5.jpg",
+        "audio": "/free/dragon-5.mp3"
       },
       {
         "text": "Le ventre bien rond et le cœur tout chaud, Flamby s'endort doucement. Il rêve déjà de sa prochaine crêpe au sucre. Bonne nuit, petit dragon !",
-        "image": "/free/dragon-6.jpg"
+        "image": "/free/dragon-6.jpg",
+        "audio": "/free/dragon-6.mp3"
       }
     ]
   },
@@ -41,27 +47,33 @@
     "pages": [
       {
         "text": "Ce matin, le ciel est tout gris, tout triste. Les fleurs baissent la tête. Les oiseaux ne chantent plus. Lyra la licorne lève les yeux et dit : « Je vais t'aider, joli ciel ! »",
-        "image": "/free/licorne-1.jpg"
+        "image": "/free/licorne-1.jpg",
+        "audio": "/free/licorne-1.mp3"
       },
       {
         "text": "Lyra secoue sa crinière de toutes ses forces. Des étincelles rouges et orangées s'envolent vers le ciel. Une belle bande de couleurs apparaît là-haut !",
-        "image": "/free/licorne-2.jpg"
+        "image": "/free/licorne-2.jpg",
+        "audio": "/free/licorne-2.mp3"
       },
       {
         "text": "Soudain, un petit nuage gris arrive en boudant. C'est Filou ! « Moi aussi je veux des couleurs ! » dit-il. Lyra sourit et lui touche le ventre avec sa corne dorée.",
-        "image": "/free/licorne-3.jpg"
+        "image": "/free/licorne-3.jpg",
+        "audio": "/free/licorne-3.mp3"
       },
       {
         "text": "Pouf ! Filou devient un nuage tout rose et tout doux. Il rit aux éclats et fait des cabrioles dans le ciel. Lyra galope en cercles joyeux sous lui.",
-        "image": "/free/licorne-4.jpg"
+        "image": "/free/licorne-4.jpg",
+        "audio": "/free/licorne-4.mp3"
       },
       {
         "text": "Lyra secoue encore sa crinière, encore et encore. Du jaune, du vert, du bleu, du violet éclatent partout dans le ciel. Les oiseaux se remettent à chanter !",
-        "image": "/free/licorne-5.jpg"
+        "image": "/free/licorne-5.jpg",
+        "audio": "/free/licorne-5.mp3"
       },
       {
         "text": "Le ciel est maintenant tout arc-en-ciel et magnifique. Lyra et Filou regardent ensemble le beau spectacle. « Bonne nuit, joli ciel », chuchote Lyra en souriant.",
-        "image": "/free/licorne-6.jpg"
+        "image": "/free/licorne-6.jpg",
+        "audio": "/free/licorne-6.mp3"
       }
     ]
   },
@@ -74,27 +86,33 @@
     "pages": [
       {
         "text": "Ce soir, le petit ourson Doudou ne peut pas dormir. Il a besoin d'un câlin tout doux avant de fermer les yeux. Alors il part en chercher un dans la forêt des doux.",
-        "image": "/free/ourson-1.jpg"
+        "image": "/free/ourson-1.jpg",
+        "audio": "/free/ourson-1.mp3"
       },
       {
         "text": "Doudou rencontre une grosse grenouille verte. « Veux-tu me faire un câlin ? » demande-t-il. La grenouille saute de joie et serre Doudou très fort dans ses bras tout mouillés !",
-        "image": "/free/ourson-2.jpg"
+        "image": "/free/ourson-2.jpg",
+        "audio": "/free/ourson-2.mp3"
       },
       {
         "text": "Mais Doudou rigole : « Tu es trop fraîche ! » Il continue son chemin en sautillant entre les champignons lumineux.",
-        "image": "/free/ourson-3.jpg"
+        "image": "/free/ourson-3.jpg",
+        "audio": "/free/ourson-3.mp3"
       },
       {
         "text": "Il trouve alors un grand lapin gris avec de longues oreilles douces. Le lapin l'enveloppe dans ses grandes oreilles comme une couverture. Oh, que c'est chaud !",
-        "image": "/free/ourson-4.jpg"
+        "image": "/free/ourson-4.jpg",
+        "audio": "/free/ourson-4.mp3"
       },
       {
         "text": "Doudou ferme les yeux. Son cœur est tout chaud. Il murmure : « C'est exactement le câlin dont j'avais besoin. » Le lapin lui chante une petite chanson douce.",
-        "image": "/free/ourson-5.jpg"
+        "image": "/free/ourson-5.jpg",
+        "audio": "/free/ourson-5.mp3"
       },
       {
         "text": "Tout doucement, Doudou s'endort avec le sourire. Bonne nuit, Doudou. Bonne nuit, toi aussi.",
-        "image": "/free/ourson-6.jpg"
+        "image": "/free/ourson-6.jpg",
+        "audio": "/free/ourson-6.mp3"
       }
     ]
   },
@@ -107,27 +125,33 @@
     "pages": [
       {
         "text": "Ce soir, Léo se glisse dans son lit. Mais quand la lumière s'éteint, tout devient très sombre. Léo tire sa couverture jusqu'au nez et chuchote : « J'ai peur du noir ! »",
-        "image": "/free/etoile-1.jpg"
+        "image": "/free/etoile-1.jpg",
+        "audio": "/free/etoile-1.mp3"
       },
       {
         "text": "Tout à coup, une toute petite lumière dorée apparaît près de la fenêtre. C'est Étincelle, une petite étoile rieuse ! Elle fait un grand sourire et pouffe de rire : « Hi hi hi ! »",
-        "image": "/free/etoile-2.jpg"
+        "image": "/free/etoile-2.jpg",
+        "audio": "/free/etoile-2.mp3"
       },
       {
         "text": "« Le noir, c'est mon jardin secret ! » dit Étincelle en virevoltant. Elle fait apparaître de petits dessins lumineux sur le plafond : un lapin, un canard, un gros chat rigolo !",
-        "image": "/free/etoile-3.jpg"
+        "image": "/free/etoile-3.jpg",
+        "audio": "/free/etoile-3.mp3"
       },
       {
         "text": "Léo rit de bon cœur en voyant le gros chat faire des grimaces. « Le noir, c'est comme un théâtre ! » s'écrie-t-il. Étincelle fait une petite révérence en scintillant.",
-        "image": "/free/etoile-4.jpg"
+        "image": "/free/etoile-4.jpg",
+        "audio": "/free/etoile-4.mp3"
       },
       {
         "text": "« Je veille sur toi toute la nuit, » murmure Étincelle doucement. Elle se pose sur le rebord de la fenêtre, brillant comme une petite veilleuse dorée. Léo se sent tout chaud et tout rassuré.",
-        "image": "/free/etoile-5.jpg"
+        "image": "/free/etoile-5.jpg",
+        "audio": "/free/etoile-5.mp3"
       },
       {
         "text": "Léo ferme les yeux tout doucement, le sourire aux lèvres. Étincelle chantonne une petite mélodie en scintillant. Et bientôt, Léo s'endort, heureux et serein, sous les étoiles.",
-        "image": "/free/etoile-6.jpg"
+        "image": "/free/etoile-6.jpg",
+        "audio": "/free/etoile-6.mp3"
       }
     ]
   },
@@ -140,27 +164,33 @@
     "pages": [
       {
         "text": "Dans la forêt des amis vivait Croco, un grand crocodile tout vert et tout doux. Ce qu'il préférait dans la vie ? Les câlins !",
-        "image": "/free/croco-1.jpg"
+        "image": "/free/croco-1.jpg",
+        "audio": "/free/croco-1.mp3"
       },
       {
         "text": "Ce matin, Croco se leva très tôt. Il voulait trouver quelqu'un à câliner ! Il courut dans la forêt en agitant ses petits bras.",
-        "image": "/free/croco-2.jpg"
+        "image": "/free/croco-2.jpg",
+        "audio": "/free/croco-2.mp3"
       },
       {
         "text": "Il rencontra un petit lapin rose. « Veux-tu un câlin ? » demanda Croco. Le lapin sauta dans ses bras et ils rirent très fort !",
-        "image": "/free/croco-3.jpg"
+        "image": "/free/croco-3.jpg",
+        "audio": "/free/croco-3.mp3"
       },
       {
         "text": "Puis Croco câlina un gros ours brun, un petit oiseau jaune, et même un escargot tout lent. Il était le roi des câlins !",
-        "image": "/free/croco-4.jpg"
+        "image": "/free/croco-4.jpg",
+        "audio": "/free/croco-4.mp3"
       },
       {
         "text": "Le soir venu, tous les amis firent un immense câlin ensemble. Croco était au milieu, tout chaud et tout heureux.",
-        "image": "/free/croco-5.jpg"
+        "image": "/free/croco-5.jpg",
+        "audio": "/free/croco-5.mp3"
       },
       {
         "text": "Croco ferma les yeux tout doucement. Entouré de ses amis, il s'endormit avec un grand sourire. Bonne nuit, Croco !",
-        "image": "/free/croco-6.jpg"
+        "image": "/free/croco-6.jpg",
+        "audio": "/free/croco-6.mp3"
       }
     ]
   },
@@ -173,27 +203,33 @@
     "pages": [
       {
         "text": "Chaque soir, la petite souris grise Mila s'asseyait devant sa fenêtre. Elle regardait la lune briller dans le ciel. « Un jour, je la toucherai ! » disait-elle tout doucement.",
-        "image": "/free/souris-1.jpg"
+        "image": "/free/souris-1.jpg",
+        "audio": "/free/souris-1.mp3"
       },
       {
         "text": "Mila fabriqua une grande échelle avec des brindilles et des feuilles. Elle grimpa, grimpa, grimpa... mais la lune était encore très loin ! Elle éclata de rire.",
-        "image": "/free/souris-2.jpg"
+        "image": "/free/souris-2.jpg",
+        "audio": "/free/souris-2.mp3"
       },
       {
         "text": "Alors Mila demanda à son ami le hibou de la porter très haut. Ensemble, ils s'envolèrent dans le ciel étoilé. C'était magnifique !",
-        "image": "/free/souris-3.jpg"
+        "image": "/free/souris-3.jpg",
+        "audio": "/free/souris-3.mp3"
       },
       {
         "text": "Mila s'approcha tout près de la lune. Elle tendit sa petite patte... et toucha quelque chose de doux et de chaud. La lune lui fit un grand sourire !",
-        "image": "/free/souris-4.jpg"
+        "image": "/free/souris-4.jpg",
+        "audio": "/free/souris-4.mp3"
       },
       {
         "text": "« Tu es courageuse, petite Mila ! » dit la lune d'une voix douce. Elle lui offrit une étoile toute brillante à rapporter chez elle.",
-        "image": "/free/souris-5.jpg"
+        "image": "/free/souris-5.jpg",
+        "audio": "/free/souris-5.mp3"
       },
       {
         "text": "Mila rentra dans son petit lit douillet, l'étoile posée sur sa table de nuit. Elle ferma les yeux, le cœur tout léger. Cette nuit, elle rêva d'aventures encore plus belles.",
-        "image": "/free/souris-6.jpg"
+        "image": "/free/souris-6.jpg",
+        "audio": "/free/souris-6.mp3"
       }
     ]
   }
