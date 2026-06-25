@@ -35,7 +35,21 @@ function findImageBase64(obj, depth = 0) {
   return null
 }
 
-async function generateGemini(prompt, res) {
+// Résume la réponse (remplace les longues chaînes par <str len=N>) pour inspecter
+// la structure sans charrier 375 Ko de base64.
+function summarize(o, d = 0) {
+  if (d > 12) return '…'
+  if (typeof o === 'string') return o.length > 80 ? `<str len=${o.length}>` : o
+  if (Array.isArray(o)) return o.map((x) => summarize(x, d + 1))
+  if (o && typeof o === 'object') {
+    const r = {}
+    for (const k of Object.keys(o)) r[k] = summarize(o[k], d + 1)
+    return r
+  }
+  return o
+}
+
+async function generateGemini(prompt, res, debug) {
   const r = await fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
     method: 'POST',
     headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'Content-Type': 'application/json' },
@@ -51,6 +65,10 @@ async function generateGemini(prompt, res) {
     return
   }
   const data = await r.json()
+  if (debug) {
+    res.status(200).json({ structure: summarize(data) })
+    return
+  }
   const img = findImageBase64(data)
   if (!img) {
     res.status(502).json({ error: 'Pas d\'image dans la réponse Gemini.', keys: Object.keys(data || {}).slice(0, 20) })
@@ -78,7 +96,7 @@ export default async function handler(req, res) {
       return
     }
     try {
-      await generateGemini(prompt, res)
+      await generateGemini(prompt, res, req.body?.debug)
     } catch (err) {
       console.error('gemini image error:', err)
       res.status(500).json({ error: String(err?.message || err) })
