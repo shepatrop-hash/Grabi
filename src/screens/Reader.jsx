@@ -80,7 +80,9 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       else advance()
     }
     ;(async () => {
-      let url = cur.audio || null
+      // Audio pré-généré (baké) = voix de base « Douce ». Pour une autre voix choisie,
+      // on génère à la volée (puis cache) afin de respecter la sélection.
+      let url = cur.audio && voice === 'Douce' ? cur.audio : null
       if (!url) {
         const key = audioKey(cur.text, voice)
         url = await getCachedAudio(key) // déjà narré ? -> instantané, 0 crédit
