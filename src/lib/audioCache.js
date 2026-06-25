@@ -8,6 +8,24 @@ const STORE = 'clips'
 const MAX_CLIPS = 200 // au-delà, on évince les plus anciens (~26 Mo max)
 const VERSION = 'g3'  // change-le pour invalider tout le cache si la voix change
 
+// Purge le cache si VERSION a changé (ex. nouvelle voix) : les histoires déjà narrées
+// avec l'ancienne voix sont effacées -> elles se régénèrent avec la nouvelle voix au
+// prochain clic sur Play. Ne s'exécute qu'une fois (au 1er accès après le changement).
+let purgeDone = false
+function purgeIfStale(db) {
+  if (purgeDone) return
+  purgeDone = true
+  try {
+    const k = 'grabi:audioCacheVersion'
+    if (localStorage.getItem(k) === VERSION) return
+    const tx = db.transaction(STORE, 'readwrite')
+    tx.objectStore(STORE).clear()
+    tx.oncomplete = () => { try { localStorage.setItem(k, VERSION) } catch {} }
+  } catch {
+    /* best effort */
+  }
+}
+
 let dbPromise = null
 function openDb() {
   if (dbPromise) return dbPromise
@@ -18,7 +36,10 @@ function openDb() {
     }
     const req = indexedDB.open(DB_NAME, 1)
     req.onupgradeneeded = () => req.result.createObjectStore(STORE)
-    req.onsuccess = () => resolve(req.result)
+    req.onsuccess = () => {
+      purgeIfStale(req.result)
+      resolve(req.result)
+    }
     req.onerror = () => reject(req.error)
   }).catch((e) => {
     dbPromise = null // permet de réessayer plus tard
