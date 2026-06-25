@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 // se coupe si `enabled` = false.
 const FADE = 2.0 // durée du fondu (secondes)
 
-export default function BackgroundMusic({ track, enabled = true, volume = 0.3 }) {
+export default function BackgroundMusic({ track, enabled = true, volume = 0.2 }) {
   const els = useRef([]) // [audioA, audioB]
   const active = useRef(0)
   const started = useRef(false)
