@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 
 // Modèle configurable. Défaut : Opus 4.8 (qualité max).
 // Pour réduire le coût à l'échelle : STORY_MODEL=claude-sonnet-4-6
-const MODEL = process.env.STORY_MODEL || 'claude-opus-4-8'
+const MODEL = process.env.STORY_MODEL || 'claude-haiku-4-5'
 
 // Laisse le temps à Claude d'écrire l'histoire (sinon timeout serverless à ~10s).
 export const config = { maxDuration: 60 }

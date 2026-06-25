@@ -6,7 +6,8 @@ import { fal } from '@fal-ai/client'
 // Par défaut : fal (Qwen Image 2). Mettre IMAGE_PROVIDER=gemini pour repasser sur Nano Banana 2.
 const PROVIDER = process.env.IMAGE_PROVIDER || 'fal'
 
-const T2I_MODEL = process.env.IMAGE_MODEL || 'fal-ai/qwen-image-2/text-to-image'
+// Hardcodé : on IGNORE la var Vercel IMAGE_MODEL (périmée = `pro/edit`, mauvais modèle + plus cher).
+const T2I_MODEL = 'fal-ai/qwen-image-2/text-to-image'
 const EDIT_MODEL = process.env.EDIT_MODEL || 'fal-ai/qwen-image-edit-2509'
 const GEMINI_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image'
 const GEMINI_SIZE = process.env.GEMINI_IMAGE_SIZE || '512' // 0.5K (valeurs Gemini: 512, 1K, 2K, 4K)
