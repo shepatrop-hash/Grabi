@@ -63,22 +63,20 @@ input::placeholder {
 .age-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #fff url('/grabi.png') center/82% no-repeat;
-  box-shadow: 0 6px 14px -4px rgba(74, 58, 102, 0.45);
+  width: 56px;
+  height: 56px;
+  background: transparent url('/grabi.png') center/contain no-repeat;
+  border: none;
   cursor: pointer;
-  border: 3px solid #fff;
+  filter: drop-shadow(0 4px 6px rgba(74, 58, 102, 0.35));
 }
 .age-slider::-moz-range-thumb {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #fff url('/grabi.png') center/82% no-repeat;
-  box-shadow: 0 6px 14px -4px rgba(74, 58, 102, 0.45);
+  width: 56px;
+  height: 56px;
+  background: transparent url('/grabi.png') center/contain no-repeat;
+  border: none;
   cursor: pointer;
-  border: 3px solid #fff;
+  filter: drop-shadow(0 4px 6px rgba(74, 58, 102, 0.35));
 }
 .age-slider::-moz-range-track {
   height: 14px;

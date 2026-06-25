@@ -82,13 +82,13 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
 
         {/* Décor */}
         <div style={sectionTitle}>Décor</div>
-        <div style={{ ...card, display: 'flex', gap: 8, overflowX: 'auto' }}>
+        <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: 8 }}>
           {DECORS.map((dec) => {
             const active = decor === dec.key
             return (
-              <button key={dec.key} onClick={() => onDecor(dec.key)} style={{ flex: 'none', width: 64, borderRadius: 16, padding: '10px 4px', textAlign: 'center', background: active ? 'var(--violet-soft)' : '#F6F3FB', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
+              <button key={dec.key} onClick={() => onDecor(dec.key)} style={{ borderRadius: 16, padding: '10px 2px', textAlign: 'center', background: active ? 'var(--violet-soft)' : '#F6F3FB', border: active ? '2px solid var(--violet)' : '2px solid transparent', minWidth: 0 }}>
                 <div style={{ fontSize: 24, lineHeight: 1 }}>{dec.emoji}</div>
-                <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4 }}>{dec.label}</div>
+                <div style={{ fontSize: 10.5, fontWeight: 600, marginTop: 4, whiteSpace: 'nowrap' }}>{dec.label}</div>
               </button>
             )
           })}

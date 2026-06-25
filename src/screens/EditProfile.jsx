@@ -7,7 +7,9 @@ const parseAge = (age) => {
   const n = parseInt(String(age), 10)
   return Number.isFinite(n) ? n : 5
 }
-const AGES = [3, 4, 5, 6, 7]
+const MIN_AGE = 3
+const MAX_AGE = 12
+const TICKS = [3, 6, 9, 12]
 
 export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, onSave, onBack }) {
   const [name, setName] = useState(child.name || '')
@@ -53,14 +55,14 @@ export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, on
           <input
             type="range"
             className="age-slider"
-            min={AGES[0]}
-            max={AGES[AGES.length - 1]}
+            min={MIN_AGE}
+            max={MAX_AGE}
             step={1}
             value={age}
             onChange={(e) => setAge(parseInt(e.target.value, 10))}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, padding: '0 2px' }}>
-            {AGES.map((a) => (
+            {TICKS.map((a) => (
               <span key={a} style={{ fontSize: 13, fontWeight: 700, color: age === a ? 'var(--violet)' : 'var(--ink2)' }}>{a}</span>
             ))}
           </div>
