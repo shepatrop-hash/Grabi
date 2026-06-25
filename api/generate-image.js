@@ -66,7 +66,11 @@ async function generateGemini(prompt, res, debug) {
   }
   const data = await r.json()
   if (debug) {
-    res.status(200).json({ structure: summarize(data) })
+    const picked = findImageBase64(data)
+    res.status(200).json({
+      structure: summarize(data),
+      picked: picked ? { mime: picked.mime, len: picked.data.length, prefix: picked.data.slice(0, 16) } : null,
+    })
     return
   }
   const img = findImageBase64(data)
