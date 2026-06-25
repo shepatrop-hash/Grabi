@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 
 // Modèle pour les questions (rapide). Par défaut : celui des histoires, sinon Opus 4.8.
-const MODEL = process.env.QUESTIONS_MODEL || process.env.STORY_MODEL || 'claude-opus-4-8'
+const MODEL = process.env.QUESTIONS_MODEL || process.env.STORY_MODEL || 'claude-haiku-4-5'
 
 export const config = { maxDuration: 30 }
 
