@@ -3,8 +3,8 @@ import { fal } from '@fal-ai/client'
 // Génération d'illustration. Deux fournisseurs :
 // - PROVIDER=gemini  -> Nano Banana 2 (gemini-3.1-flash-image), synchrone, renvoie l'image direct.
 // - PROVIDER=fal     -> Qwen Image 2 (asynchrone : submit + polling via /api/image-status).
-// Par défaut : gemini si GEMINI_API_KEY est présent, sinon fal. (Override avec IMAGE_PROVIDER.)
-const PROVIDER = process.env.IMAGE_PROVIDER || (process.env.GEMINI_API_KEY ? 'gemini' : 'fal')
+// Par défaut : fal (Qwen Image 2). Mettre IMAGE_PROVIDER=gemini pour repasser sur Nano Banana 2.
+const PROVIDER = process.env.IMAGE_PROVIDER || 'fal'
 
 const T2I_MODEL = process.env.IMAGE_MODEL || 'fal-ai/qwen-image-2/text-to-image'
 const EDIT_MODEL = process.env.EDIT_MODEL || 'fal-ai/qwen-image-edit-2509'
