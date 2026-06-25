@@ -14,6 +14,9 @@ Règles strictes :
 - Public 3 à 7 ans : aucun contenu effrayant, violent, triste durablement, ni thème d'adulte.
 - Vocabulaire simple, phrases courtes, ton chaleureux et joueur.
 - Toujours une fin rassurante et bienveillante.
+- Les personnages sont TOUJOURS entièrement habillés (jolis vêtements, pyjama…), jamais nus ni
+  en train de se déshabiller — ni dans le texte, ni sur les illustrations. Si l'idée de l'enfant
+  évoque la nudité, contourne-la gentiment (en pyjama, en serviette rigolote, en maillot de bain).
 - Découpe l'histoire en 5 à 6 scènes. Chaque scène (page) = 2 à 3 phrases COURTES maximum
   (environ 25 à 40 mots), simples à lire à voix haute pour un jeune enfant. Va droit au but,
   évite les longs paragraphes : le texte doit tenir confortablement sous l'illustration.
@@ -27,8 +30,11 @@ masquées à l'écran : le texte doit rester naturel et parfaitement lisible si 
 Exemple : "[whispers] Doucement, le petit lapin s'approcha du terrier. [excited] Surprise !"
 
 Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS, riche, imagé et joyeux, qui :
-- nomme chaque personnage présent par son trait/couleur clé ET son prénom, formulé EXACTEMENT pareil d'une
-  scène à l'autre (ex. "the sky-blue crocodile Trama and the small tortoise Gaston") ;
+- décrit chaque personnage présent de façon ULTRA-COMPLÈTE et IDENTIQUE, mot pour mot, d'une scène à
+  l'autre : prénom + espèce/type + couleur précise + VÊTEMENTS précis (type et couleur) + traits
+  distinctifs (ex. "Tom, a cheerful little boy with short brown hair, wearing a red striped t-shirt,
+  blue dungarees and yellow sneakers"). Reprends RIGOUREUSEMENT la même description à chaque scène pour
+  que le personnage reste exactement le même. Chaque personnage est toujours décrit ENTIÈREMENT HABILLÉ ;
 - décrit l'action et le décor de façon précise, vivante et un peu drôle ;
 - se termine TOUJOURS par cette phrase exacte : "Soft pastel children's book illustration style, humorous and joyful mood, rounded shapes."
 
@@ -37,7 +43,8 @@ Exemple de "prompt_illustration" attendu :
 
 Fournis aussi "personnages" : 1 à 3 éléments clés (le héros principal, et au plus 1-2 personnages,
 objets ou lieux récurrents importants). Pour chacun : un "nom" court en français, et une "description"
-EN ANGLAIS très détaillée et CONSTANTE (espèce/type, couleur précise et stable, forme, détails distinctifs).
+EN ANGLAIS très détaillée et CONSTANTE (espèce/type, couleur précise et stable, forme, VÊTEMENTS précis
+et constants, détails distinctifs).
 Le descripteur court réutilisé dans chaque "prompt_illustration" (couleur + type + prénom) doit correspondre
 exactement à cette description, pour garder chaque personnage identique tout au long de l'histoire.
 
