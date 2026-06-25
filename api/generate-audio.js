@@ -5,15 +5,16 @@
 const MODEL = process.env.ELEVENLABS_MODEL || 'eleven_v3'
 const FALLBACK_MODEL = 'eleven_multilingual_v2'
 
-// Voix de NARRATION sélectionnables (l'utilisateur choisit). 4 voix DISTINCTES,
-// chacune remplaçable par une voix FR via une variable d'env (VOICE_*_ID).
-// NB : Grabi ne narre plus — il fait des petits bruits mignons (voir generate-sfx.js).
+// Voix de BASE de la narration (choisie par l'utilisateur) : une seule voix, déclinée
+// en 4 humeurs via les réglages. Chaque slot reste remplaçable par une autre voix via
+// une variable d'env (VOICE_*_ID). NB : Grabi ne narre plus (voir generate-sfx.js).
 const env = (k, d) => process.env[k] || d
+const BASE = process.env.VOICE_BASE_ID || 'DguSKGFJeOJdyMI6NrYY'
 const VOICES = {
-  Douce: { id: env('VOICE_DOUCE_ID', 'EXAVITQu4vr4xnSDxMaL'), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.12, speed: 0.96, use_speaker_boost: true } },
-  Rigolote: { id: env('VOICE_RIGOLOTE_ID', '9BWtsMINqrJLrRacOk9x'), settings: { stability: 0.4, similarity_boost: 0.75, style: 0.5, speed: 1.05, use_speaker_boost: true } },
-  Magique: { id: env('VOICE_MAGIQUE_ID', 'XB0fDUnXU5powFXDhCwa'), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.35, speed: 0.97, use_speaker_boost: true } },
-  Robot: { id: env('VOICE_ROBOT_ID', 'JBFqnCBsd6RMkjVDRZzb'), settings: { stability: 0.9, similarity_boost: 0.45, style: 0, speed: 0.92, use_speaker_boost: false } },
+  Douce: { id: env('VOICE_DOUCE_ID', BASE), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.12, speed: 0.96, use_speaker_boost: true } },
+  Rigolote: { id: env('VOICE_RIGOLOTE_ID', BASE), settings: { stability: 0.4, similarity_boost: 0.75, style: 0.45, speed: 1.04, use_speaker_boost: true } },
+  Magique: { id: env('VOICE_MAGIQUE_ID', BASE), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.3, speed: 0.97, use_speaker_boost: true } },
+  Robot: { id: env('VOICE_ROBOT_ID', BASE), settings: { stability: 0.9, similarity_boost: 0.45, style: 0, speed: 0.92, use_speaker_boost: false } },
 }
 
 // Retire les balises [..] (pour le repli v2 qui ne les gère pas → sinon il les lirait).
