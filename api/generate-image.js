@@ -34,13 +34,15 @@ export default async function handler(req, res) {
 
     fal.config({ credentials: process.env.FAL_KEY })
 
+    // Garde-fou sécurité enfant ajouté à CHAQUE prompt : personnages toujours habillés.
+    const SAFE = 'All characters are fully clothed in cute complete outfits, wholesome and appropriate for young children, absolutely no nudity.'
     const input = useEdit
       ? {
-          prompt: `${prompt}. Keep EXACTLY the same characters, colors and art style as the reference image(s). Children's picture book illustration, soft warm colors, cute and gentle, no text.`,
+          prompt: `${prompt}. Keep EXACTLY the same characters, colors and art style as the reference image(s). ${SAFE} Children's picture book illustration, soft warm colors, cute and gentle, no text.`,
           image_urls: refs.slice(0, 4),
         }
       : {
-          prompt: `${prompt}. Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
+          prompt: `${prompt}. ${SAFE} Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
         }
 
     // Soumission asynchrone à la file Fal -> renvoie un request_id immédiatement.
