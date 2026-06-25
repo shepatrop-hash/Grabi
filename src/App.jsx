@@ -23,7 +23,8 @@ import Published from './screens/Published.jsx'
 import TopBack from './components/BackButton.jsx'
 import BackgroundMusic from './components/BackgroundMusic.jsx'
 import RawSvg from './components/RawSvg.jsx'
-import { generateStory, generateImage, generateQuestions } from './lib/api.js'
+import { generateStory, generateImage, generateQuestions, generateAudio } from './lib/api.js'
+import { audioKey, getCachedAudio, putCachedAudio } from './lib/audioCache.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
@@ -36,7 +37,7 @@ import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
 
-function Ready({ story, onKeep, onPublish, allowPublish = true }) {
+function Ready({ story, voice = 'Douce', onKeep, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
 
   useEffect(() => {
@@ -57,6 +58,27 @@ function Ready({ story, onKeep, onPublish, allowPublish = true }) {
       cancelled = true
     }
   }, [story])
+
+  // Pré-génère la NARRATION de chaque page EN ARRIÈRE-PLAN (en même temps que les images)
+  // et la met en cache → lecture INSTANTANÉE dans le lecteur (plus de « Grabi prépare sa voix »).
+  useEffect(() => {
+    if (!story?.pages) return
+    let cancelled = false
+    story.pages.forEach((p) => {
+      const text = p.texte
+      if (!text) return
+      const key = audioKey(text, voice)
+      getCachedAudio(key).then((cached) => {
+        if (cancelled || cached) return // déjà en cache -> rien à faire
+        generateAudio(text, voice)
+          .then((d) => { if (!cancelled && d?.url) putCachedAudio(key, d.url) })
+          .catch(() => {})
+      })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [story, voice])
 
   const assemble = () => {
     const pages = (story?.pages || []).map((p, i) => ({
@@ -342,7 +364,7 @@ export default function App() {
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
+      {screen === 'ready' && <Ready story={story} voice={voice} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
         <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
