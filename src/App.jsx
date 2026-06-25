@@ -27,8 +27,19 @@ import { generateStory, generateImage, generateQuestions } from './lib/api.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
+import Profiles from './screens/Profiles.jsx'
+import { DEFAULT_ACC } from './lib/grabiCustom.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
+
+// Construit la liste initiale de profils. Migration : si aucun profil n'existe
+// encore, on en crée un à partir des données actuelles (enfant unique).
+function initProfiles() {
+  const saved = load('profiles', null)
+  if (saved && saved.length) return saved
+  const c = load('child', { name: 'Léa', age: '5 ans' })
+  return [{ id: newId(), name: c.name, age: c.age, voice: load('voice', 'Douce'), decor: load('decor', 'none'), acc: load('acc', DEFAULT_ACC) }]
+}
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
@@ -141,6 +152,12 @@ export default function App() {
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
   const [decor, setDecor] = useState(() => load('decor', 'none'))
   const [nightMode, setNightMode] = useState(() => load('nightMode', false))
+  // Profils multiples (léger) : chaque profil porte prénom/âge + Grabi (voix/décor/acc).
+  const [profiles, setProfiles] = useState(initProfiles)
+  const [activeProfile, setActiveProfile] = useState(() => {
+    const saved = load('activeProfile', null)
+    return saved && profiles.some((p) => p.id === saved) ? saved : profiles[0]?.id
+  })
   // Suivi du temps d'écran du jour : { date, seconds (utilisées), bonus (min ajoutées par un parent) }
   const [usage, setUsage] = useState(() => {
     const u = load('usage', { date: todayKey(), seconds: 0, bonus: 0 })
@@ -164,6 +181,8 @@ export default function App() {
   useEffect(() => save('decor', decor), [decor])
   useEffect(() => save('nightMode', nightMode), [nightMode])
   useEffect(() => save('usage', usage), [usage])
+  useEffect(() => save('profiles', profiles), [profiles])
+  useEffect(() => save('activeProfile', activeProfile), [activeProfile])
 
   // Compte le temps passé dans l'app (par tranches de 20 s), avec remise à zéro
   // quotidienne. Sert à appliquer réellement la limite de temps d'écran.
@@ -289,7 +308,51 @@ export default function App() {
 
   function saveChild(next) {
     setChild(next)
-    setScreen('settings')
+    setProfiles((prev) => prev.map((p) => (p.id === activeProfile ? { ...p, name: next.name, age: next.age } : p)))
+    setScreen('profiles')
+  }
+
+  // Enregistre l'état courant (identité + Grabi) dans le profil actif.
+  function snapshotActive(list = profiles) {
+    return list.map((p) => (p.id === activeProfile ? { ...p, name: child.name, age: child.age, voice, decor, acc: load('acc', DEFAULT_ACC) } : p))
+  }
+
+  // Applique un profil aux états vivants (et au stockage `acc` lu par Grabi).
+  function applyProfile(p) {
+    setChild({ name: p.name, age: p.age })
+    setVoice(p.voice)
+    setDecor(p.decor)
+    save('acc', p.acc || DEFAULT_ACC)
+  }
+
+  function switchProfile(id) {
+    if (id === activeProfile) { setScreen('home'); return }
+    const snapped = snapshotActive()
+    const target = snapped.find((p) => p.id === id)
+    if (!target) return
+    setProfiles(snapped)
+    applyProfile(target)
+    setActiveProfile(id)
+    setScreen('home')
+  }
+
+  function addProfile() {
+    const np = { id: newId(), name: 'Nouvel enfant', age: '5 ans', voice: 'Douce', decor: 'none', acc: DEFAULT_ACC }
+    setProfiles([...snapshotActive(), np])
+    applyProfile(np)
+    setActiveProfile(np.id)
+    setScreen('edit-profile')
+  }
+
+  function deleteProfile(id) {
+    if (profiles.length <= 1) return
+    if (!window.confirm('Supprimer ce profil ?')) return
+    const remaining = profiles.filter((p) => p.id !== id)
+    setProfiles(remaining)
+    if (id === activeProfile) {
+      applyProfile(remaining[0])
+      setActiveProfile(remaining[0].id)
+    }
   }
 
   async function toggleReminder() {
@@ -352,7 +415,7 @@ export default function App() {
         <Settings
           premium={premium}
           child={child}
-          onEditProfile={() => setScreen('edit-profile')}
+          onEditProfile={() => { setProfiles(snapshotActive()); setScreen('profiles') }}
           onMonGrabi={() => setScreen('mon-grabi')}
           onPlayGrabi={() => { setGrabiBack('settings'); setScreen('grabi') }}
           onRewards={() => setScreen('rewards')}
@@ -364,7 +427,18 @@ export default function App() {
         />
       )}
       {screen === 'edit-profile' && (
-        <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('settings')} />
+        <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('profiles')} />
+      )}
+      {screen === 'profiles' && (
+        <Profiles
+          profiles={profiles}
+          activeId={activeProfile}
+          onSwitch={switchProfile}
+          onAdd={addProfile}
+          onEdit={(id) => { if (id !== activeProfile) switchProfile(id); setScreen('edit-profile') }}
+          onDelete={deleteProfile}
+          onBack={() => setScreen('settings')}
+        />
       )}
       {screen === 'legal' && <Legal onBack={() => setScreen('espace-parents')} />}
       {screen === 'rewards' && <Rewards child={child} stories={stories} smilesOf={smilesOf} onBack={() => setScreen('settings')} />}
