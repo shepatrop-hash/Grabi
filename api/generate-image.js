@@ -9,7 +9,7 @@ const PROVIDER = process.env.IMAGE_PROVIDER || (process.env.GEMINI_API_KEY ? 'ge
 const T2I_MODEL = process.env.IMAGE_MODEL || 'fal-ai/qwen-image-2/text-to-image'
 const EDIT_MODEL = process.env.EDIT_MODEL || 'fal-ai/qwen-image-edit-2509'
 const GEMINI_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image'
-const GEMINI_SIZE = process.env.GEMINI_IMAGE_SIZE || '512px' // 0.5K = le moins cher de Nano Banana 2
+const GEMINI_SIZE = process.env.GEMINI_IMAGE_SIZE || '512' // 0.5K (valeurs Gemini: 512, 1K, 2K, 4K)
 
 // Garde-fou sécurité enfant ajouté à chaque prompt : personnages toujours habillés.
 const SAFE = 'All characters are fully clothed in cute complete outfits, wholesome and appropriate for young children, absolutely no nudity.'
