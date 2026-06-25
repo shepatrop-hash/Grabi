@@ -15,7 +15,7 @@ const trashIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" s
 const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 L15 12 L9 18"></path></svg>`
 const lockBig = `<svg width="40" height="46" viewBox="0 0 40 46"><path d="M11,20 V14 a9,9 0 0 1 18,0 V20" fill="none" stroke="#A98CFF" stroke-width="4.5" stroke-linecap="round"></path><rect x="6" y="19" width="28" height="22" rx="7" fill="#A98CFF"></rect><circle cx="20" cy="28" r="3.6" fill="#fff"></circle><rect x="18.3" y="29" width="3.4" height="8" rx="1.6" fill="#fff"></rect></svg>`
 
-const card = { background: '#fff', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
+const card = { background: 'var(--card)', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const iconBox = (bg) => ({ width: 42, height: 42, borderRadius: 14, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' })
 const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
 
@@ -24,8 +24,8 @@ const fmtTime = (t) => (t === 0 ? 'Illimité' : `${t} min`)
 
 function Toggle({ on }) {
   return (
-    <span style={{ width: 46, height: 27, borderRadius: 14, background: on ? 'var(--mint)' : '#D9D3E4', position: 'relative', flex: 'none', transition: 'background .2s ease' }}>
-      <span style={{ position: 'absolute', top: 3, left: on ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} />
+    <span style={{ width: 46, height: 27, borderRadius: 14, background: on ? 'var(--mint)' : 'var(--track-off)', position: 'relative', flex: 'none', transition: 'background .2s ease' }}>
+      <span style={{ position: 'absolute', top: 3, left: on ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: 'var(--knob)', transition: 'left .2s ease' }} />
     </span>
   )
 }
@@ -42,7 +42,7 @@ function ParentGate({ onUnlock, onBack }) {
   const [wrong, setWrong] = useState(false)
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#F4EEFF 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', flex: 'none' }}><BackButton onClick={onBack} /></div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 32px', textAlign: 'center' }}>
         <RawSvg html={lockBig} />
@@ -51,7 +51,7 @@ function ParentGate({ onUnlock, onBack }) {
         <div style={{ fontSize: 30, fontWeight: 700, marginTop: 26 }}>{a} + {b} = ?</div>
         <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
           {options.map((o) => (
-            <button key={o} onClick={() => (o === answer ? onUnlock() : setWrong(true))} style={{ width: 72, height: 72, borderRadius: 22, background: '#fff', fontSize: 24, fontWeight: 700, color: 'var(--ink)', boxShadow: '0 8px 18px -12px rgba(74,58,102,.35)' }}>{o}</button>
+            <button key={o} onClick={() => (o === answer ? onUnlock() : setWrong(true))} style={{ width: 72, height: 72, borderRadius: 22, background: 'var(--card)', fontSize: 24, fontWeight: 700, color: 'var(--ink)', boxShadow: '0 8px 18px -12px rgba(74,58,102,.35)' }}>{o}</button>
           ))}
         </div>
         {wrong && <div style={{ fontSize: 14, color: '#C24A7A', fontWeight: 600, marginTop: 18 }}>Oups, ce n'est pas ça. Réessaie&nbsp;!</div>}
@@ -77,7 +77,7 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin =
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px calc(env(safe-area-inset-bottom, 0px) + 20px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Temps d'écran */}
         <div style={sectionTitle}>Temps d'écran</div>
-        <div style={{ background: '#fff', borderRadius: 22, padding: '14px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+        <div style={{ background: 'var(--card)', borderRadius: 22, padding: '14px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <span style={iconBox('var(--sky-soft)')}><RawSvg html={clockIcon} /></span>
             <div style={{ flex: 1 }}>
@@ -138,7 +138,7 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin =
 
         {/* Rappel */}
         <div style={sectionTitle}>Rappel</div>
-        <div style={{ background: '#fff', borderRadius: 22, padding: '13px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+        <div style={{ background: 'var(--card)', borderRadius: 22, padding: '13px 16px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
           <button onClick={onToggleReminder} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', textAlign: 'left' }}>
             <span style={iconBox('var(--yellow-soft)')}><RawSvg html={bellIcon} /></span>
             <div style={{ flex: 1 }}>
@@ -148,9 +148,9 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin =
             <Toggle on={reminder.on} />
           </button>
           {reminder.on && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, paddingTop: 12, borderTop: '1px solid #F1EEF8' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--card-soft)' }}>
               <span style={{ fontSize: 15, fontWeight: 600 }}>Heure du rappel</span>
-              <input type="time" value={reminder.time} onChange={(e) => onReminderTime(e.target.value)} style={{ background: '#F1EEF8', border: 'none', borderRadius: 14, padding: '9px 14px', fontSize: 16, fontWeight: 700, fontFamily: 'inherit', color: 'var(--ink)' }} />
+              <input type="time" value={reminder.time} onChange={(e) => onReminderTime(e.target.value)} style={{ background: 'var(--card-soft)', border: 'none', borderRadius: 14, padding: '9px 14px', fontSize: 16, fontWeight: 700, fontFamily: 'inherit', color: 'var(--ink)' }} />
             </div>
           )}
         </div>

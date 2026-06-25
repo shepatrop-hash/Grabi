@@ -32,17 +32,17 @@ export default function Settings({ premium, child = { name: 'Léa', age: '5 ans'
         <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500 }}>Réglages &amp; espace parents</div>
       </div>
 
-      <button onClick={onEditProfile} style={{ margin: '16px 24px 0', background: '#fff', borderRadius: 26, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', position: 'relative', zIndex: 2, textAlign: 'left' }}>
+      <button onClick={onEditProfile} style={{ margin: '16px 24px 0', background: 'var(--card)', borderRadius: 26, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', position: 'relative', zIndex: 2, textAlign: 'left' }}>
         <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', overflow: 'hidden' }}><Grabi size={54} /></div>
         <div style={{ flex: 1 }}><div style={{ fontSize: 18, fontWeight: 700 }}>{child.name}</div><div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>{child.age} · profil enfant</div></div>
         <RawSvg html={chevron} />
       </button>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 12px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 2 }}>
-        <CategoryCard onClick={onMonGrabi} bg="#fff" iconBg="var(--violet-soft)" icon={grabiIcon} title="Mon Grabi" subtitle="Apparence, voix & accessoires" />
-        <CategoryCard onClick={onPlayGrabi} bg="#fff" iconBg="var(--pink-soft)" icon={heartIcon} title="Jouer avec Grabi" subtitle="Câline, nourris et habille ton compagnon" />
-        <CategoryCard onClick={onRewards} bg="#fff" iconBg="var(--yellow-soft)" icon={trophyIcon} title="Mes récompenses" subtitle="Tes badges et tes histoires" />
-        <CategoryCard onClick={onEspaceParents} bg="#fff" iconBg="var(--sky-soft)" icon={parentIcon} title="Espace parents" subtitle="Abonnement, temps d'écran, sécurité" badge={premium ? 'Premium' : 'Gratuit'} badgeColor={premium ? '#a07d2a' : '#7d5fc4'} badgeBg={premium ? 'var(--yellow-soft)' : 'var(--violet-soft)'} />
+        <CategoryCard onClick={onMonGrabi} bg="var(--card)" iconBg="var(--violet-soft)" icon={grabiIcon} title="Mon Grabi" subtitle="Apparence, voix & accessoires" />
+        <CategoryCard onClick={onPlayGrabi} bg="var(--card)" iconBg="var(--pink-soft)" icon={heartIcon} title="Jouer avec Grabi" subtitle="Câline, nourris et habille ton compagnon" />
+        <CategoryCard onClick={onRewards} bg="var(--card)" iconBg="var(--yellow-soft)" icon={trophyIcon} title="Mes récompenses" subtitle="Tes badges et tes histoires" />
+        <CategoryCard onClick={onEspaceParents} bg="var(--card)" iconBg="var(--sky-soft)" icon={parentIcon} title="Espace parents" subtitle="Abonnement, temps d'écran, sécurité" badge={premium ? 'Premium' : 'Gratuit'} badgeColor={premium ? '#a07d2a' : '#7d5fc4'} badgeBg={premium ? 'var(--yellow-soft)' : 'var(--violet-soft)'} />
 
         <div style={{ fontSize: 11, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', padding: '8px 12px 0' }}>Grabi v1.0 · Fait avec 💜</div>
       </div>

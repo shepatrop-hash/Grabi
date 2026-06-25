@@ -1,6 +1,6 @@
 import BackButton from '../components/BackButton.jsx'
 
-const card = { background: '#fff', borderRadius: 22, padding: '18px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
+const card = { background: 'var(--card)', borderRadius: 22, padding: '18px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const h = { fontSize: 17, fontWeight: 700, marginBottom: 8 }
 const p = { fontSize: 14, color: 'var(--ink)', fontWeight: 500, lineHeight: 1.55, margin: '0 0 8px' }
 

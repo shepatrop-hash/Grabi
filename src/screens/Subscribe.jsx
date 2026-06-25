@@ -15,10 +15,10 @@ const FEATURES = [
 
 export default function Subscribe({ onClose, onStart }) {
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#fff', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--card)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '4px 24px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#F1EEF8', color: '#7d6fb0', fontSize: 13, fontWeight: 600, padding: '7px 13px', borderRadius: 18 }}><RawSvg html={parentIcon} />Espace parents</div>
-        <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={closeIcon} /></button>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--card-soft)', color: '#7d6fb0', fontSize: 13, fontWeight: 600, padding: '7px 13px', borderRadius: 18 }}><RawSvg html={parentIcon} />Espace parents</div>
+        <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--card-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={closeIcon} /></button>
       </div>
 
       <div style={{ textAlign: 'center', padding: '8px 28px 0' }}>
@@ -27,7 +27,7 @@ export default function Subscribe({ onClose, onStart }) {
         <div style={{ fontSize: 15, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>Une nouvelle histoire chaque semaine,<br />rien que pour vous deux.</div>
       </div>
 
-      <div style={{ margin: '14px 24px 0', border: '2px solid var(--violet)', background: '#F8F5FF', borderRadius: 26, padding: '16px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ margin: '14px 24px 0', border: '2px solid var(--violet)', background: 'var(--card-soft)', borderRadius: 26, padding: '16px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, whiteSpace: 'nowrap' }}><span style={{ fontSize: 32, fontWeight: 700 }}>4,99 €</span><span style={{ fontSize: 15, color: 'var(--ink2)', fontWeight: 600 }}>/ mois</span></div>
           <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>ou 39,99 € / an · 2 mois offerts</div>

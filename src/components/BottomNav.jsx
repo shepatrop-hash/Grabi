@@ -20,7 +20,7 @@ export default function BottomNav({ active, onHome, onCommunity, onCreate, onMin
   }
   return (
     <div style={{ flex: 'none', padding: '8px 26px calc(env(safe-area-inset-bottom, 0px) + 20px)' }}>
-      <div style={{ background: '#fff', borderRadius: 30, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-around', boxShadow: '0 10px 26px -8px rgba(74,58,102,.28)' }}>
+      <div style={{ background: 'var(--card)', borderRadius: 30, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-around', boxShadow: '0 10px 26px -8px rgba(74,58,102,.28)' }}>
         {item('home')}
         {item('community')}
         <button onClick={onCreate} style={{ width: 62, height: 62, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: -24, boxShadow: '0 12px 22px -6px rgba(255,127,176,.75)' }}><RawSvg html={fabPlus} /></button>

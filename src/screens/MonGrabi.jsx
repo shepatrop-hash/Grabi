@@ -17,7 +17,7 @@ const VOICES = [
   { key: 'Robot', emoji: '🤖', desc: 'Drôle et métallique' },
 ]
 
-const card = { background: '#fff', borderRadius: 24, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
+const card = { background: 'var(--card)', borderRadius: 24, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
 
 export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice, decor = 'none', onDecor, nightMode = false, onToggleNight, onBack, onPlay }) {
@@ -29,7 +29,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
 
   const toggleAcc = (key) => setAcc((a) => ({ ...a, [key]: !a[key] }))
   const d = getDecor(decor)
-  const previewBg = d.bg !== 'transparent' ? d.bg : 'linear-gradient(180deg,#FBF7FF,#F1EBFA)'
+  const previewBg = d.bg !== 'transparent' ? d.bg : 'var(--card-soft)'
 
   // Aperçu de la VRAIE voix ElevenLabs (repli sur la voix du navigateur si indispo).
   const testVoice = async (v) => {
@@ -51,7 +51,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
   }
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#F4EEFF 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', display: 'flex', alignItems: 'center', gap: 14, flex: 'none', position: 'relative', zIndex: 2 }}>
         <BackButton onClick={onBack} />
         <div>
@@ -70,7 +70,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
         <div style={sectionTitle}>Apparence</div>
         <div style={{ ...card, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10 }}>
           {ACCESSORIES.map((a) => (
-            <button key={a.key} onClick={() => toggleAcc(a.key)} style={{ position: 'relative', background: acc[a.key] ? 'var(--violet-soft)' : '#F6F3FB', borderRadius: 18, padding: '12px 4px', textAlign: 'center', transition: 'background .15s ease' }}>
+            <button key={a.key} onClick={() => toggleAcc(a.key)} style={{ position: 'relative', background: acc[a.key] ? 'var(--violet-soft)' : 'var(--card-soft)', borderRadius: 18, padding: '12px 4px', textAlign: 'center', transition: 'background .15s ease' }}>
               {acc[a.key] && (
                 <span style={{ position: 'absolute', top: 5, right: 5, width: 18, height: 18, borderRadius: '50%', background: 'var(--mint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={checkBadge} /></span>
               )}
@@ -86,7 +86,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
           {DECORS.map((dec) => {
             const active = decor === dec.key
             return (
-              <button key={dec.key} onClick={() => onDecor(dec.key)} style={{ borderRadius: 16, padding: '10px 2px', textAlign: 'center', background: active ? 'var(--violet-soft)' : '#F6F3FB', border: active ? '2px solid var(--violet)' : '2px solid transparent', minWidth: 0 }}>
+              <button key={dec.key} onClick={() => onDecor(dec.key)} style={{ borderRadius: 16, padding: '10px 2px', textAlign: 'center', background: active ? 'var(--violet-soft)' : 'var(--card-soft)', border: active ? '2px solid var(--violet)' : '2px solid transparent', minWidth: 0 }}>
                 <div style={{ fontSize: 24, lineHeight: 1 }}>{dec.emoji}</div>
                 <div style={{ fontSize: 10.5, fontWeight: 600, marginTop: 4, whiteSpace: 'nowrap' }}>{dec.label}</div>
               </button>
@@ -102,7 +102,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
             <div style={{ fontSize: 16, fontWeight: 700 }}>{nightMode ? 'Mode nuit' : 'Mode jour'}</div>
             <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Un écran plus doux le soir</div>
           </div>
-          <span style={{ width: 46, height: 27, borderRadius: 14, background: nightMode ? 'var(--violet)' : '#D9D3E4', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: nightMode ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} /></span>
+          <span style={{ width: 46, height: 27, borderRadius: 14, background: nightMode ? 'var(--violet)' : 'var(--track-off)', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: nightMode ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: 'var(--knob)', transition: 'left .2s ease' }} /></span>
         </button>
 
         {/* Voix */}
@@ -110,20 +110,20 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
           <span>Voix de Grabi</span>
           <button onClick={onToggleVoice} style={{ display: 'flex', alignItems: 'center', gap: 7, textTransform: 'none', letterSpacing: 0 }}>
             <span style={{ fontSize: 12, color: voiceOn ? 'var(--ink2)' : '#C24A7A', fontWeight: 700 }}>{voiceOn ? 'Activée' : 'Coupée'}</span>
-            <span style={{ width: 40, height: 23, borderRadius: 12, background: voiceOn ? 'var(--mint)' : '#D9D3E4', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: voiceOn ? 20 : 3, width: 17, height: 17, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} /></span>
+            <span style={{ width: 40, height: 23, borderRadius: 12, background: voiceOn ? 'var(--mint)' : 'var(--track-off)', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: voiceOn ? 20 : 3, width: 17, height: 17, borderRadius: '50%', background: 'var(--knob)', transition: 'left .2s ease' }} /></span>
           </button>
         </div>
         <div style={{ ...card, display: 'flex', flexDirection: 'column', gap: 10, opacity: voiceOn ? 1 : 0.55 }}>
           {VOICES.map((v) => {
             const active = voice === v.key
             return (
-              <button key={v.key} onClick={() => testVoice(v.key)} style={{ display: 'flex', alignItems: 'center', gap: 13, background: active ? 'var(--violet-soft)' : '#F6F3FB', borderRadius: 18, padding: '11px 14px', textAlign: 'left', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
+              <button key={v.key} onClick={() => testVoice(v.key)} style={{ display: 'flex', alignItems: 'center', gap: 13, background: active ? 'var(--violet-soft)' : 'var(--card-soft)', borderRadius: 18, padding: '11px 14px', textAlign: 'left', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
                 <span style={{ fontSize: 24, flex: 'none' }}>{v.emoji}</span>
                 <span style={{ flex: 1 }}>
                   <span style={{ display: 'block', fontSize: 16, fontWeight: 700 }}>{v.key}</span>
                   <span style={{ display: 'block', fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>{v.desc}</span>
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: '#7d5fc4', flex: 'none', minWidth: 74, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--card)', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: '#7d5fc4', flex: 'none', minWidth: 74, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>
               </button>
             )
           })}

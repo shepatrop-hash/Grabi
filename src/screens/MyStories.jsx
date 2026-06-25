@@ -29,7 +29,7 @@ export default function MyStories({ stories = [], favoriteStories = [], favorite
   const list = tab === 'mine' ? stories : favoriteStories
 
   const Row = ({ s, showDelete }) => (
-    <div onClick={() => onOpenReader(s)} style={{ background: '#fff', borderRadius: 24, padding: 14, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', cursor: 'pointer' }}>
+    <div onClick={() => onOpenReader(s)} style={{ background: 'var(--card)', borderRadius: 24, padding: 14, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', cursor: 'pointer' }}>
       <Thumb s={s} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 16, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</div>
@@ -57,7 +57,7 @@ export default function MyStories({ stories = [], favoriteStories = [], favorite
           {[{ k: 'mine', l: 'Mes créations' }, { k: 'fav', l: '❤️ Favoris' }].map((t) => {
             const active = tab === t.k
             return (
-              <button key={t.k} onClick={() => setTab(t.k)} style={active ? { background: 'var(--ink)', color: '#fff', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600 } : { background: '#fff', color: 'var(--ink2)', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600, boxShadow: '0 4px 10px rgba(74,58,102,.08)' }}>{t.l}</button>
+              <button key={t.k} onClick={() => setTab(t.k)} style={active ? { background: 'var(--ink)', color: '#fff', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600 } : { background: 'var(--card)', color: 'var(--ink2)', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600, boxShadow: '0 4px 10px rgba(74,58,102,.08)' }}>{t.l}</button>
             )
           })}
         </div>

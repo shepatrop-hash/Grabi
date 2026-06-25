@@ -12,7 +12,7 @@ const iconGear = `<svg width="25" height="25" viewBox="0 0 24 24" fill="none" st
 const fabPlus = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><path d="M12 5 V19 M5 12 H19"></path></svg>`
 
 const whiteCircle = {
-  width: 80, height: 80, borderRadius: '50%', background: '#fff',
+  width: 80, height: 80, borderRadius: '50%', background: 'var(--card)',
   display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
 }
 const navBtn = { width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }
@@ -48,7 +48,7 @@ export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCr
           <div style={{ fontSize: 27, fontWeight: 700, lineHeight: 1.12, maxWidth: 172 }}>On invente une histoire&nbsp;?</div>
         </div>
         <div style={{ position: 'relative' }}>
-          <div style={{ position: 'absolute', top: -22, left: -46, background: '#fff', borderRadius: '18px 18px 4px 18px', padding: '8px 13px', fontSize: 14, fontWeight: 600, boxShadow: '0 6px 16px rgba(74,58,102,.14)', whiteSpace: 'nowrap' }}>On joue&nbsp;?</div>
+          <div style={{ position: 'absolute', top: -22, left: -46, background: 'var(--card)', borderRadius: '18px 18px 4px 18px', padding: '8px 13px', fontSize: 14, fontWeight: 600, boxShadow: '0 6px 16px rgba(74,58,102,.14)', whiteSpace: 'nowrap' }}>On joue&nbsp;?</div>
           <div onClick={() => { playGrabiSound(); onGoGrabi() }} style={{ cursor: 'pointer' }}><Grabi size={104} /></div>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCr
       </div>
 
       <div style={{ flex: 'none', padding: '12px 26px calc(22px + env(safe-area-inset-bottom, 0px))', position: 'relative', zIndex: 2 }}>
-        <div style={{ background: '#fff', borderRadius: 30, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'space-around', boxShadow: '0 10px 26px -8px rgba(74,58,102,.28)' }}>
+        <div style={{ background: 'var(--card)', borderRadius: 30, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'space-around', boxShadow: '0 10px 26px -8px rgba(74,58,102,.28)' }}>
           <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--violet)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconHome} /></div>
           <button onClick={onGoCommunity} style={navBtn}><RawSvg html={iconCommunity} /></button>
           <button onClick={onGoCreate} style={{ width: 62, height: 62, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: -24, boxShadow: '0 12px 22px -6px rgba(255,127,176,.75)' }}><RawSvg html={fabPlus} /></button>

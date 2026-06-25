@@ -17,19 +17,19 @@ export default function Create({ storyText, setStoryText, onBack, onCreate, busy
       <div style={{ position: 'absolute', bottom: -50, right: -50, width: 200, height: 200, borderRadius: '50%', background: 'var(--violet-soft)', opacity: 0.6 }} />
 
       <div style={{ padding: '12px 24px 0', display: 'flex', alignItems: 'center', gap: 14, position: 'relative', zIndex: 2 }}>
-        <button onClick={onBack} style={{ width: 48, height: 48, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
+        <button onClick={onBack} style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
           <RawSvg html={backIcon} />
         </button>
         <div style={{ fontSize: 26, fontWeight: 700 }}>Crée ton histoire</div>
       </div>
 
       <div style={{ textAlign: 'center', padding: '12px 24px 0', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'inline-block', background: '#fff', borderRadius: '22px 22px 22px 4px', padding: '12px 18px', fontSize: 17, fontWeight: 600, boxShadow: '0 8px 18px rgba(74,58,102,.12)', marginBottom: 4 }}>Raconte-moi une idée&nbsp;!</div>
+        <div style={{ display: 'inline-block', background: 'var(--card)', borderRadius: '22px 22px 22px 4px', padding: '12px 18px', fontSize: 17, fontWeight: 600, boxShadow: '0 8px 18px rgba(74,58,102,.12)', marginBottom: 4 }}>Raconte-moi une idée&nbsp;!</div>
         <div style={{ display: 'flex', justifyContent: 'center' }}><Grabi size={92} /></div>
       </div>
 
       <div style={{ padding: '10px 24px 0', position: 'relative', zIndex: 2 }}>
-        <div style={{ background: '#fff', border: '3px dashed #E3B8D4', borderRadius: 28, padding: '20px 22px', minHeight: 112, display: 'flex', alignItems: 'center' }}>
+        <div style={{ background: 'var(--card)', border: '3px dashed #E3B8D4', borderRadius: 28, padding: '20px 22px', minHeight: 112, display: 'flex', alignItems: 'center' }}>
           <input
             value={storyText}
             onChange={(e) => setStoryText(e.target.value)}

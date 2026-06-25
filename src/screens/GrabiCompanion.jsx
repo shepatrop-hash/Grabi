@@ -51,9 +51,9 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#FFE9F2 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', display: 'flex', alignItems: 'center', gap: 14, position: 'relative', zIndex: 2 }}>
-        <button onClick={onBack} style={{ width: 48, height: 48, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
+        <button onClick={onBack} style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
           <RawSvg html={backIcon} />
         </button>
         <div style={{ flex: 1 }}>
@@ -64,7 +64,7 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
 
       <div style={{ padding: '14px 28px 0', position: 'relative', zIndex: 2 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#C24A7A', marginBottom: 6 }}>❤️ Bonheur</div>
-        <div style={{ height: 12, borderRadius: 6, background: '#fff', overflow: 'hidden', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.06)' }}>
+        <div style={{ height: 12, borderRadius: 6, background: 'var(--card)', overflow: 'hidden', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.06)' }}>
           <div style={{ width: `${happiness}%`, height: '100%', background: 'linear-gradient(90deg,#FF9FC4,#FF6FA6)', borderRadius: 6, transition: 'width .4s ease' }} />
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
         <div onClick={caresser} style={{ cursor: 'pointer', position: 'relative', width: 250, height: 250, borderRadius: '50%', background: companionDecor.bg !== 'transparent' ? companionDecor.bg : 'transparent', boxShadow: companionDecor.bg !== 'transparent' ? 'inset 0 4px 18px rgba(74,58,102,.18)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {petActive && (
-            <div style={{ position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)', background: '#fff', borderRadius: 18, padding: '8px 14px', fontSize: 15, fontWeight: 700, boxShadow: '0 6px 16px rgba(74,58,102,.16)', whiteSpace: 'nowrap', zIndex: 6 }}>{reaction}</div>
+            <div style={{ position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)', background: 'var(--card)', borderRadius: 18, padding: '8px 14px', fontSize: 15, fontWeight: 700, boxShadow: '0 6px 16px rgba(74,58,102,.16)', whiteSpace: 'nowrap', zIndex: 6 }}>{reaction}</div>
           )}
           <div style={{ position: 'relative', width: 200, height: 200 }}>
             <Grabi size={200} acc={acc} />
@@ -94,7 +94,7 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
         {tab === 'nourrir' && (
           <div style={{ display: 'flex', gap: 12 }}>
             {FEED.map((f) => (
-              <button key={f.key} onClick={() => feed(f)} style={{ flex: 1, background: '#fff', borderRadius: 22, padding: '14px 6px', textAlign: 'center', boxShadow: '0 6px 16px -10px rgba(74,58,102,.3)' }}>
+              <button key={f.key} onClick={() => feed(f)} style={{ flex: 1, background: 'var(--card)', borderRadius: 22, padding: '14px 6px', textAlign: 'center', boxShadow: '0 6px 16px -10px rgba(74,58,102,.3)' }}>
                 <div style={{ fontSize: 34, lineHeight: 1 }}>{f.emoji}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, marginTop: 4 }}>{f.label}</div>
               </button>
@@ -104,7 +104,7 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
         {tab === 'habiller' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10 }}>
             {ACCESSORIES.map((a) => (
-              <button key={a.key} onClick={() => toggleAcc(a.key)} style={{ position: 'relative', background: '#fff', borderRadius: 20, padding: '12px 4px', textAlign: 'center', boxShadow: '0 6px 16px -10px rgba(74,58,102,.3)' }}>
+              <button key={a.key} onClick={() => toggleAcc(a.key)} style={{ position: 'relative', background: 'var(--card)', borderRadius: 20, padding: '12px 4px', textAlign: 'center', boxShadow: '0 6px 16px -10px rgba(74,58,102,.3)' }}>
                 {acc[a.key] && (
                   <span style={{ position: 'absolute', top: 5, right: 5, width: 18, height: 18, borderRadius: '50%', background: 'var(--mint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={checkBadge} /></span>
                 )}

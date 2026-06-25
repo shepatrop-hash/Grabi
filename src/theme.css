@@ -1,5 +1,5 @@
 :root {
-  /* Palette reprise à l'identique du prototype Grabi */
+  /* Palette reprise à l'identique du prototype Grabi (thème jour) */
   --bg: #FFF7EC;
   --ink: #4A3A66;
   --ink2: #9789AE;
@@ -13,6 +13,29 @@
   --mint-soft: #C6F2E6;
   --violet: #A98CFF;
   --violet-soft: #E6DDFF;
+  /* Surfaces (variabilisées pour permettre le thème nuit) */
+  --card: #fff;          /* fond des cartes */
+  --card-soft: #F1EEF8;  /* boutons/surfaces secondaires */
+  --card-border: #EDE7F5;/* bordures douces */
+  --track-off: #D9D3E4;  /* rail d'interrupteur éteint */
+  --knob: #fff;          /* pastille d'interrupteur */
+}
+
+/* 🌙 Thème nuit / galaxy : on garde la DA, on passe sur des couleurs nuit. */
+[data-theme='night'] {
+  --bg: radial-gradient(120% 80% at 50% 0%, #2A2150 0%, #1A1536 55%, #141029 100%);
+  --ink: #ECE7F8;
+  --ink2: #A79CC8;
+  --yellow-soft: #4A3F22;
+  --pink-soft: #47263F;
+  --sky-soft: #233E58;
+  --mint-soft: #1E463F;
+  --violet-soft: #392E63;
+  --card: #271F4A;
+  --card-soft: #332960;
+  --card-border: #3B3366;
+  --track-off: #463C6B;
+  --knob: #ECE7F8;
 }
 
 * {
@@ -86,6 +109,7 @@ input::placeholder {
 
 button {
   font-family: inherit;
+  color: inherit;
   border: none;
   background: none;
   cursor: pointer;

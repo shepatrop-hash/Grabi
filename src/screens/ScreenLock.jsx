@@ -30,7 +30,7 @@ export default function ScreenLock({ onGrantMore }) {
           <div style={{ fontSize: 26, fontWeight: 700, color: '#fff', marginTop: 12 }}>{a} + {b} = ?</div>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
             {options.map((o) => (
-              <button key={o} onClick={() => (o === answer ? onGrantMore() : setWrong(true))} style={{ width: 64, height: 64, borderRadius: 18, background: '#fff', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{o}</button>
+              <button key={o} onClick={() => (o === answer ? onGrantMore() : setWrong(true))} style={{ width: 64, height: 64, borderRadius: 18, background: 'var(--card)', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{o}</button>
             ))}
           </div>
           {wrong && <div style={{ fontSize: 13, color: '#FFD2E0', fontWeight: 600, marginTop: 14 }}>Oups, réessaie&nbsp;!</div>}

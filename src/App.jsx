@@ -93,7 +93,7 @@ function Ready({ story, onKeep, onPublish, allowPublish = true }) {
         {(story?.pages || []).map((p, i) => {
           const img = images[i]
           return (
-            <div key={i} style={{ background: '#fff', borderRadius: 22, padding: 14, boxShadow: '0 8px 18px -12px rgba(74,58,102,.3)' }}>
+            <div key={i} style={{ background: 'var(--card)', borderRadius: 22, padding: 14, boxShadow: '0 8px 18px -12px rgba(74,58,102,.3)' }}>
               <div style={{ aspectRatio: '1 / 1', borderRadius: 16, overflow: 'hidden', background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 {img && img !== 'error' ? (
                   <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -110,7 +110,7 @@ function Ready({ story, onKeep, onPublish, allowPublish = true }) {
         })}
       </div>
       <div style={{ flex: 'none', display: 'flex', gap: 12, paddingTop: 14 }}>
-        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: allowPublish ? '#fff' : 'linear-gradient(135deg,#FF8FB6,#A98CFF)', border: allowPublish ? '2px solid #EDE7F5' : 'none', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: allowPublish ? 'var(--ink)' : '#fff' }}>Garder pour moi</button>
+        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: allowPublish ? '#fff' : 'linear-gradient(135deg,#FF8FB6,#A98CFF)', border: allowPublish ? '2px solid var(--card-border)' : 'none', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: allowPublish ? 'var(--ink)' : '#fff' }}>Garder pour moi</button>
         {allowPublish && (
           <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
         )}
@@ -382,7 +382,7 @@ export default function App() {
   const musicTrack = screen === 'reader' ? musicFor(reader?.story?.mood) : MUSIC.app
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={nightMode ? 'night' : 'day'}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
       {screen === 'home' && (
         <Home
@@ -539,9 +539,6 @@ export default function App() {
       >
         <RawSvg html={musicOn ? musicOnIcon : musicOffIcon} />
       </button>
-      {nightMode && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(42,28,66,.30)', mixBlendMode: 'multiply', pointerEvents: 'none', zIndex: 9999 }} />
-      )}
       {screenLocked && (
         <ScreenLock onGrantMore={() => setUsage((u) => ({ ...u, bonus: u.bonus + 15 }))} />
       )}

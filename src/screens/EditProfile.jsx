@@ -21,7 +21,7 @@ export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, on
   }
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#F4EEFF 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', display: 'flex', alignItems: 'center', gap: 14, flex: 'none' }}>
         <BackButton onClick={onBack} />
         <div>
@@ -43,7 +43,7 @@ export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, on
             maxLength={20}
             placeholder="Prénom de l'enfant"
             autoFocus
-            style={{ width: '100%', background: '#fff', border: '2px solid #EDE7F5', borderRadius: 20, padding: '15px 18px', fontSize: 18, fontWeight: 600, color: 'var(--ink)', outline: 'none', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}
+            style={{ width: '100%', background: 'var(--card)', border: '2px solid var(--card-border)', borderRadius: 20, padding: '15px 18px', fontSize: 18, fontWeight: 600, color: 'var(--ink)', outline: 'none', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}
           />
         </div>
 

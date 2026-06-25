@@ -16,7 +16,7 @@ export default function Premium({ isPremium, onBack, onSubscribe, onOpenReader }
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'var(--violet-soft)', opacity: 0.7 }} />
       <div style={{ padding: '6px 24px 10px', display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 2 }}>
-        <button onClick={onBack} style={{ width: 44, height: 44, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}><RawSvg html={backIcon} /></button>
+        <button onClick={onBack} style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}><RawSvg html={backIcon} /></button>
         <div style={{ fontSize: 23, fontWeight: 700, lineHeight: 1.05, flex: 1 }}>Histoires de la semaine</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#FFD86A,#FFB23F)', color: '#7a4a00', fontSize: 13, fontWeight: 700, padding: '7px 12px', borderRadius: 20, boxShadow: '0 6px 14px -4px rgba(255,160,40,.6)', flex: 'none' }}><RawSvg html={crownBadge} />{isPremium ? 'Actif' : 'Premium'}</div>
       </div>
@@ -26,7 +26,7 @@ export default function Premium({ isPremium, onBack, onSubscribe, onOpenReader }
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
           <div>
             <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.12, maxWidth: 160 }}>{WEEKLY_STORY.title}</div>
-            <div style={{ marginTop: 12, display: 'flex', width: 'fit-content', alignItems: 'center', gap: 9, background: '#fff', padding: '9px 16px 9px 12px', borderRadius: 22, fontWeight: 700, fontSize: 15, boxShadow: '0 6px 14px rgba(74,58,102,.15)' }}><span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--violet)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={playIcon} /></span>Écouter</div>
+            <div style={{ marginTop: 12, display: 'flex', width: 'fit-content', alignItems: 'center', gap: 9, background: 'var(--card)', padding: '9px 16px 9px 12px', borderRadius: 22, fontWeight: 700, fontSize: 15, boxShadow: '0 6px 14px rgba(74,58,102,.15)' }}><span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--violet)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={playIcon} /></span>Écouter</div>
           </div>
           <div style={{ width: 96, height: 96, borderRadius: '50%', background: 'rgba(255,255,255,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><RawSvg html={castle} /></div>
         </div>

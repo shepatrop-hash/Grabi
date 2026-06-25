@@ -4,7 +4,7 @@ import RawSvg from '../components/RawSvg.jsx'
 const twinkle = (fill) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="${fill}"><path d="M12,0 L14.5,9 L24,12 L14.5,15 L12,24 L9.5,15 L0,12 L9.5,9 Z"></path></svg>`
 const ring = `<svg width="220" height="220" viewBox="0 0 220 220" fill="none"><circle cx="110" cy="110" r="100" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 22" opacity=".8"></circle></svg>`
 
-const dot = (delay) => ({ width: 8, height: 8, borderRadius: '50%', background: '#fff', animation: `gn-dot 1.3s ease-in-out infinite ${delay}` })
+const dot = (delay) => ({ width: 8, height: 8, borderRadius: '50%', background: 'var(--card)', animation: `gn-dot 1.3s ease-in-out infinite ${delay}` })
 
 export default function Generating() {
   return (

@@ -14,7 +14,7 @@ const FEATURES = [
   'Sans publicité, pour des écrans apaisés',
 ]
 
-const card = { background: '#fff', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
+const card = { background: 'var(--card)', borderRadius: 22, padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const iconBox = (bg) => ({ width: 42, height: 42, borderRadius: 14, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' })
 const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
 
@@ -44,7 +44,7 @@ export default function MonAbonnement({ premium, onSubscribe, onCancel, onRestor
         {premium ? (
           <>
             <div style={sectionTitle}>Ton offre</div>
-            <div style={{ background: '#fff', borderRadius: 22, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)', display: 'flex', flexDirection: 'column', gap: 11 }}>
+            <div style={{ background: 'var(--card)', borderRadius: 22, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)', display: 'flex', flexDirection: 'column', gap: 11 }}>
               {FEATURES.map((f) => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--mint-soft)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><RawSvg html={check} /></span>
@@ -66,7 +66,7 @@ export default function MonAbonnement({ premium, onSubscribe, onCancel, onRestor
         ) : (
           <>
             <div style={sectionTitle}>Passe à Premium</div>
-            <div style={{ background: '#fff', borderRadius: 22, padding: '18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+            <div style={{ background: 'var(--card)', borderRadius: 22, padding: '18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
                 <span style={{ fontSize: 30, fontWeight: 700 }}>4,99 €</span>
                 <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600 }}>/ mois</span>

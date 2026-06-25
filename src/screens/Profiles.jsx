@@ -24,7 +24,7 @@ export default function Profiles({ profiles = [], activeId, onSwitch, onAdd, onE
         {profiles.map((p) => {
           const active = p.id === activeId
           return (
-            <div key={p.id} onClick={() => onSwitch(p.id)} style={{ cursor: 'pointer', background: '#fff', borderRadius: 24, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -14px rgba(74,58,102,.35)', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
+            <div key={p.id} onClick={() => onSwitch(p.id)} style={{ cursor: 'pointer', background: 'var(--card)', borderRadius: 24, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -14px rgba(74,58,102,.35)', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
               <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', position: 'relative' }}>
                 <Grabi size={52} acc={p.acc} />
                 {active && <span style={{ position: 'absolute', bottom: -2, right: -2, width: 22, height: 22, borderRadius: '50%', background: 'var(--mint)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}><RawSvg html={check} /></span>}
@@ -33,7 +33,7 @@ export default function Profiles({ profiles = [], activeId, onSwitch, onAdd, onE
                 <div style={{ fontSize: 18, fontWeight: 700 }}>{p.name}</div>
                 <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>{active ? `${p.age} · actif` : p.age}</div>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); onEdit(p.id) }} style={roundBtn('#F1EEF8')}><RawSvg html={pencil} /></button>
+              <button onClick={(e) => { e.stopPropagation(); onEdit(p.id) }} style={roundBtn('var(--card-soft)')}><RawSvg html={pencil} /></button>
               {profiles.length > 1 && (
                 <button onClick={(e) => { e.stopPropagation(); onDelete(p.id) }} style={roundBtn('var(--pink-soft)')}><RawSvg html={trash} /></button>
               )}

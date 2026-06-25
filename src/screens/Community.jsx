@@ -17,7 +17,7 @@ export default function Community({ list = [], smilesOf = () => 0, given = {}, o
           {TABS.map((t) => {
             const active = tab === t.k
             return (
-              <button key={t.k} onClick={() => setTab(t.k)} style={active ? { background: 'var(--ink)', color: '#fff', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600 } : { background: '#fff', color: 'var(--ink2)', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600, boxShadow: '0 4px 10px rgba(74,58,102,.08)' }}>{t.l}</button>
+              <button key={t.k} onClick={() => setTab(t.k)} style={active ? { background: 'var(--ink)', color: '#fff', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600 } : { background: 'var(--card)', color: 'var(--ink2)', padding: '9px 18px', borderRadius: 20, fontSize: 15, fontWeight: 600, boxShadow: '0 4px 10px rgba(74,58,102,.08)' }}>{t.l}</button>
             )
           })}
         </div>
@@ -25,7 +25,7 @@ export default function Community({ list = [], smilesOf = () => 0, given = {}, o
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 16px' }}>
         {stories.map((s) => (
-          <div key={s.id} style={{ background: '#fff', borderRadius: 30, overflow: 'hidden', boxShadow: '0 12px 26px -14px rgba(74,58,102,.3)', marginBottom: 18 }}>
+          <div key={s.id} style={{ background: 'var(--card)', borderRadius: 30, overflow: 'hidden', boxShadow: '0 12px 26px -14px rgba(74,58,102,.3)', marginBottom: 18 }}>
             <button onClick={() => onOpenReader(s)} style={{ width: '100%', height: 150, background: s.bg || 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
               {s.svg ? <RawSvg html={s.svg} /> : s.cover ? <img src={s.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : null}
             </button>

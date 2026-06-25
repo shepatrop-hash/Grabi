@@ -30,7 +30,7 @@ export default function Rewards({ child = { name: 'Léa' }, stories = [], smiles
   const earnedCount = badges.filter((b) => b.earned).length
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg,#FFF7EC 0%,#FFF1F6 100%)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', display: 'flex', alignItems: 'center', gap: 14, flex: 'none' }}>
         <BackButton onClick={onBack} />
         <div>
@@ -41,7 +41,7 @@ export default function Rewards({ child = { name: 'Léa' }, stories = [], smiles
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px calc(env(safe-area-inset-bottom, 0px) + 20px)', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* En-tête avec Grabi + message */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, background: '#fff', borderRadius: 24, padding: '14px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'var(--card)', borderRadius: 24, padding: '14px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
           <Grabi size={64} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 17, fontWeight: 700 }}>Bravo {child.name} !</div>
@@ -52,7 +52,7 @@ export default function Rewards({ child = { name: 'Léa' }, stories = [], smiles
         {/* Stats */}
         <div style={{ display: 'flex', gap: 10 }}>
           {stats.map((s) => (
-            <div key={s.label} style={{ flex: 1, background: '#fff', borderRadius: 20, padding: '14px 6px', textAlign: 'center', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
+            <div key={s.label} style={{ flex: 1, background: 'var(--card)', borderRadius: 20, padding: '14px 6px', textAlign: 'center', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
               <div style={{ fontSize: 26, fontWeight: 700, color: s.color }}>{s.value}</div>
               <div style={{ fontSize: 11.5, color: 'var(--ink2)', fontWeight: 600, lineHeight: 1.2, marginTop: 2 }}>{s.label}</div>
             </div>
@@ -63,7 +63,7 @@ export default function Rewards({ child = { name: 'Léa' }, stories = [], smiles
         <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', marginLeft: 4 }}>Badges</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {badges.map((b) => (
-            <div key={b.label} style={{ position: 'relative', background: '#fff', borderRadius: 22, padding: '16px 12px', textAlign: 'center', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)', opacity: b.earned ? 1 : 0.7 }}>
+            <div key={b.label} style={{ position: 'relative', background: 'var(--card)', borderRadius: 22, padding: '16px 12px', textAlign: 'center', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)', opacity: b.earned ? 1 : 0.7 }}>
               {!b.earned && <span style={{ position: 'absolute', top: 10, right: 10 }}><RawSvg html={lockIcon} /></span>}
               <div style={{ fontSize: 40, lineHeight: 1, filter: b.earned ? 'none' : 'grayscale(1)' }}>{b.emoji}</div>
               <div style={{ fontSize: 14, fontWeight: 700, marginTop: 8 }}>{b.label}</div>

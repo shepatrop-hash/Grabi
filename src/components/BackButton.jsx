@@ -4,7 +4,7 @@ const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" st
 
 export default function BackButton({ onClick, size = 48 }) {
   return (
-    <button onClick={onClick} style={{ width: size, height: size, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
+    <button onClick={onClick} style={{ width: size, height: size, borderRadius: '50%', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}>
       <RawSvg html={backIcon} />
     </button>
   )

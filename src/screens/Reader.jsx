@@ -151,7 +151,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   )
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#fff', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--card)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
       <div style={{ position: 'relative', height: 'min(46dvh, 480px)', flex: 'none', overflow: 'hidden' }}>
         {hero}
         <button onClick={close} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', left: 22, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)' }}><RawSvg html={backIcon} /></button>
@@ -168,14 +168,14 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
         )}
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, background: '#fff', borderRadius: '36px 36px 0 0', marginTop: -32, position: 'relative', zIndex: 2, padding: '26px 30px calc(env(safe-area-inset-bottom, 0px) + 22px)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, minHeight: 0, background: 'var(--card)', borderRadius: '36px 36px 0 0', marginTop: -32, position: 'relative', zIndex: 2, padding: '26px 30px calc(env(safe-area-inset-bottom, 0px) + 22px)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.5, flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>{cleanText(cur.text)}</div>
         <div style={{ flex: 'none', paddingTop: 16 }}>
-          <div style={{ height: 8, borderRadius: 4, background: '#EFEAF6', overflow: 'hidden' }}><div style={{ width: progress, height: '100%', background: 'var(--mint)', borderRadius: 4, transition: 'width .3s ease' }} /></div>
+          <div style={{ height: 8, borderRadius: 4, background: 'var(--card-soft)', overflow: 'hidden' }}><div style={{ width: progress, height: '100%', background: 'var(--mint)', borderRadius: 4, transition: 'width .3s ease' }} /></div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, marginTop: 22 }}>
-            <button onClick={prev} disabled={page === 0} style={{ width: 60, height: 60, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0.45 : 1 }}><RawSvg html={prevIcon} /></button>
+            <button onClick={prev} disabled={page === 0} style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--card-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0.45 : 1 }}><RawSvg html={prevIcon} /></button>
             <button onClick={togglePlay} style={{ width: 86, height: 86, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 14px 26px -8px rgba(255,127,176,.65)' }}><RawSvg html={playing ? pauseSvg : playSvg} /></button>
-            <button onClick={next} style={{ width: 60, height: 60, borderRadius: '50%', background: '#F1EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={nextIcon} /></button>
+            <button onClick={next} style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--card-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={nextIcon} /></button>
           </div>
           {loadingAudio && (
             <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--violet)', fontWeight: 600, marginTop: 10 }}>🎙️ Grabi prépare sa voix…</div>
@@ -188,7 +188,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
 
       {paywall && (
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(74,58,102,.5)', display: 'flex', alignItems: 'flex-end', zIndex: 20, animation: 'gn-fadein .25s ease' }}>
-          <div style={{ background: '#fff', borderRadius: '38px 38px 0 0', width: '100%', padding: '30px 30px calc(env(safe-area-inset-bottom, 0px) + 30px)', textAlign: 'center' }}>
+          <div style={{ background: 'var(--card)', borderRadius: '38px 38px 0 0', width: '100%', padding: '30px 30px calc(env(safe-area-inset-bottom, 0px) + 30px)', textAlign: 'center' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}><RawSvg html={lockBig} /></div>
             <div style={{ fontSize: 24, fontWeight: 700 }}>Tu as adoré le début&nbsp;?</div>
             <div style={{ fontSize: 15, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45, marginTop: 8 }}>La suite de cette histoire t'attend dans <b style={{ color: 'var(--violet)' }}>Grabi Premium</b>&nbsp;✨</div>
