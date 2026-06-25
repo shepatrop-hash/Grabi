@@ -29,6 +29,8 @@ import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
+// Retire les balises d'émotion [..] pour l'affichage (l'aperçu montrait "[softly]").
+const stripTags = (t) => (t || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s{2,}/g, ' ').trim()
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
@@ -93,7 +95,7 @@ function Ready({ story, onKeep, onPublish, allowPublish = true }) {
                 )}
               </div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--violet)' }}>Page {i + 1}</div>
-              <div style={{ fontSize: 16, lineHeight: 1.5, marginTop: 4 }}>{p.texte}</div>
+              <div style={{ fontSize: 16, lineHeight: 1.5, marginTop: 4 }}>{stripTags(p.texte)}</div>
             </div>
           )
         })}

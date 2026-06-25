@@ -19,18 +19,18 @@ export const config = { maxDuration: 60 }
 // La réponse de l'API Interactions n'a pas une forme 100% figée -> on cherche
 // récursivement une grosse chaîne base64 (l'image), peu importe le nom du champ.
 function findImageBase64(obj, depth = 0) {
-  if (depth > 8 || obj == null) return null
-  if (typeof obj === 'string') {
-    if (obj.length > 500 && /^[A-Za-z0-9+/=\s]+$/.test(obj)) return { data: obj.replace(/\s/g, ''), mime: 'image/jpeg' }
-    return null
-  }
-  if (typeof obj !== 'object') return null
-  if (typeof obj.data === 'string' && obj.data.length > 500) {
-    return { data: obj.data.replace(/\s/g, ''), mime: obj.mime_type || obj.mimeType || 'image/jpeg' }
+  if (depth > 12 || obj == null || typeof obj !== 'object') return null
+  // L'image = un objet { mime_type: 'image/...', data: '<base64>' }. On EXIGE le mime_type
+  // image pour ne PAS confondre avec la "signature" du step "thought" (qui est aussi du base64).
+  const mime = obj.mime_type || obj.mimeType
+  if (typeof obj.data === 'string' && obj.data.length > 200 && typeof mime === 'string' && /^image\//.test(mime)) {
+    return { data: obj.data.replace(/\s/g, ''), mime }
   }
   for (const k of Object.keys(obj)) {
-    const r = findImageBase64(obj[k], depth + 1)
-    if (r) return r
+    if (obj[k] && typeof obj[k] === 'object') {
+      const r = findImageBase64(obj[k], depth + 1)
+      if (r) return r
+    }
   }
   return null
 }
