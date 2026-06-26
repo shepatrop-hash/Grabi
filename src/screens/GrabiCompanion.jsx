@@ -120,7 +120,7 @@ export default function GrabiCompanion({ onBack, decor = 'none' }) {
         {TABS.map((t) => (
           <button key={t.key} onClick={() => (t.key === 'caresser' ? (setTab('caresser'), caresser()) : setTab(t.key))} style={{ flex: 1, background: t.bg, borderRadius: 24, padding: '13px 4px', textAlign: 'center', outline: tab === t.key ? '2px solid rgba(0,0,0,.08)' : 'none' }}>
             <div style={{ fontSize: 26, lineHeight: 1 }}>{t.emoji}</div>
-            <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4, color: t.color }}>{t.label}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4, color: 'var(--ink)' }}>{t.label}</div>
           </button>
         ))}
       </div>

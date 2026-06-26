@@ -112,7 +112,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
                   <span style={{ display: 'block', fontSize: 16, fontWeight: 700 }}>{v.key}</span>
                   <span style={{ display: 'block', fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>{v.desc}</span>
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--card)', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: '#7d5fc4', flex: 'none', minWidth: 74, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--card)', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: 'var(--ink)', flex: 'none', minWidth: 74, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>
               </button>
             )
           })}

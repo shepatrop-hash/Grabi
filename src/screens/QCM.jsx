@@ -35,7 +35,7 @@ export default function QCM({ idea, questions, index, loading, onBack, onAnswer 
         <>
           <div style={{ padding: '16px 26px 0', position: 'relative', zIndex: 2 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Question {step} / {total}</div>
-            <div style={{ height: 8, borderRadius: 4, background: '#EFE7F5', overflow: 'hidden' }}>
+            <div style={{ height: 8, borderRadius: 4, background: 'var(--track-off)', overflow: 'hidden' }}>
               <div style={{ width: progress, height: '100%', background: 'var(--violet)', borderRadius: 4, transition: 'width .3s ease' }} />
             </div>
           </div>

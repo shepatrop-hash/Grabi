@@ -74,7 +74,7 @@ export default function Create({ storyText, setStoryText, onBack, onCreate, busy
             value={storyText}
             onChange={(e) => setStoryText(e.target.value)}
             placeholder="Un dragon qui adore les crêpes…"
-            style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'Fredoka, sans-serif', fontSize: 21, fontWeight: 500, color: '#4A3A66', lineHeight: 1.4 }}
+            style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'Fredoka, sans-serif', fontSize: 21, fontWeight: 500, color: 'var(--ink)', lineHeight: 1.4 }}
           />
           {SR && (
             <button

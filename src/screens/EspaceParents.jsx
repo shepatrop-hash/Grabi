@@ -92,7 +92,7 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin =
             {SCREEN_OPTIONS.map((t) => {
               const active = screenTime === t
               return (
-                <button key={t} onClick={() => onScreenTime(t)} style={{ background: active ? 'var(--sky)' : '#F1F6FB', color: active ? '#fff' : 'var(--ink2)', padding: '8px 14px', borderRadius: 16, fontSize: 14, fontWeight: 700 }}>{fmtTime(t)}</button>
+                <button key={t} onClick={() => onScreenTime(t)} style={{ background: active ? 'var(--sky)' : 'var(--card-soft)', color: active ? '#fff' : 'var(--ink2)', padding: '8px 14px', borderRadius: 16, fontSize: 14, fontWeight: 700 }}>{fmtTime(t)}</button>
               )
             })}
           </div>

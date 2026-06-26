@@ -10,7 +10,7 @@ const CONFETTI = [
 
 export default function Published({ onMine, onHome }) {
   return (
-    <div style={{ height: '100dvh', color: 'var(--ink)', background: 'linear-gradient(165deg,#CFF3E6 0%,#FFF1C9 55%,#FFD9E6 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ height: '100dvh', color: '#4A3A66', background: 'linear-gradient(165deg,#CFF3E6 0%,#FFF1C9 55%,#FFD9E6 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
       {CONFETTI.map((c, i) => (
         <div key={i} style={{ position: 'absolute', top: c.top, left: c.left, right: c.right, width: c.w, height: c.w, borderRadius: 3, background: c.bg, animation: `gn-fall ${c.d} linear infinite ${c.delay}` }} />
       ))}

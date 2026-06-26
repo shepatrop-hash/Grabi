@@ -29,7 +29,7 @@ function Card({ onClick, bg, title, subtitle, subColor, shadow, icon }) {
     >
       <span>
         <span style={{ display: 'block', fontSize: 24, fontWeight: 700, lineHeight: 1.1 }} dangerouslySetInnerHTML={{ __html: title }} />
-        <span style={{ display: 'block', fontSize: 14, fontWeight: 500, color: subColor, marginTop: 4 }}>{subtitle}</span>
+        <span className="card-sub" style={{ display: 'block', fontSize: 14, fontWeight: 500, color: subColor, marginTop: 4 }}>{subtitle}</span>
       </span>
       <RawSvg style={whiteCircle} html={icon} />
     </button>

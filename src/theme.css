@@ -55,6 +55,13 @@
   --knob: #F1ECFF;
 }
 
+/* En nuit, les sous-titres colorés des cartes d'accueil (olive/mauve/violet)
+   manquent de contraste sur les surfaces sombres → on les passe en ink2 lisible.
+   Le thème jour garde ses couleurs d'origine. */
+[data-theme='night'] .card-sub {
+  color: var(--ink2) !important;
+}
+
 * {
   box-sizing: border-box;
 }
