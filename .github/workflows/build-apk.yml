@@ -1,0 +1,49 @@
+name: Build Android APK
+
+# Construit l'APK Grabi sur un runner GitHub vierge (évite le souci de loopback VPN
+# de la machine locale). L'APK est uploadé en artefact, téléchargeable depuis l'onglet
+# Actions (ou récupéré en CLI via `gh run download`).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Build du web
+        run: npm run build
+
+      - name: Ajouter la plateforme Android
+        run: npx cap add android
+
+      - name: Synchroniser
+        run: npx cap sync android
+
+      - name: Construire l'APK (debug)
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Uploader l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: grabi-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
