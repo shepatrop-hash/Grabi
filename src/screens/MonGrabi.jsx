@@ -131,11 +131,6 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
             <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', paddingTop: 2 }}>Aperçu audio non disponible sur ce navigateur.</div>
           )}
         </div>
-
-        {/* Raccourci compagnon */}
-        <button onClick={onPlay} style={{ background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', color: '#fff', borderRadius: 24, padding: '15px 18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, fontSize: 16, fontWeight: 700, boxShadow: '0 12px 22px -10px rgba(255,127,176,.7)' }}>
-          🫶 Jouer avec Grabi
-        </button>
       </div>
     </div>
   )

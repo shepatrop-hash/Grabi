@@ -159,7 +159,7 @@ export default function App() {
   const [musicOn, setMusicOn] = useState(() => load('musicOn', true))
   const [premium, setPremium] = useState(() => load('premium', false))
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
-  const [screenTime, setScreenTime] = useState(() => load('screenTime', 30))
+  const [screenTime, setScreenTime] = useState(() => load('screenTime', 0))
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
   const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
