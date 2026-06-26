@@ -64,9 +64,9 @@ export default function MyStories({ stories = [], favoriteStories = [], favorite
       </div>
 
       {tab === 'mine' && stories.length > 0 && (
-        <div style={{ margin: '14px 24px 0', background: 'linear-gradient(135deg,#FFE7A0,#FFC4DC)', borderRadius: 24, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, position: 'relative', zIndex: 2 }}>
+        <div className="smiles-banner" style={{ margin: '14px 24px 0', background: 'linear-gradient(135deg,#FFE7A0,#FFC4DC)', borderRadius: 24, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, position: 'relative', zIndex: 2 }}>
           <div style={{ flex: 'none' }}><Grabi size={54} /></div>
-          <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.25, color: '#7a4a5a' }}>Tes histoires ont fait sourire <span style={{ color: '#C24A7A' }}>{total} enfant{total > 1 ? 's' : ''}</span> 💛</div>
+          <div className="sb-h" style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.25, color: '#7a4a5a' }}>Tes histoires ont fait sourire <span className="sb-c" style={{ color: '#C24A7A' }}>{total} enfant{total > 1 ? 's' : ''}</span> 💛</div>
         </div>
       )}
 

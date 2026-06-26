@@ -39,9 +39,9 @@ export default function Community({ list = [], smilesOf = () => 0, given = {}, o
               </div>
               <div style={{ marginTop: 16 }}>
                 {given[s.id] ? (
-                  <div style={{ background: '#FFF0D6', color: '#C77A4A', padding: 14, borderRadius: 24, fontSize: 17, fontWeight: 700, textAlign: 'center' }}>Merci&nbsp;! Grabi envoyé 💛</div>
+                  <div style={{ background: 'var(--mint-soft)', color: 'var(--ink)', padding: 14, borderRadius: 24, fontSize: 17, fontWeight: 700, textAlign: 'center' }}>Merci&nbsp;! Grabi envoyé 💛</div>
                 ) : (
-                  <button onClick={() => onGive(s)} style={{ width: '100%', background: 'linear-gradient(135deg,#FF9FC4,#FFC97A)', color: '#fff', padding: 14, borderRadius: 24, fontSize: 17, fontWeight: 700, boxShadow: '0 8px 16px -6px rgba(255,140,170,.7)' }}>Donner un Grabi 💛</button>
+                  <button onClick={() => onGive(s)} style={{ width: '100%', background: 'linear-gradient(135deg,#FF7FB0,#FFB84D)', color: '#fff', padding: 14, borderRadius: 24, fontSize: 17, fontWeight: 700, boxShadow: '0 8px 16px -6px rgba(255,140,170,.7)' }}>Donner un Grabi 💛</button>
                 )}
               </div>
             </div>

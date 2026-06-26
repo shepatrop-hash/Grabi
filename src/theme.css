@@ -43,11 +43,13 @@
     linear-gradient(180deg, #1C1444 0%, #150E33 48%, #0E0926 100%);
   --ink: #F1ECFF;
   --ink2: #ABA0D4;
-  --yellow-soft: #423916;
-  --pink-soft: #4A2440;
-  --sky-soft: #1C3A5C;
-  --mint-soft: #163F39;
-  --violet-soft: #352B66;
+  /* Tons « bijou » nuit : ambre chaud / orchidée / océan / sapin / indigo —
+     assez saturés pour ne pas faire boueux quand ils remplissent une carte. */
+  --yellow-soft: #5E4417;
+  --pink-soft: #5C2A4C;
+  --sky-soft: #1E3E62;
+  --mint-soft: #194A42;
+  --violet-soft: #3A2F70;
   --card: #221A47;
   --card-soft: #2E2558;
   --card-border: #3A3170;
@@ -60,6 +62,18 @@
    Le thème jour garde ses couleurs d'origine. */
 [data-theme='night'] .card-sub {
   color: var(--ink2) !important;
+}
+
+/* Bandeau « sourires » (Mes histoires) : dégradé clair + texte sombre en jour,
+   surface galaxy + texte clair en nuit (sinon ça jure avec le sombre). */
+[data-theme='night'] .smiles-banner {
+  background: var(--card-soft) !important;
+}
+[data-theme='night'] .smiles-banner .sb-h {
+  color: var(--ink) !important;
+}
+[data-theme='night'] .smiles-banner .sb-c {
+  color: var(--pink) !important;
 }
 
 * {
