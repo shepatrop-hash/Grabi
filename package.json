@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
     "@fal-ai/client": "^1.10.1",
     "@vercel/blob": "^2.4.1",
     "react": "^19.2.7",

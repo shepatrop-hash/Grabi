@@ -1,0 +1,9 @@
+{
+  "appId": "com.grabi.app",
+  "appName": "Grabi",
+  "webDir": "dist",
+  "server": {
+    "url": "https://grabi-eight.vercel.app",
+    "cleartext": false
+  }
+}
