@@ -343,7 +343,7 @@ export default function App() {
   const musicTrack = screen === 'reader' ? musicFor(reader?.story?.mood) : MUSIC.app
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={nightMode ? 'night' : 'day'}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
       {screen === 'home' && (
         <Home
@@ -376,6 +376,8 @@ export default function App() {
         <Settings
           premium={premium}
           child={child}
+          nightMode={nightMode}
+          onToggleNight={() => setNightMode((n) => !n)}
           onEditProfile={() => setScreen('edit-profile')}
           onMonGrabi={() => setScreen('mon-grabi')}
           onPlayGrabi={() => { setGrabiBack('settings'); setScreen('grabi') }}
@@ -400,8 +402,6 @@ export default function App() {
           onToggleVoice={() => setVoiceOn((s) => !s)}
           decor={decor}
           onDecor={setDecor}
-          nightMode={nightMode}
-          onToggleNight={() => setNightMode((n) => !n)}
           onBack={() => setScreen('settings')}
           onPlay={() => { setGrabiBack('mon-grabi'); setScreen('grabi') }}
         />
@@ -489,9 +489,6 @@ export default function App() {
       >
         <RawSvg html={musicOn ? musicOnIcon : musicOffIcon} />
       </button>
-      {nightMode && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(42,28,66,.30)', mixBlendMode: 'multiply', pointerEvents: 'none', zIndex: 9999 }} />
-      )}
       {screenLocked && (
         <ScreenLock onGrantMore={() => setUsage((u) => ({ ...u, bonus: u.bonus + 15 }))} />
       )}

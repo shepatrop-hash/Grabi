@@ -20,7 +20,7 @@ const VOICES = [
 const card = { background: 'var(--card)', borderRadius: 24, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
 
-export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice, decor = 'none', onDecor, nightMode = false, onToggleNight, onBack, onPlay }) {
+export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice, decor = 'none', onDecor, onBack, onPlay }) {
   const [acc, setAcc] = useState(() => load('acc', DEFAULT_ACC))
   const [previewing, setPreviewing] = useState('')
   const audioRef = useRef(null)
@@ -93,17 +93,6 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
             )
           })}
         </div>
-
-        {/* Ambiance jour/nuit */}
-        <div style={sectionTitle}>Ambiance</div>
-        <button onClick={onToggleNight} style={{ ...card, display: 'flex', alignItems: 'center', gap: 13, width: '100%', textAlign: 'left' }}>
-          <span style={{ fontSize: 26, flex: 'none' }}>{nightMode ? '🌙' : '☀️'}</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>{nightMode ? 'Mode nuit' : 'Mode jour'}</div>
-            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Un écran plus doux le soir</div>
-          </div>
-          <span style={{ width: 46, height: 27, borderRadius: 14, background: nightMode ? 'var(--violet)' : 'var(--track-off)', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: nightMode ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: 'var(--knob)', transition: 'left .2s ease' }} /></span>
-        </button>
 
         {/* Voix */}
         <div style={{ ...sectionTitle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

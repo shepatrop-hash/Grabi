@@ -23,7 +23,7 @@ function CategoryCard({ onClick, bg, iconBg, icon, title, subtitle, badge, badge
   )
 }
 
-export default function Settings({ premium, child = { name: 'Léa', age: '5 ans' }, onEditProfile, onMonGrabi, onPlayGrabi, onRewards, onEspaceParents, onHome, onCommunity, onCreate, onMine }) {
+export default function Settings({ premium, child = { name: 'Léa', age: '5 ans' }, nightMode = false, onToggleNight, onEditProfile, onMonGrabi, onPlayGrabi, onRewards, onEspaceParents, onHome, onCommunity, onCreate, onMine }) {
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, right: -40, width: 170, height: 170, borderRadius: '50%', background: 'var(--sky-soft)', opacity: 0.55 }} />
@@ -42,6 +42,16 @@ export default function Settings({ premium, child = { name: 'Léa', age: '5 ans'
         <CategoryCard onClick={onMonGrabi} bg="var(--card)" iconBg="var(--violet-soft)" icon={grabiIcon} title="Mon Grabi" subtitle="Apparence, voix & accessoires" />
         <CategoryCard onClick={onRewards} bg="var(--card)" iconBg="var(--yellow-soft)" icon={trophyIcon} title="Mes récompenses" subtitle="Tes badges et tes histoires" />
         <CategoryCard onClick={onEspaceParents} bg="var(--card)" iconBg="var(--sky-soft)" icon={parentIcon} title="Espace parents" subtitle="Abonnement, temps d'écran, sécurité" badge={premium ? 'Premium' : 'Gratuit'} badgeColor={premium ? '#a07d2a' : '#7d5fc4'} badgeBg={premium ? 'var(--yellow-soft)' : 'var(--violet-soft)'} />
+
+        {/* Bascule directe jour / nuit galaxy */}
+        <button onClick={onToggleNight} style={{ background: 'var(--card)', borderRadius: 26, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14, width: '100%', textAlign: 'left', boxShadow: '0 8px 20px -14px rgba(74,58,102,.4)' }}>
+          <span style={{ width: 52, height: 52, borderRadius: 18, background: 'var(--violet-soft)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, flex: 'none' }}>{nightMode ? '🌙' : '☀️'}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 18, fontWeight: 700 }}>{nightMode ? 'Thème nuit' : 'Thème jour'}</div>
+            <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>{nightMode ? 'Ambiance galaxy étoilée' : 'Bascule en ciel étoilé'}</div>
+          </div>
+          <span style={{ width: 46, height: 27, borderRadius: 14, background: nightMode ? 'var(--violet)' : 'var(--track-off)', position: 'relative', flex: 'none', transition: 'background .2s ease' }}><span style={{ position: 'absolute', top: 3, left: nightMode ? 22 : 3, width: 21, height: 21, borderRadius: '50%', background: 'var(--knob)', transition: 'left .2s ease' }} /></span>
+        </button>
 
         <div style={{ fontSize: 11, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', padding: '8px 12px 0' }}>Grabi v1.0 · Fait avec 💜</div>
       </div>
