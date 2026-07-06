@@ -6,8 +6,9 @@ import { fal } from '@fal-ai/client'
 // Par défaut : fal (Qwen Image 2). Mettre IMAGE_PROVIDER=gemini pour repasser sur Nano Banana 2.
 const PROVIDER = process.env.IMAGE_PROVIDER || 'fal'
 
-// Hardcodé : on IGNORE la var Vercel IMAGE_MODEL (périmée = `pro/edit`, mauvais modèle + plus cher).
-const T2I_MODEL = 'fal-ai/qwen-image-2/text-to-image'
+// Modèle texte→image. Défaut : FLUX schnell (~10× moins cher que Qwen, rapide, qualité correcte).
+// Surchargeable via FAL_T2I_MODEL (ex. 'fal-ai/qwen-image-2/text-to-image' pour + de qualité/cohérence).
+const T2I_MODEL = process.env.FAL_T2I_MODEL || 'fal-ai/flux/schnell'
 const EDIT_MODEL = process.env.EDIT_MODEL || 'fal-ai/qwen-image-edit-2509'
 const GEMINI_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image'
 const GEMINI_SIZE = process.env.GEMINI_IMAGE_SIZE || '512' // 0.5K (valeurs Gemini: 512, 1K, 2K, 4K)
@@ -126,6 +127,8 @@ export default async function handler(req, res) {
         }
       : {
           prompt: `${prompt}. ${SAFE} Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
+          image_size: 'square_hd',
+          num_inference_steps: 4,
         }
     const submitted = await fal.queue.submit(model, { input })
     res.status(200).json({ request_id: submitted.request_id, model })

@@ -7,25 +7,29 @@ const lockIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
 
 const statCard = (value, label, color) => ({ value, label, color })
 
-export default function Rewards({ child = { name: 'Léa' }, stories = [], smilesOf = () => 0, onBack }) {
+export default function Rewards({ child = { name: 'Léa' }, stories = [], reads = { total: 0, streak: 0 }, smilesOf = () => 0, onBack }) {
   const created = stories.length
-  const published = stories.filter((s) => s.published).length
+  const read = reads.total || 0
+  const streak = reads.streak || 0
   const hearts = stories.reduce((sum, s) => sum + (smilesOf(s) || 0), 0)
   const happiness = load('happiness', 62)
 
+  // Récompenses orientées LECTURE (la lecture est gratuite ; la création coûte de l'IA).
   const stats = [
-    statCard(created, 'Histoires créées', 'var(--violet)'),
-    statCard(published, 'Publiées', 'var(--pink)'),
+    statCard(read, 'Histoires lues', 'var(--violet)'),
+    statCard(streak, 'Soirs de suite', 'var(--pink)'),
     statCard(hearts, 'Cœurs reçus', '#e8638f'),
   ]
 
   const badges = [
-    { emoji: '🌟', label: 'Première histoire', desc: 'Créer 1 histoire', earned: created >= 1 },
-    { emoji: '✍️', label: 'Petit conteur', desc: 'Créer 3 histoires', earned: created >= 3 },
-    { emoji: '📚', label: 'Grand conteur', desc: 'Créer 10 histoires', earned: created >= 10 },
-    { emoji: '🎨', label: 'Artiste', desc: 'Publier 1 histoire', earned: published >= 1 },
+    { emoji: '📖', label: 'Première histoire', desc: 'Lire 1 histoire', earned: read >= 1 },
+    { emoji: '🦉', label: 'Petit lecteur', desc: 'Lire 5 histoires', earned: read >= 5 },
+    { emoji: '📚', label: 'Grand lecteur', desc: 'Lire 20 histoires', earned: read >= 20 },
+    { emoji: '🌙', label: 'Rituel du soir', desc: '3 soirs de suite', earned: streak >= 3 },
+    { emoji: '🔥', label: 'Semaine complète', desc: '7 soirs de suite', earned: streak >= 7 },
     { emoji: '💝', label: 'Cœur de la communauté', desc: 'Recevoir 5 cœurs', earned: hearts >= 5 },
-    { emoji: '🫶', label: 'Ami de Grabi', desc: 'Bonheur à 80', earned: happiness >= 80 },
+    { emoji: '✨', label: 'Petit créateur', desc: 'Créer 1 histoire', earned: created >= 1 },
+    { emoji: '💛', label: 'Ami de Grabi', desc: 'Bonheur à 80', earned: happiness >= 80 },
   ]
   const earnedCount = badges.filter((b) => b.earned).length
 
@@ -45,7 +49,7 @@ export default function Rewards({ child = { name: 'Léa' }, stories = [], smiles
           <Grabi size={64} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 17, fontWeight: 700 }}>Bravo {child.name} !</div>
-            <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4 }}>Continue de créer des histoires pour gagner des badges 🌈</div>
+            <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4 }}>Continue de lire des histoires pour gagner des badges 🌈</div>
           </div>
         </div>
 
