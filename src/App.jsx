@@ -161,6 +161,7 @@ export default function App() {
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 0))
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
+  const [reads, setReads] = useState(() => load('reads', { total: 0, streak: 0, lastDay: '' }))
   const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
   const [decor, setDecor] = useState(() => load('decor', 'none'))
@@ -183,6 +184,7 @@ export default function App() {
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
   useEffect(() => save('favorites', favorites), [favorites])
+  useEffect(() => save('reads', reads), [reads])
   useEffect(() => save('allowPublish', allowPublish), [allowPublish])
   useEffect(() => save('reminder', reminder), [reminder])
   useEffect(() => save('decor', decor), [decor])
@@ -307,6 +309,14 @@ export default function App() {
   // --- Lecteur ---
   function openReader(storyObj, origin) {
     if (!storyObj) return
+    // Compte la lecture (les récompenses encouragent à lire plutôt qu'à créer).
+    setReads((r) => {
+      const today = todayKey()
+      if (r.lastDay === today) return { ...r, total: (r.total || 0) + 1 }
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+      const streak = r.lastDay === yesterday ? (r.streak || 0) + 1 : 1
+      return { total: (r.total || 0) + 1, streak, lastDay: today }
+    })
     setReader({ story: storyObj, origin: origin || 'home' })
     setScreen('reader')
   }
@@ -393,7 +403,7 @@ export default function App() {
         <EditProfile child={child} onSave={saveChild} onBack={() => setScreen('settings')} />
       )}
       {screen === 'legal' && <Legal onBack={() => setScreen('espace-parents')} />}
-      {screen === 'rewards' && <Rewards child={child} stories={stories} smilesOf={smilesOf} onBack={() => setScreen('settings')} />}
+      {screen === 'rewards' && <Rewards child={child} stories={stories} reads={reads} smilesOf={smilesOf} onBack={() => setScreen('settings')} />}
       {screen === 'mon-grabi' && (
         <MonGrabi
           voice={voice}

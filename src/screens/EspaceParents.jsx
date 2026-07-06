@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import BackButton from '../components/BackButton.jsx'
+import { load, save } from '../lib/store.js'
 
 const clockIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A8AC0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7 V12 L15 14"></path></svg>`
 const voiceIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11 a7 7 0 0 0 14 0 M12 18 V21"></path></svg>`
@@ -30,31 +31,69 @@ function Toggle({ on }) {
   )
 }
 
-// Porte parentale : une addition simple à résoudre par un adulte.
-function ParentGate({ onUnlock, onBack }) {
-  const { a, b } = useMemo(() => ({ a: 2 + Math.floor(Math.random() * 7), b: 2 + Math.floor(Math.random() * 7) }), [])
-  const answer = a + b
-  const options = useMemo(() => {
-    const set = new Set([answer])
-    while (set.size < 3) set.add(answer + (Math.floor(Math.random() * 7) - 3) || answer + 1)
-    return [...set].sort(() => Math.random() - 0.5)
-  }, [answer])
-  const [wrong, setWrong] = useState(false)
+const backspaceIcon = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5 H8 L3 12 L8 19 H21 Z"></path><path d="M12 9.5 L17 14.5 M17 9.5 L12 14.5"></path></svg>`
 
+// Porte parentale : code PIN à 4 chiffres, défini par le parent au 1er accès.
+function ParentGate({ onUnlock, onBack }) {
+  const stored = load('parentPin', null)
+  const [entered, setEntered] = useState('')
+  const [step, setStep] = useState(stored ? 'enter' : 'create') // create -> confirm, ou enter
+  const [firstPin, setFirstPin] = useState('')
+  const [error, setError] = useState('')
+
+  const titles = { create: 'Crée ton code parent', confirm: 'Confirme ton code', enter: 'Entre ton code parent' }
+  const subtitles = {
+    create: 'Choisis un code à 4 chiffres. Les enfants ne doivent pas le connaître.',
+    confirm: 'Saisis-le une deuxième fois pour vérifier.',
+    enter: 'Réservé aux grands 🔒',
+  }
+
+  function submit(code) {
+    if (step === 'create') {
+      setFirstPin(code); setEntered(''); setStep('confirm')
+    } else if (step === 'confirm') {
+      if (code === firstPin) { save('parentPin', code); onUnlock() }
+      else { setError('Les codes ne correspondent pas, recommence.'); setEntered(''); setFirstPin(''); setStep('create') }
+    } else {
+      if (code === stored) onUnlock()
+      else { setError('Code incorrect, réessaie.'); setEntered('') }
+    }
+  }
+  function press(d) {
+    if (entered.length >= 4) return
+    const next = entered + d
+    setError(''); setEntered(next)
+    if (next.length === 4) setTimeout(() => submit(next), 130)
+  }
+  function del() { setError(''); setEntered((e) => e.slice(0, -1)) }
+  function forgot() {
+    if (window.confirm('Réinitialiser le code parent ? Tu devras en choisir un nouveau.')) {
+      save('parentPin', null); setStep('create'); setEntered(''); setFirstPin(''); setError('')
+    }
+  }
+
+  const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del']
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', flex: 'none' }}><BackButton onClick={onBack} /></div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 32px', textAlign: 'center' }}>
         <RawSvg html={lockBig} />
-        <div style={{ fontSize: 24, fontWeight: 700, marginTop: 14 }}>Espace parents</div>
-        <div style={{ fontSize: 15, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45, marginTop: 8 }}>Pour les grands&nbsp;! Réponds à la question pour entrer.</div>
-        <div style={{ fontSize: 30, fontWeight: 700, marginTop: 26 }}>{a} + {b} = ?</div>
-        <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
-          {options.map((o) => (
-            <button key={o} onClick={() => (o === answer ? onUnlock() : setWrong(true))} style={{ width: 72, height: 72, borderRadius: 22, background: 'var(--card)', fontSize: 24, fontWeight: 700, color: 'var(--ink)', boxShadow: '0 8px 18px -12px rgba(74,58,102,.35)' }}>{o}</button>
+        <div style={{ fontSize: 24, fontWeight: 700, marginTop: 14 }}>{titles[step]}</div>
+        <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45, marginTop: 8, maxWidth: 300 }}>{subtitles[step]}</div>
+        <div style={{ display: 'flex', gap: 16, marginTop: 26 }}>
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} style={{ width: 18, height: 18, borderRadius: '50%', background: i < entered.length ? 'var(--violet)' : 'var(--track-off)', transition: 'background .15s ease' }} />
           ))}
         </div>
-        {wrong && <div style={{ fontSize: 14, color: '#C24A7A', fontWeight: 600, marginTop: 18 }}>Oups, ce n'est pas ça. Réessaie&nbsp;!</div>}
+        <div style={{ minHeight: 22, marginTop: 14 }}>{error && <div style={{ fontSize: 14, color: '#C24A7A', fontWeight: 600 }}>{error}</div>}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 72px)', gap: 14, marginTop: 4 }}>
+          {keys.map((k, i) => {
+            if (k === '') return <span key={i} />
+            if (k === 'del') return <button key={i} onClick={del} style={{ width: 72, height: 72, borderRadius: 24, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={backspaceIcon} /></button>
+            return <button key={i} onClick={() => press(k)} style={{ width: 72, height: 72, borderRadius: 24, background: 'var(--card)', fontSize: 26, fontWeight: 700, color: 'var(--ink)', boxShadow: '0 8px 18px -12px rgba(74,58,102,.35)' }}>{k}</button>
+          })}
+        </div>
+        {step === 'enter' && <button onClick={forgot} style={{ marginTop: 22, fontSize: 13, fontWeight: 600, color: 'var(--ink2)', background: 'none' }}>Code oublié&nbsp;?</button>}
       </div>
     </div>
   )
