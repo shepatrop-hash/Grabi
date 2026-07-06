@@ -48,7 +48,6 @@ export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCr
           <div style={{ fontSize: 27, fontWeight: 700, lineHeight: 1.12, maxWidth: 172 }}>On invente une histoire&nbsp;?</div>
         </div>
         <div style={{ position: 'relative' }}>
-          <div style={{ position: 'absolute', top: -22, left: -46, background: 'var(--card)', borderRadius: '18px 18px 4px 18px', padding: '8px 13px', fontSize: 14, fontWeight: 600, boxShadow: '0 6px 16px rgba(74,58,102,.14)', whiteSpace: 'nowrap' }}>On joue&nbsp;?</div>
           <div onClick={() => { playGrabiSound(); onGoGrabi() }} style={{ cursor: 'pointer' }}><Grabi size={104} /></div>
         </div>
       </div>
