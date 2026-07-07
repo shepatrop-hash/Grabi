@@ -97,42 +97,44 @@ async function genEleven(text, voiceKey) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Méthode non autorisée.' }); return }
-  const { text, voice } = req.body || {}
+  const { text, voice, provider: forced } = req.body || {}
   if (!text || typeof text !== 'string') { res.status(400).json({ error: 'Texte à lire manquant.' }); return }
 
-  const wantGemini = PROVIDER === 'gemini' && !!process.env.GEMINI_API_KEY
-  const primaryTag = wantGemini ? `gemini|${GEMINI_MODEL}|${(GEMINI_VOICES[voice] || GEMINI_VOICES.Douce).voice}` : `eleven|${(EL_VOICES[voice] || EL_VOICES.Douce).id}`
-  const primaryExt = wantGemini ? 'wav' : 'mp3'
+  // Fournisseur VOULU : forcé par l'appelant (cohérence par histoire décidée via /api/audio-plan)
+  // sinon le défaut d'env. On tente ce fournisseur, puis l'AUTRE en repli si échec.
+  const useGemini = forced === 'gemini' || (forced !== 'eleven' && PROVIDER === 'gemini')
+  const order = useGemini && process.env.GEMINI_API_KEY ? ['gemini', 'eleven'] : ['eleven', 'gemini']
+  const tagOf = (p) => (p === 'gemini' ? `gemini|${GEMINI_MODEL}|${(GEMINI_VOICES[voice] || GEMINI_VOICES.Douce).voice}` : `eleven|${(EL_VOICES[voice] || EL_VOICES.Douce).id}`)
+  const extOf = (p) => (p === 'gemini' ? 'wav' : 'mp3')
 
-  // 0) Déjà en cache partagé ? -> 0 crédit.
+  // 0) Déjà en cache partagé (pour le fournisseur voulu) ? -> 0 crédit.
   if (USE_BLOB) {
     try {
-      const key = blobKey(primaryTag, text, primaryExt)
+      const key = blobKey(tagOf(order[0]), text, extOf(order[0]))
       const { blobs } = await list({ prefix: key, limit: 1 })
-      if (blobs.length && blobs[0].pathname === key) { res.status(200).json({ url: blobs[0].url, cached: true }); return }
+      if (blobs.length && blobs[0].pathname === key) { res.status(200).json({ url: blobs[0].url, provider: order[0], cached: true }); return }
     } catch { /* store indispo -> on génère */ }
   }
 
-  try {
-    let out
-    if (wantGemini) {
-      try { out = await genGemini(text, voice) }
-      catch (e) { console.warn('gemini tts fail, repli elevenlabs:', e?.message); out = await genEleven(text, voice) }
-    } else {
-      out = await genEleven(text, voice)
-    }
-
-    if (USE_BLOB) {
-      try {
-        const key = blobKey(out.tag, text, out.ext)
-        const blob = await put(key, out.buf, { access: 'public', addRandomSuffix: false, contentType: out.contentType })
-        res.status(200).json({ url: blob.url, cached: false })
-        return
-      } catch (e) { console.error('blob put error:', e) /* repli data-URL */ }
-    }
-    res.status(200).json({ url: `data:${out.contentType};base64,${out.buf.toString('base64')}`, cached: false })
-  } catch (err) {
-    console.error('generate-audio error:', err)
-    res.status(502).json({ error: String(err?.message || err) })
+  // Génère avec le fournisseur voulu, repli automatique sur l'autre si échec.
+  let out, lastErr
+  for (const p of order) {
+    try {
+      if (p === 'gemini') { if (!process.env.GEMINI_API_KEY) continue; out = await genGemini(text, voice) }
+      else { if (!process.env.ELEVENLABS_API_KEY) continue; out = await genEleven(text, voice) }
+      break
+    } catch (e) { lastErr = e; console.warn(`tts ${p} fail:`, e?.message) }
   }
+  if (!out) { res.status(502).json({ error: String(lastErr?.message || 'Aucun fournisseur audio disponible.') }); return }
+
+  const usedProvider = out.tag.split('|')[0]
+  if (USE_BLOB) {
+    try {
+      const key = blobKey(out.tag, text, out.ext)
+      const blob = await put(key, out.buf, { access: 'public', addRandomSuffix: false, contentType: out.contentType })
+      res.status(200).json({ url: blob.url, provider: usedProvider, cached: false })
+      return
+    } catch (e) { console.error('blob put error:', e) /* repli data-URL */ }
+  }
+  res.status(200).json({ url: `data:${out.contentType};base64,${out.buf.toString('base64')}`, provider: usedProvider, cached: false })
 }

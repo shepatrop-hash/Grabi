@@ -11,12 +11,12 @@ const robot = `<svg width="110" height="92" viewBox="0 0 120 100"><circle cx="60
 // chaque page a son image dans public/free/. (id, title, sub, bg, cover, pages:[{text,image}])
 // Humeur musicale par histoire (ordre : Flamby, Lyra, Doudou, Étincelle, Croco, souris).
 const FREE_MOODS = ['funny', 'calm', 'cozy', 'dreamy', 'cozy', 'dreamy']
-export const FREE_STORIES = freeStories.map((s, i) => ({ ...s, mood: s.mood || FREE_MOODS[i] || 'calm' }))
+export const FREE_STORIES = freeStories.map((s, i) => ({ ...s, mood: s.mood || FREE_MOODS[i] || 'calm', audioProvider: 'eleven' }))
 
 // Histoire premium de la semaine : la 1ère page est libre, la suite demande Premium.
 export const WEEKLY_STORY = {
   id: 'weekly-chateau', title: 'Le château dans les nuages', bg: 'linear-gradient(160deg,#C7B4FF,#FFD6EA)', svg: castle,
-  premium: true, freePages: 1, mood: 'dreamy',
+  premium: true, freePages: 1, mood: 'dreamy', audioProvider: 'eleven',
   pages: [
     'Tout là-haut, au-dessus des nuages, se cachait un château argenté. Plume, la petite souris, poussa la grande porte dorée et entra sur la pointe des pattes…',
     'À l’intérieur, des centaines de bougies dansaient toutes seules dans les airs.',
