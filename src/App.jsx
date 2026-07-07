@@ -28,6 +28,7 @@ import { audioKey, getCachedAudio, putCachedAudio } from './lib/audioCache.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
+import { initBilling, purchase, restore as restoreBilling, billingReady } from './lib/billing.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 // Retire les balises d'émotion [..] pour l'affichage (l'aperçu montrait "[softly]").
@@ -181,6 +182,11 @@ export default function App() {
   useEffect(() => save('musicOn', musicOn), [musicOn])
   useEffect(() => setEffectsEnabled(effectsOn), [effectsOn])
   useEffect(() => save('premium', premium), [premium])
+
+  // Facturation (RevenueCat) : au démarrage, synchronise le vrai statut Premium (natif uniquement).
+  useEffect(() => {
+    initBilling().then((active) => { if (active) setPremium(true) }).catch(() => {})
+  }, [])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
   useEffect(() => save('favorites', favorites), [favorites])
@@ -282,6 +288,30 @@ export default function App() {
     setScreen(published ? 'published' : 'mine')
   }
 
+  // Abonnement : achat réel via Google Play (natif) ; sur le web, on débloque en mock pour tester le parcours.
+  async function startSubscribe() {
+    if (billingReady()) {
+      try {
+        const ok = await purchase()
+        if (ok) { setPremium(true); setScreen('home') }
+      } catch (e) {
+        console.warn('[subscribe]', e) // achat annulé ou erreur : on ne débloque pas
+      }
+    } else {
+      setPremium(true)
+      setScreen('home')
+    }
+  }
+  async function restorePremium() {
+    if (billingReady()) {
+      const ok = await restoreBilling()
+      setPremium(ok)
+      window.alert(ok ? 'Ton abonnement a été restauré ✨' : "Aucun achat à restaurer.")
+    } else {
+      window.alert(premium ? 'Tes achats sont déjà actifs ✨' : "Aucun achat à restaurer pour le moment.")
+    }
+  }
+
   const smilesOf = (item) => smiles[item.id] ?? item.smiles ?? 0
   function giveGrabi(item) {
     if (given[item.id]) return
@@ -380,7 +410,7 @@ export default function App() {
         <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
       )}
       {screen === 'subscribe' && (
-        <Subscribe onClose={() => setScreen('home')} onStart={() => { setPremium(true); setScreen('home') }} />
+        <Subscribe onClose={() => setScreen('home')} onStart={startSubscribe} />
       )}
       {screen === 'settings' && (
         <Settings
@@ -444,7 +474,7 @@ export default function App() {
           premium={premium}
           onSubscribe={() => setScreen('subscribe')}
           onCancel={() => { if (window.confirm("Résilier ton abonnement Premium ?")) setPremium(false) }}
-          onRestore={() => window.alert(premium ? 'Tes achats sont déjà actifs ✨' : "Aucun achat à restaurer pour le moment.")}
+          onRestore={restorePremium}
           onBack={() => setScreen('settings')}
         />
       )}
