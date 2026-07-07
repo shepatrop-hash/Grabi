@@ -50,7 +50,13 @@ exactement à cette description, pour garder chaque personnage identique tout au
 
 Choisis enfin "mood" : l'ambiance musicale de fond la plus adaptée à l'histoire, parmi EXACTEMENT ces
 valeurs : cozy (douillet, tendre), dreamy (féérique, magique), adventure (petite aventure douce),
-funny (rigolo, espiègle), calm (très calme, apaisant).`
+funny (rigolo, espiègle), calm (très calme, apaisant).
+
+Choisis aussi "categorie" : la catégorie de l'histoire, parmi EXACTEMENT ces valeurs :
+animaux ; morale (une petite leçon de vie) ; contes (contes de fées : princes, princesses, châteaux) ;
+fantastique (magie, créatures imaginaires, robots) ; amis (amitié, meilleurs amis) ; nature (forêt, jardin, saisons) ;
+noel (Noël, hiver, cadeaux) ; planetes (espace, fusées, étoiles, lune) ; vilains (un vilain gentiment vaincu) ;
+vroom (voitures, trains, véhicules qui roulent). Choisis la plus proche du thème principal de l'histoire.`
 
 // Schéma de sortie structurée : { titre, pages: [{ texte, prompt_illustration }] }
 const SCHEMA = {
@@ -59,6 +65,7 @@ const SCHEMA = {
   properties: {
     titre: { type: 'string' },
     mood: { type: 'string', enum: ['cozy', 'dreamy', 'adventure', 'funny', 'calm'] },
+    categorie: { type: 'string', enum: ['animaux', 'morale', 'contes', 'fantastique', 'amis', 'nature', 'noel', 'planetes', 'vilains', 'vroom'] },
     personnages: {
       type: 'array',
       items: {
@@ -84,7 +91,7 @@ const SCHEMA = {
       },
     },
   },
-  required: ['titre', 'mood', 'personnages', 'pages'],
+  required: ['titre', 'mood', 'categorie', 'personnages', 'pages'],
 }
 
 export default async function handler(req, res) {
