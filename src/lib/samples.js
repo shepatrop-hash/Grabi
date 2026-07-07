@@ -25,10 +25,14 @@ export const WEEKLY_STORY = {
   ],
 }
 
+const car = `<svg width="118" height="80" viewBox="0 0 140 96"><ellipse cx="70" cy="84" rx="50" ry="7" fill="#fff" opacity=".65"></ellipse><rect x="24" y="44" width="92" height="30" rx="14" fill="#FF7FB0"></rect><path d="M44 44 Q54 26 70 26 Q90 26 98 44 Z" fill="#FFB0CE"></path><rect x="58" y="30" width="30" height="14" rx="5" fill="#CFEFFF"></rect><circle cx="48" cy="76" r="11" fill="#3B2D5A"></circle><circle cx="48" cy="76" r="4.5" fill="#fff"></circle><circle cx="94" cy="76" r="11" fill="#3B2D5A"></circle><circle cx="94" cy="76" r="4.5" fill="#fff"></circle><circle cx="114" cy="54" r="4" fill="#FFE08A"></circle></svg>`
+const rocket = `<svg width="96" height="96" viewBox="0 0 100 100"><circle cx="78" cy="24" r="12" fill="#FFCC6A"></circle><ellipse cx="78" cy="24" rx="19" ry="5" fill="#FFB84D" opacity=".55" transform="rotate(-20 78 24)"></ellipse><path d="M40 58 Q40 20 54 12 Q68 20 68 58 Z" fill="#EAE6FF"></path><circle cx="54" cy="34" r="7" fill="#7FB0FF"></circle><path d="M40 58 L28 72 L44 66 Z" fill="#FF7FB0"></path><path d="M68 58 L80 72 L64 66 Z" fill="#FF7FB0"></path><path d="M48 66 Q54 84 60 66 Z" fill="#FFB84D"></path><circle cx="22" cy="30" r="2.4" fill="#fff"></circle><circle cx="34" cy="82" r="2.4" fill="#fff"></circle></svg>`
+const tree = `<svg width="86" height="96" viewBox="0 0 90 100"><path d="M45 12 L64 40 H52 L68 62 H54 L72 82 H18 L36 62 H22 L38 40 H26 Z" fill="#4FB477"></path><rect x="40" y="82" width="10" height="10" fill="#B07A4A"></rect><path d="M45 4 l2.5 5 5.5 .5 -4 4 1 5.5 -5 -2.8 -5 2.8 1 -5.5 -4 -4 5.5 -.5 z" fill="#FFCC3E"></path><circle cx="38" cy="48" r="3" fill="#FF6B8A"></circle><circle cx="54" cy="58" r="3" fill="#FFCC3E"></circle><circle cx="45" cy="70" r="3" fill="#7FB0FF"></circle><circle cx="34" cy="72" r="2.6" fill="#FFCC3E"></circle></svg>`
+
 // Histoires de la communauté (graine). Les histoires publiées par l'enfant s'y ajoutent.
 export const SEED_COMMUNITY = [
   {
-    id: 'com-baleine', title: 'La baleine qui chante', author: 'par Maya, 6 ans', bg: 'var(--sky-soft)', svg: whale, smiles: 27, mood: 'calm',
+    id: 'com-baleine', title: 'La baleine qui chante', author: 'par Maya, 6 ans', bg: 'var(--sky-soft)', svg: whale, smiles: 27, mood: 'calm', categorie: 'animaux',
     pages: [
       'Au fond de l’océan vivait une baleine qui chantait de jolies berceuses.',
       'Les petits poissons venaient de partout pour l’écouter, blottis les uns contre les autres.',
@@ -36,11 +40,35 @@ export const SEED_COMMUNITY = [
     ],
   },
   {
-    id: 'com-robot', title: 'Le robot jardinier', author: 'par Tom, 5 ans', bg: 'var(--violet-soft)', svg: robot, smiles: 12, mood: 'cozy',
+    id: 'com-robot', title: 'Le robot jardinier', author: 'par Tom, 5 ans', bg: 'var(--violet-soft)', svg: robot, smiles: 12, mood: 'cozy', categorie: 'nature',
     pages: [
       'Robi le robot adorait s’occuper de son jardin.',
       'Il arrosait les fleurs avec des petites gouttes de pluie qu’il fabriquait lui-même.',
       'Au printemps, son jardin était le plus coloré et le plus parfumé de toute la ville.',
+    ],
+  },
+  {
+    id: 'com-voiture', title: 'La petite voiture rouge', author: 'par Léo, 5 ans', bg: 'var(--pink-soft)', svg: car, smiles: 19, mood: 'funny', categorie: 'vroom',
+    pages: [
+      'Vroom, la petite voiture rouge, adorait partir en balade sur les routes de campagne.',
+      'Un jour, elle aida un escargot à traverser en le portant tout doucement sur son capot.',
+      'Depuis, tous les animaux la saluent quand elle passe : « Bonne route, Vroom ! »',
+    ],
+  },
+  {
+    id: 'com-lune', title: 'Voyage sur la Lune', author: 'par Zoé, 6 ans', bg: 'var(--sky-soft)', svg: rocket, smiles: 23, mood: 'dreamy', categorie: 'planetes',
+    pages: [
+      'Nino enfila sa combinaison et grimpa dans sa fusée en carton.',
+      'Trois, deux, un… décollage ! La fusée s’envola jusqu’à la Lune toute ronde.',
+      'Là-haut, il fit des bonds géants avec les étoiles, puis rentra se coucher, la tête pleine de rêves.',
+    ],
+  },
+  {
+    id: 'com-sapin', title: 'Le sapin magique', author: 'par Emma, 4 ans', bg: 'var(--mint-soft)', svg: tree, smiles: 15, mood: 'cozy', categorie: 'noel',
+    pages: [
+      'La veille de Noël, un petit sapin s’illumina tout seul dans la forêt.',
+      'Ses boules scintillaient si fort que les animaux vinrent se réchauffer autour de lui.',
+      'Au matin, chacun trouva un petit cadeau accroché à ses branches. Joyeux Noël !',
     ],
   },
 ]

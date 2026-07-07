@@ -91,6 +91,7 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
       cover: pages.find((p) => p.image)?.image || null,
       personnages: story?.personnages || [],
       mood: story?.mood || 'calm',
+      categorie: story?.categorie || 'fantastique',
     }
   }
 
