@@ -6,7 +6,7 @@
 const DB_NAME = 'grabi-audio'
 const STORE = 'clips'
 const MAX_CLIPS = 200 // au-delà, on évince les plus anciens (~26 Mo max)
-const VERSION = 'g3'  // change-le pour invalider tout le cache si la voix change
+const VERSION = 'g4'  // change-le pour invalider tout le cache si la voix change (g4 = passage à Gemini)
 
 // Purge le cache si VERSION a changé (ex. nouvelle voix) : les histoires déjà narrées
 // avec l'ancienne voix sont effacées -> elles se régénèrent avec la nouvelle voix au
