@@ -1,15 +1,16 @@
-name: Build Android APK
+name: Build Android AAB
 
-# Construit l'APK Grabi sur un runner GitHub vierge (évite le souci de loopback VPN
-# de la machine locale). L'APK est uploadé en artefact, téléchargeable depuis l'onglet
-# Actions (ou récupéré en CLI via `gh run download`).
+# Construit le bundle Android signe (.aab) pret pour Google Play, sur un runner vierge.
+# - versionCode = 10000 + numero de run -> toujours unique et croissant (Play refuse un code deja utilise).
+# - Signature avec TA cle d'upload (secret GRABI_KEYSTORE_B64) -> Play accepte la mise a jour.
+# L'AAB signe est uploade en artefact "grabi-aab", telechargeable depuis l'onglet Actions.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  build-aab:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Installer les dépendances
+      - name: Installer les dependances
         run: npm install
 
       - name: Build du web
@@ -35,15 +36,45 @@ jobs:
       - name: Synchroniser
         run: npx cap sync android
 
-      - name: Construire l'APK (debug)
+      - name: Incrementer le versionCode (Play refuse un code deja utilise)
+        run: |
+          VC=$(( 10000 + ${{ github.run_number }} ))
+          sed -i -E "s/versionCode [0-9]+/versionCode ${VC}/" android/app/build.gradle
+          sed -i -E "s/versionName \"[^\"]*\"/versionName \"1.0.${{ github.run_number }}\"/" android/app/build.gradle
+          echo "versionCode -> ${VC}"
+          grep -E 'versionCode|versionName' android/app/build.gradle
+
+      - name: Preparer la cle d'upload (obligatoire)
+        run: |
+          if [ -z "${{ secrets.GRABI_KEYSTORE_B64 }}" ]; then
+            echo "::error::Secret GRABI_KEYSTORE_B64 manquant. Ajoute-le (base64 de grabi-upload.jks) dans Settings > Secrets and variables > Actions. Sans lui, l'AAB serait signe avec une AUTRE cle et Google Play le refuserait."
+            exit 1
+          fi
+          printf '%s' "${{ secrets.GRABI_KEYSTORE_B64 }}" | base64 -d > "$RUNNER_TEMP/grabi-upload.jks"
+          echo "Cle d'upload chargee depuis le secret."
+
+      - name: Construire le bundle release (.aab)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew bundleRelease --no-daemon
 
-      - name: Uploader l'APK
+      - name: Signer l'AAB avec la cle d'upload
+        run: |
+          AAB=$(find android/app/build/outputs/bundle/release -name '*.aab' | head -1)
+          echo "AAB brut: $AAB"
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore "$RUNNER_TEMP/grabi-upload.jks" \
+            -storepass grabistore -keypass grabistore \
+            "$AAB" grabi
+          cp "$AAB" grabi-release.aab
+
+      - name: Verifier la signature
+        run: jarsigner -verify -verbose:summary grabi-release.aab | tail -3
+
+      - name: Uploader l'AAB signe
         uses: actions/upload-artifact@v4
         with:
-          name: grabi-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: grabi-aab
+          path: grabi-release.aab
           if-no-files-found: error
