@@ -85,12 +85,13 @@ export async function generateQuestions(idea) {
   return res.json()
 }
 
-// Génère la narration audio d'un texte (ElevenLabs via Fal). Renvoie { url }.
-export async function generateAudio(text, voice) {
+// Génère la narration audio d'un texte. `provider` (optionnel : 'eleven' | 'gemini')
+// force le fournisseur pour garder TOUTE une histoire cohérente. Renvoie { url, provider }.
+export async function generateAudio(text, voice, provider) {
   const res = await fetch('/api/generate-audio', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, voice }),
+    body: JSON.stringify({ text, voice, provider }),
   })
   if (!res.ok) {
     let detail = ''
@@ -102,4 +103,21 @@ export async function generateAudio(text, voice) {
     throw new Error(detail || `HTTP ${res.status}`)
   }
   return res.json()
+}
+
+// Décide LE fournisseur de voix pour une histoire entière (cohérence du début à la fin).
+// admin=true (histoires gratuites/semaine) -> ElevenLabs ; sinon ElevenLabs si assez de
+// crédits pour toute l'histoire, sinon Gemini. Renvoie { provider }. Repli 'eleven' si l'appel échoue.
+export async function audioPlan(chars, admin = false) {
+  try {
+    const res = await fetch('/api/audio-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chars, admin }),
+    })
+    if (!res.ok) return { provider: 'eleven' }
+    return res.json()
+  } catch {
+    return { provider: 'eleven' }
+  }
 }

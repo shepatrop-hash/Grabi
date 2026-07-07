@@ -49,8 +49,8 @@ function openDb() {
 }
 
 // Clé stable : version + voix + texte -> même histoire/voix = même clé = cache hit.
-export function audioKey(text, voice) {
-  const s = `${VERSION}|${voice || 'Douce'}|${text || ''}`
+export function audioKey(text, voice, provider) {
+  const s = `${VERSION}|${provider || ''}|${voice || 'Douce'}|${text || ''}`
   let h = 5381
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0
   return `a${(h >>> 0).toString(36)}_${s.length}`

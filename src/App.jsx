@@ -22,7 +22,7 @@ import Published from './screens/Published.jsx'
 import TopBack from './components/BackButton.jsx'
 import BackgroundMusic from './components/BackgroundMusic.jsx'
 import RawSvg from './components/RawSvg.jsx'
-import { generateStory, generateImage, generateQuestions, generateAudio } from './lib/api.js'
+import { generateStory, generateImage, generateQuestions, generateAudio, audioPlan } from './lib/api.js'
 import { audioKey, getCachedAudio, putCachedAudio } from './lib/audioCache.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
@@ -72,13 +72,14 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
   useEffect(() => {
     if (!story?.pages) return
     let cancelled = false
+    const provider = story.audioProvider // fournisseur figé pour TOUTE l'histoire
     story.pages.forEach((p) => {
       const text = p.texte
       if (!text) return
-      const key = audioKey(text, voice)
+      const key = audioKey(text, voice, provider)
       getCachedAudio(key).then((cached) => {
         if (cancelled || cached) return // déjà en cache -> rien à faire
-        generateAudio(text, voice)
+        generateAudio(text, voice, provider)
           .then((d) => { if (!cancelled && d?.url) putCachedAudio(key, d.url) })
           .catch(() => {})
       })
@@ -92,6 +93,9 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
     const pages = (story?.pages || []).map((p, i) => ({
       text: p.texte,
       image: images[i] && images[i] !== 'error' ? images[i] : null,
+      // On garde le prompt d'illustration : si on quitte AVANT la fin des images, le lecteur
+      // pourra régénérer celles qui manquent (plus d'histoire « finie sans images »).
+      prompt: p.prompt_illustration || null,
     }))
     return {
       title: story?.titre || 'Mon histoire',
@@ -101,6 +105,7 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
       personnages: story?.personnages || [],
       mood: story?.mood || 'calm',
       categorie: story?.categorie || 'fantastique',
+      audioProvider: story?.audioProvider || 'eleven', // fournisseur voix figé pour l'histoire
     }
   }
 
@@ -291,7 +296,14 @@ export default function App() {
     setScreen('generating')
     try {
       const data = await generateStory(idea, answers)
-      setStory(data.story)
+      const st = data.story
+      // Décide LE fournisseur de voix pour TOUTE l'histoire, UNE seule fois : ElevenLabs tant
+      // qu'il reste assez de crédits pour l'histoire entière, sinon Gemini. Ainsi toutes les
+      // pages sont narrées par le MÊME moteur (jamais un mélange en cours d'histoire).
+      const chars = (st?.pages || []).reduce((n, p) => n + (p?.texte?.length || 0), 0)
+      const plan = await audioPlan(chars, false)
+      st.audioProvider = plan?.provider || 'eleven'
+      setStory(st)
       setScreen('ready')
     } catch (e) {
       setError(
@@ -384,6 +396,21 @@ export default function App() {
     })
     setReader({ story: storyObj, origin: origin || 'home' })
     setScreen('reader')
+  }
+
+  // Le lecteur a régénéré une illustration manquante (histoire quittée avant la fin de
+  // la création) : on la sauvegarde dans la bibliothèque pour ne PLUS la refaire ensuite.
+  function persistStoryImage(storyId, pageIndex, url) {
+    if (!storyId || !url) return
+    setStories((list) => list.map((s) => {
+      if (s.id !== storyId) return s
+      const pages = (s.pages || []).map((p, i) => {
+        if (i !== pageIndex) return p
+        const base = typeof p === 'string' ? { text: p } : { ...p }
+        return { ...base, image: url }
+      })
+      return { ...s, pages, cover: s.cover || url }
+    }))
   }
 
   function saveChild(next) {
@@ -549,6 +576,7 @@ export default function App() {
           onToggleFavorite={() => reader?.story?.id && toggleFavorite(reader.story.id)}
           onClose={() => setScreen(reader?.origin || 'home')}
           onSubscribe={() => setScreen('subscribe')}
+          onImage={(i, url) => persistStoryImage(reader?.story?.id, i, url)}
         />
       )}
       {/* Couper / remettre la musique de fond — accessible depuis n'importe quel écran */}

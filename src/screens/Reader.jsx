@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import { speak, stopSpeak, ttsSupported } from '../lib/tts.js'
-import { generateAudio } from '../lib/api.js'
+import { generateAudio, generateImage } from '../lib/api.js'
 import { audioKey, getCachedAudio, putCachedAudio } from '../lib/audioCache.js'
 
 // Retire les balises d'émotion v3 [..] (ex. [softly]) pour l'AFFICHAGE et la voix du
@@ -18,7 +18,7 @@ const lockBig = `<svg width="56" height="62" viewBox="0 0 40 46"><path d="M11,20
 const heartFull = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#FF5C9A"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
 const heartLine = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C6F95" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
 
-export default function Reader({ story, isPremium, voice = 'Douce', soundOn = true, onClose, onSubscribe, isFavorite, onToggleFavorite }) {
+export default function Reader({ story, isPremium, voice = 'Douce', soundOn = true, onClose, onSubscribe, onImage, isFavorite, onToggleFavorite }) {
   const pages = story?.pages || []
   const total = pages.length || 1
   const locked = !!story?.premium && !isPremium
@@ -29,6 +29,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   const [paywall, setPaywall] = useState(false)
   const [mutedHint, setMutedHint] = useState(false)
   const [loadingAudio, setLoadingAudio] = useState(false)
+  const [fixImages, setFixImages] = useState({}) // index -> url (illustrations régénérées ici)
   const tokenRef = useRef(0)
   const hintRef = useRef(null)
   const audioRef = useRef(null)
@@ -56,7 +57,28 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
     setPage(0)
     setPlaying(false)
     setPaywall(false)
+    setFixImages({})
     stopAll()
+  }, [story?.id])
+
+  // Répare les illustrations manquantes : si on a quitté la création AVANT la fin des
+  // images, la page a été sauvée avec son `prompt` mais sans image → on la régénère ici
+  // (et on remonte l'URL via onImage pour la sauvegarder définitivement, 0 coût ensuite).
+  useEffect(() => {
+    let cancelled = false
+    pages.forEach((p, i) => {
+      const pg = typeof p === 'string' ? { text: p } : p || {}
+      if (pg.image || !pg.prompt) return // déjà illustrée (ou pas de prompt) -> rien à faire
+      generateImage(pg.prompt)
+        .then(({ url }) => {
+          if (cancelled || !url) return
+          setFixImages((m) => ({ ...m, [i]: url }))
+          onImage && onImage(i, url)
+        })
+        .catch(() => {})
+    })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [story?.id])
 
   // Audio : joue la narration de la page courante (vraie voix ElevenLabs si dispo —
@@ -84,13 +106,15 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       // on génère à la volée (puis cache) afin de respecter la sélection.
       let url = cur.audio && voice === 'Douce' ? cur.audio : null
       if (!url) {
-        const key = audioKey(cur.text, voice)
+        // Fournisseur voix figé pour TOUTE l'histoire (décidé à la création) -> cohérence.
+        const provider = story?.audioProvider
+        const key = audioKey(cur.text, voice, provider)
         url = await getCachedAudio(key) // déjà narré ? -> instantané, 0 crédit
         if (cancelled || tokenRef.current !== myToken) return
         if (!url) {
           setLoadingAudio(true)
           try {
-            const d = await generateAudio(cur.text, voice)
+            const d = await generateAudio(cur.text, voice, provider)
             url = d?.url || null
             if (url) putCachedAudio(key, url) // on garde pour les prochaines fois
           } catch {
@@ -144,8 +168,9 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   }
   const progress = `${Math.round(((page + 1) / total) * 100)}%`
 
-  const hero = cur.image ? (
-    <img src={cur.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  const heroImg = cur.image || fixImages[page] // image d'origine, sinon celle régénérée ici
+  const hero = heroImg ? (
+    <img src={heroImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
   ) : (
     <div style={{ width: '100%', height: '100%', background: story?.bg || 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {story?.svg && <div style={{ transform: 'scale(2.3)' }}><RawSvg html={story.svg} /></div>}
