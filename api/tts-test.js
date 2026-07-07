@@ -1,18 +1,18 @@
 import { put } from '@vercel/blob'
 
-// Route de TEST : narration via Gemini TTS (pour comparer à ElevenLabs v3).
-// Utilise la clé GEMINI_API_KEY déjà présente sur Vercel — aucun nouveau compte.
-// Gemini TTS renvoie du PCM brut (L16, 24 kHz) -> on l'emballe en WAV pour le rendre lisible.
-const TTS_MODEL = process.env.GEMINI_TTS_MODEL || 'gemini-2.5-flash-preview-tts'
-const DEFAULT_VOICE = process.env.GEMINI_TTS_VOICE || 'Kore'
+// Route de TEST : narration via Gemini TTS (comparatif vs ElevenLabs v3).
+// Supporte : voix simple OU multi-locuteur (voix différente par personnage sur
+// les dialogues), modèle flash (défaut) ou pro. Utilise GEMINI_API_KEY (déjà sur Vercel).
+// Gemini renvoie du PCM brut (L16, 24 kHz) -> on l'emballe en WAV.
+const DEFAULT_MODEL = process.env.GEMINI_TTS_MODEL || 'gemini-2.5-flash-preview-tts'
+const DEFAULT_VOICE = process.env.GEMINI_TTS_VOICE || 'Sulafat'
 
 export const config = { maxDuration: 60 }
 
-// Retire les balises d'émotion [softly], [whispers]… (propres à ElevenLabs v3) :
-// Gemini ne les gère pas par balise mais via une instruction de style.
-const stripTags = (t) => t.replace(/\[[^\]]*\]/g, ' ').replace(/\s{2,}/g, ' ').trim()
+// Retire les balises [softly]… (propres à v3) mais garde les retours à la ligne
+// (utiles pour le format multi-locuteur "Narrateur: …").
+const stripTags = (t) => t.replace(/\[[^\]]*\]/g, ' ').replace(/[^\S\n]{2,}/g, ' ').trim()
 
-// PCM 16 bits mono -> fichier WAV jouable (en-tête 44 octets).
 function pcmToWav(pcm, sampleRate) {
   const channels = 1
   const bits = 16
@@ -44,35 +44,45 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'GEMINI_API_KEY manquante.' })
     return
   }
-  const { text, style, voice } = req.body || {}
+  const { text, style, voice, model, speakers } = req.body || {}
   if (!text || typeof text !== 'string') {
     res.status(400).json({ error: 'Texte manquant.' })
     return
   }
+  const useModel = model || DEFAULT_MODEL
   const clean = stripTags(text)
   const instruction =
     style ||
-    "Lis cette histoire du soir pour un jeune enfant d'une voix douce, chaleureuse, posée et rassurante, avec des intonations tendres et un rythme lent :"
-  const voiceName = voice || DEFAULT_VOICE
+    "Raconte cette histoire du soir comme un conteur chaleureux et EXPRESSIF pour enfant : voix souriante et vivante, rythme naturel et allant (surtout pas lent ni endormi), du relief et de la joie, en changeant d'intonation selon l'action :"
+
+  // Multi-locuteur : une voix par personnage (max 2). Sinon voix simple.
+  const multi = Array.isArray(speakers) && speakers.length >= 2
+  const speechConfig = multi
+    ? {
+        multiSpeakerVoiceConfig: {
+          speakerVoiceConfigs: speakers.slice(0, 2).map((s) => ({
+            speaker: s.name,
+            voiceConfig: { prebuiltVoiceConfig: { voiceName: s.voice } },
+          })),
+        },
+      }
+    : { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice || DEFAULT_VOICE } } }
 
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${useModel}:generateContent`,
       {
         method: 'POST',
         headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${instruction}\n\n${clean}` }] }],
-          generationConfig: {
-            responseModalities: ['AUDIO'],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } },
-          },
+          generationConfig: { responseModalities: ['AUDIO'], speechConfig },
         }),
       }
     )
     if (!resp.ok) {
       const detail = await resp.text().catch(() => '')
-      res.status(502).json({ error: `Gemini TTS ${resp.status}`, detail: detail.slice(0, 600), model: TTS_MODEL })
+      res.status(502).json({ error: `Gemini TTS ${resp.status}`, detail: detail.slice(0, 700), model: useModel })
       return
     }
     const data = await resp.json()
@@ -86,12 +96,13 @@ export default async function handler(req, res) {
     const pcm = Buffer.from(part.inlineData.data, 'base64')
     const wav = pcmToWav(pcm, rate)
 
+    const meta = { provider: 'gemini', model: useModel, mode: multi ? 'multi' : 'single' }
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       const blob = await put('tts-test/gemini.wav', wav, { access: 'public', addRandomSuffix: true, contentType: 'audio/wav' })
-      res.status(200).json({ url: blob.url, provider: 'gemini', model: TTS_MODEL, voice: voiceName })
+      res.status(200).json({ url: blob.url, ...meta })
       return
     }
-    res.status(200).json({ url: `data:audio/wav;base64,${wav.toString('base64')}`, provider: 'gemini', model: TTS_MODEL, voice: voiceName })
+    res.status(200).json({ url: `data:audio/wav;base64,${wav.toString('base64')}`, ...meta })
   } catch (err) {
     console.error('tts-test error:', err)
     res.status(500).json({ error: String(err?.message || err) })
