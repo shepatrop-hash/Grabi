@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Home from './screens/Home.jsx'
 import Create from './screens/Create.jsx'
-import GrabiCompanion from './screens/GrabiCompanion.jsx'
 import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
 import Subscribe from './screens/Subscribe.jsx'
@@ -32,6 +31,16 @@ import { initBilling, purchase, restore as restoreBilling, billingReady } from '
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
+
+// Cible du bouton « retour » Android pour chaque écran (le lecteur gère son origine ;
+// l'accueil quitte l'app). Évite que « retour » ferme l'app depuis un sous-menu.
+const BACK_TARGET = {
+  create: 'home', qcm: 'create', generating: 'home', ready: 'home',
+  free: 'home', premium: 'home', subscribe: 'home', settings: 'home',
+  'edit-profile': 'settings', legal: 'espace-parents', rewards: 'settings',
+  'mon-grabi': 'settings', 'espace-parents': 'settings', 'mon-abonnement': 'settings',
+  community: 'home', mine: 'home', published: 'mine',
+}
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
@@ -144,7 +153,6 @@ export default function App() {
   const [qcmAnswers, setQcmAnswers] = useState({})
   const [qcmLoading, setQcmLoading] = useState(false)
   const [reader, setReader] = useState(null) // { story, origin }
-  const [grabiBack, setGrabiBack] = useState('home') // écran de retour depuis le compagnon
 
   // --- Données persistées (localStorage) ---
   const [stories, setStories] = useState(() => load('stories', []))
@@ -226,6 +234,25 @@ export default function App() {
     schedule()
     return () => clearTimeout(timer)
   }, [reminder])
+
+  // Bouton retour Android : revenir en arrière dans l'app au lieu de la quitter.
+  // navRef garde toujours l'écran courant pour que le listener (enregistré une fois) soit à jour.
+  const navRef = useRef({ screen })
+  navRef.current = { screen, origin: reader?.origin }
+  useEffect(() => {
+    let handle
+    import('@capacitor/app')
+      .then(async (m) => {
+        handle = await m.App.addListener('backButton', () => {
+          const { screen: s, origin } = navRef.current
+          if (s === 'reader') return setScreen(origin || 'home')
+          if (BACK_TARGET[s]) return setScreen(BACK_TARGET[s])
+          m.App.exitApp() // sur l'accueil : quitter l'app
+        })
+      })
+      .catch(() => {})
+    return () => { if (handle && handle.remove) handle.remove() }
+  }, [])
 
   // --- Création : QCM contextuel ---
   async function startQcm() {
@@ -402,7 +429,6 @@ export default function App() {
           onGoCommunity={() => setScreen('community')}
           onGoMine={() => setScreen('mine')}
           onGoSettings={() => setScreen('settings')}
-          onGoGrabi={() => { setGrabiBack('home'); setScreen('grabi') }}
         />
       )}
       {screen === 'create' && (
@@ -428,7 +454,6 @@ export default function App() {
           onToggleNight={() => setNightMode((n) => !n)}
           onEditProfile={() => setScreen('edit-profile')}
           onMonGrabi={() => setScreen('mon-grabi')}
-          onPlayGrabi={() => { setGrabiBack('settings'); setScreen('grabi') }}
           onRewards={() => setScreen('rewards')}
           onEspaceParents={() => setScreen('espace-parents')}
           onHome={() => setScreen('home')}
@@ -451,7 +476,6 @@ export default function App() {
           decor={decor}
           onDecor={setDecor}
           onBack={() => setScreen('settings')}
-          onPlay={() => { setGrabiBack('mon-grabi'); setScreen('grabi') }}
         />
       )}
       {screen === 'espace-parents' && (
@@ -527,7 +551,6 @@ export default function App() {
           onSubscribe={() => setScreen('subscribe')}
         />
       )}
-      {screen === 'grabi' && <GrabiCompanion decor={decor} onBack={() => setScreen(grabiBack)} />}
       {/* Couper / remettre la musique de fond — accessible depuis n'importe quel écran */}
       <button
         onClick={() => setMusicOn((s) => !s)}

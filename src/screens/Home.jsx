@@ -36,7 +36,7 @@ function Card({ onClick, bg, title, subtitle, subColor, shadow, icon }) {
   )
 }
 
-export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoMine, onGoSettings, onGoGrabi }) {
+export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoMine, onGoSettings }) {
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 34px)' }}>
       <div style={{ position: 'absolute', top: -60, right: -50, width: 200, height: 200, borderRadius: '50%', background: 'var(--yellow-soft)', opacity: 0.7 }} />
@@ -48,7 +48,7 @@ export default function Home({ childName = 'Léa', onGoFree, onGoPremium, onGoCr
           <div style={{ fontSize: 27, fontWeight: 700, lineHeight: 1.12, maxWidth: 172 }}>On invente une histoire&nbsp;?</div>
         </div>
         <div style={{ position: 'relative' }}>
-          <div onClick={() => { playGrabiSound(); onGoGrabi() }} style={{ cursor: 'pointer' }}><Grabi size={104} /></div>
+          <div onClick={() => playGrabiSound()} style={{ cursor: 'pointer' }}><Grabi size={104} /></div>
         </div>
       </div>
 
