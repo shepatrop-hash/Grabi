@@ -30,14 +30,12 @@ import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
-// Retire les balises d'émotion [..] pour l'affichage (l'aperçu montrait "[softly]").
-const stripTags = (t) => (t || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s{2,}/g, ' ').trim()
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
 
-function Ready({ story, voice = 'Douce', onKeep, onPublish, allowPublish = true }) {
+function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
 
   useEffect(() => {
@@ -95,41 +93,40 @@ function Ready({ story, voice = 'Douce', onKeep, onPublish, allowPublish = true 
     }
   }
 
+  // Couverture = la première illustration disponible.
+  const cover = (story?.pages || []).map((_, i) => images[i]).find((u) => u && u !== 'error') || null
+
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', padding: 'calc(env(safe-area-inset-top, 14px) + 12px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <TopBack onClick={() => onKeep(assemble())} />
-        <div style={{ fontSize: 22, fontWeight: 700 }}>Ton histoire est prête</div>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', position: 'relative', overflow: 'hidden', padding: 'calc(env(safe-area-inset-top, 14px) + 20px) 28px calc(env(safe-area-inset-bottom, 0px) + 28px)', animation: 'gn-fadein .35s ease' }}>
+      <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 14px) + 14px)', left: 20, zIndex: 3 }}><TopBack onClick={() => onKeep(assemble())} /></div>
+
+      <div style={{ fontSize: 24, fontWeight: 800, textAlign: 'center', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 8 }}>✨ Ton histoire est prête&nbsp;!</div>
+
+      {/* Carte couverture */}
+      <div style={{ width: '100%', maxWidth: 360, background: 'var(--card)', borderRadius: 28, overflow: 'hidden', boxShadow: '0 22px 46px -20px rgba(0,0,0,.45)' }}>
+        <div style={{ aspectRatio: '1 / 1', background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {cover ? (
+            <img src={cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600, textAlign: 'center', padding: 20 }}>Grabi dessine la couverture… 🎨</span>
+          )}
+        </div>
+        <div style={{ padding: '18px 20px 22px', textAlign: 'center' }}>
+          <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.2 }}>{story?.titre}</div>
+          {childName ? <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, marginTop: 5 }}>inventée par {childName}</div> : null}
+        </div>
       </div>
-      <div style={{ fontSize: 26, fontWeight: 700, textAlign: 'center', marginTop: 10 }}>{story?.titre}</div>
-      <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto' }}>
-        {(story?.pages || []).map((p, i) => {
-          const img = images[i]
-          return (
-            <div key={i} style={{ background: '#fff', borderRadius: 22, padding: 14, boxShadow: '0 8px 18px -12px rgba(74,58,102,.3)' }}>
-              <div style={{ aspectRatio: '1 / 1', borderRadius: 16, overflow: 'hidden', background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                {img && img !== 'error' ? (
-                  <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : img === 'error' ? (
-                  <span style={{ fontSize: 13, color: 'var(--ink2)', padding: 12, textAlign: 'center' }}>Illustration indisponible</span>
-                ) : (
-                  <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600, textAlign: 'center', padding: 12 }}>Grabi dessine… 🎨</span>
-                )}
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--violet)' }}>Page {i + 1}</div>
-              <div style={{ fontSize: 16, lineHeight: 1.5, marginTop: 4 }}>{stripTags(p.texte)}</div>
-            </div>
-          )
-        })}
-      </div>
-      <div style={{ flex: 'none', display: 'flex', gap: 12, paddingTop: 14 }}>
-        <button onClick={() => onKeep(assemble())} style={{ flex: 1, background: allowPublish ? '#fff' : 'linear-gradient(135deg,#FF8FB6,#A98CFF)', border: allowPublish ? '2px solid #EDE7F5' : 'none', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700, color: allowPublish ? 'var(--ink)' : '#fff' }}>Garder pour moi</button>
-        {allowPublish && (
-          <button onClick={() => onPublish(assemble())} style={{ flex: 1, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 22, padding: '14px 12px', fontSize: 15, fontWeight: 700 }}>Publier ✨</button>
-        )}
-      </div>
-      {!allowPublish && (
-        <div style={{ flex: 'none', textAlign: 'center', fontSize: 12, color: 'var(--ink2)', fontWeight: 500, paddingTop: 10 }}>La publication est désactivée dans l'Espace parents.</div>
+
+      {/* Actions */}
+      <button onClick={() => onListen(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 26, background: 'linear-gradient(135deg,#FFD23F,#FFB43A)', color: '#4A3A66', borderRadius: 26, padding: '17px 12px', fontSize: 17, fontWeight: 800, boxShadow: '0 12px 26px -10px rgba(255,180,40,.75)' }}>▶&nbsp;&nbsp;Écouter mon histoire</button>
+
+      {allowPublish ? (
+        <>
+          <button onClick={() => onPublish(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 12, background: 'transparent', border: '2px solid var(--card-soft)', color: 'var(--ink)', borderRadius: 26, padding: '15px 12px', fontSize: 15, fontWeight: 700 }}>Partager avec les copains</button>
+          <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Papa ou maman valide avant que ton histoire soit visible.</div>
+        </>
+      ) : (
+        <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Le partage est désactivé dans l'Espace parents.</div>
       )}
     </div>
   )
@@ -282,6 +279,17 @@ export default function App() {
     setScreen(published ? 'published' : 'mine')
   }
 
+  // « Écouter mon histoire » : on garde l'histoire ET on ouvre le lecteur directement.
+  function saveAndListen(assembled) {
+    const id = newId()
+    const entry = { id, ...assembled, published: false, createdAt: Date.now() }
+    setStories((list) => [entry, ...list])
+    setSmiles((m) => ({ ...m, [id]: 0 }))
+    setStoryText('')
+    setStory(null)
+    openReader(entry, 'mine')
+  }
+
   const smilesOf = (item) => smiles[item.id] ?? item.smiles ?? 0
   function giveGrabi(item) {
     if (given[item.id]) return
@@ -374,7 +382,7 @@ export default function App() {
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} voice={voice} onKeep={(s) => saveStory(s, false)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
+      {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
         <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
