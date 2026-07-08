@@ -6,7 +6,7 @@ const icon = (d) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
 const minusSvg = icon('<path d="M5 12 H19"></path>')
 const plusSvg = icon('<path d="M12 5 V19 M5 12 H19"></path>')
 
-export default function AgeStepper({ age, setAge, min = 0, max = 12 }) {
+export default function AgeStepper({ age, setAge, min = 0, max = 99 }) {
   const dec = () => setAge((a) => Math.max(min, a - 1))
   const inc = () => setAge((a) => Math.min(max, a + 1))
   const round = (enabled) => ({
