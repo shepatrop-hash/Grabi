@@ -6,16 +6,10 @@ import { load, save } from '../lib/store.js'
 import { ACCESSORIES, DEFAULT_ACC, VOICE_SAMPLE, DECORS, getDecor } from '../lib/grabiCustom.js'
 import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
 import { generateAudio } from '../lib/api.js'
+import { VOICES, engineOf } from '../lib/voices.js'
 
 const checkBadge = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 l4 4 L19 6"></path></svg>`
 const playMini = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#7d5fc4"><path d="M8 5 L19 12 L8 19 Z"></path></svg>`
-
-const VOICES = [
-  { key: 'Douce', emoji: '🌙', desc: 'Calme et tendre' },
-  { key: 'Rigolote', emoji: '🤪', desc: 'Vive et amusante' },
-  { key: 'Magique', emoji: '✨', desc: 'Douce et féérique' },
-  { key: 'Robot', emoji: '🤖', desc: 'Drôle et métallique' },
-]
 
 const card = { background: 'var(--card)', borderRadius: 24, padding: '16px 18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }
 const sectionTitle = { fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', margin: '4px 4px 0' }
@@ -38,7 +32,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
     stopSpeak()
     setPreviewing(v)
     try {
-      const data = await generateAudio(VOICE_SAMPLE, v)
+      const data = await generateAudio(VOICE_SAMPLE, v, engineOf(v))
       const a = new Audio(data.url)
       audioRef.current = a
       a.onended = () => setPreviewing('')
@@ -109,7 +103,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
               <button key={v.key} onClick={() => testVoice(v.key)} style={{ display: 'flex', alignItems: 'center', gap: 13, background: active ? 'var(--violet-soft)' : 'var(--card-soft)', borderRadius: 18, padding: '11px 14px', textAlign: 'left', border: active ? '2px solid var(--violet)' : '2px solid transparent' }}>
                 <span style={{ fontSize: 24, flex: 'none' }}>{v.emoji}</span>
                 <span style={{ flex: 1 }}>
-                  <span style={{ display: 'block', fontSize: 16, fontWeight: 700 }}>{v.key}</span>
+                  <span style={{ display: 'block', fontSize: 16, fontWeight: 700 }}>{v.label} <span style={{ fontSize: 12.5, color: 'var(--ink2)' }}>{v.genre === 'f' ? '♀' : '♂'}</span></span>
                   <span style={{ display: 'block', fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>{v.desc}</span>
                 </span>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--card)', borderRadius: 14, padding: '6px 11px', fontSize: 12, fontWeight: 700, color: 'var(--ink)', flex: 'none', minWidth: 74, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>
