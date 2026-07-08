@@ -16,6 +16,12 @@ const GEMINI_SIZE = process.env.GEMINI_IMAGE_SIZE || '512' // 0.5K (valeurs Gemi
 // Garde-fou sécurité enfant ajouté à chaque prompt : personnages toujours habillés.
 const SAFE = 'All characters are fully clothed in cute complete outfits, wholesome and appropriate for young children, absolutely no nudity.'
 
+// STYLE VISUEL UNIQUE de toutes les illustrations : dessin à la main, crayon de couleur et
+// pastel sur papier texturé (livre d'histoires pour enfants traditionnel) — surtout PAS de
+// rendu 3D / CGI brillant / vectoriel plat. Surchargeable via IMAGE_STYLE.
+const STYLE = process.env.IMAGE_STYLE ||
+  "Hand-drawn children's storybook illustration in soft colored pencil and pastel crayon on textured paper, gentle hand-sketched outlines, warm cozy colors, soft crayon shading with visible paper grain, tender and whimsical, rounded friendly shapes, traditional picture book art like a bedtime story. No text, no lettering, no 3D render, no glossy CGI, no flat vector."
+
 export const config = { maxDuration: 60 }
 
 // La réponse de l'API Interactions n'a pas une forme 100% figée -> on cherche
@@ -57,7 +63,7 @@ async function generateGemini(prompt, res, debug) {
     headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: GEMINI_MODEL,
-      input: [{ type: 'text', text: `${prompt}. ${SAFE}` }],
+      input: [{ type: 'text', text: `${prompt}. ${SAFE} ${STYLE}` }],
       response_format: { type: 'image', mime_type: 'image/jpeg', aspect_ratio: '1:1', image_size: GEMINI_SIZE },
     }),
   })
@@ -122,11 +128,11 @@ export default async function handler(req, res) {
     fal.config({ credentials: process.env.FAL_KEY })
     const input = useEdit
       ? {
-          prompt: `${prompt}. Keep EXACTLY the same characters, colors and art style as the reference image(s). ${SAFE} Children's picture book illustration, soft warm colors, cute and gentle, no text.`,
+          prompt: `${prompt}. Keep EXACTLY the same characters, colors and art style as the reference image(s). ${SAFE} ${STYLE}`,
           image_urls: refs.slice(0, 4),
         }
       : {
-          prompt: `${prompt}. ${SAFE} Children's picture book illustration, soft warm colors, cute and gentle, cohesive storybook style, no text.`,
+          prompt: `${prompt}. ${SAFE} ${STYLE}`,
           image_size: 'square_hd',
           num_inference_steps: 4,
         }
