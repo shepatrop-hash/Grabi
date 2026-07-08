@@ -1,10 +1,10 @@
 // Lecture audio des histoires via l'API Web Speech (intégrée au navigateur,
 // gratuite et hors-ligne). Chaque "voix de Grabi" = un réglage débit/hauteur.
 const PRESETS = {
-  Douce: { rate: 0.92, pitch: 1.05 },
-  Rigolote: { rate: 1.12, pitch: 1.45 },
-  Magique: { rate: 0.96, pitch: 1.28 },
-  Robot: { rate: 0.82, pitch: 0.5 },
+  Aria: { rate: 0.94, pitch: 1.18 }, // ♀ féérique
+  Douce: { rate: 0.92, pitch: 1.05 }, // ♀ tendre
+  Malo: { rate: 1.06, pitch: 0.86 }, // ♂ vif
+  Noe: { rate: 0.9, pitch: 0.8 }, // ♂ posé
 }
 
 export function ttsSupported() {

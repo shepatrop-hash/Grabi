@@ -1,3 +1,5 @@
+import { engineOf } from './voices.js'
+
 // Appelle le backend (fonction serverless Vercel) qui génère l'histoire avec Claude.
 // En local, ce endpoint n'existe que via « vercel dev » (pas le simple « npm run dev »).
 export async function generateStory(idea, answers = {}) {
@@ -120,4 +122,13 @@ export async function audioPlan(chars, admin = false) {
   } catch {
     return { provider: 'eleven' }
   }
+}
+
+// Fournisseur de narration à utiliser pour UNE histoire, d'après la VOIX choisie :
+// - voix Gemini -> toujours Gemini (instantané, 0 appel, moins cher).
+// - voix ElevenLabs -> ElevenLabs tant qu'il reste des crédits pour toute l'histoire, sinon Gemini.
+export async function resolveProvider(voice, chars) {
+  if (engineOf(voice) === 'gemini') return 'gemini'
+  const plan = await audioPlan(chars, false)
+  return plan?.provider || 'eleven'
 }

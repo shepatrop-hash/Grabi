@@ -5,25 +5,14 @@ import { VOICE_SAMPLE } from '../lib/grabiCustom.js'
 import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
 import { generateAudio } from '../lib/api.js'
 import { audioKey, getCachedAudio, putCachedAudio } from '../lib/audioCache.js'
+import { VOICES, engineOf } from '../lib/voices.js'
 import AgeStepper from '../components/AgeStepper.jsx'
 
-// L'aperçu utilise ElevenLabs (comme la narration des histoires des utilisateurs tant qu'il
-// reste des crédits) -> ce qu'on entend à l'onboarding = ce qu'on aura vraiment. Repli auto
-// Gemini côté serveur si les crédits sont épuisés.
-const PREVIEW_PROVIDER = 'eleven'
-
 // Premier lancement : bienvenue -> comment ça marche -> prénom/âge -> voix -> (paywall).
-// La voix est préchargée sur « Douce » par défaut ; l'enfant peut en écouter d'autres.
+// Chaque voix a SON moteur : l'aperçu utilise ce moteur -> ce qu'on entend = ce qu'on aura vraiment.
 
 const playMini = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#7d5fc4"><path d="M8 5 L19 12 L8 19 Z"></path></svg>`
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
-
-const VOICES = [
-  { key: 'Douce', emoji: '🌙', desc: 'Calme et tendre' },
-  { key: 'Rigolote', emoji: '🤪', desc: 'Vive et amusante' },
-  { key: 'Magique', emoji: '✨', desc: 'Douce et féérique' },
-  { key: 'Robot', emoji: '🤖', desc: 'Drôle et métallique' },
-]
 
 const STEPS_HOW = [
   { emoji: '💡', title: 'Raconte une idée', text: "Ton enfant décrit ce qu'il imagine : un dragon, une fusée, un doudou perdu…" },
@@ -33,7 +22,7 @@ const STEPS_HOW = [
 
 const primaryBtn ={ width: '100%', background: 'var(--violet)', color: '#fff', borderRadius: 26, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }
 
-export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef }) {
+export default function Onboarding({ voice = 'Aria', onVoice, onFinish, backRef }) {
   const [step, setStep] = useState(0)
   const [name, setName] = useState('')
   const [age, setAge] = useState(5)
@@ -49,10 +38,11 @@ export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef
   useEffect(() => {
     let cancelled = false
     VOICES.forEach(({ key: v }) => {
-      const k = audioKey(VOICE_SAMPLE, v, PREVIEW_PROVIDER)
+      const eng = engineOf(v)
+      const k = audioKey(VOICE_SAMPLE, v, eng)
       getCachedAudio(k).then((cached) => {
         if (cancelled || cached) return
-        generateAudio(VOICE_SAMPLE, v, PREVIEW_PROVIDER)
+        generateAudio(VOICE_SAMPLE, v, eng)
           .then((d) => { if (!cancelled && d?.url) putCachedAudio(k, d.url) })
           .catch(() => {})
       })
@@ -66,10 +56,11 @@ export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef
     stopPreview()
     setPreviewing(v)
     try {
-      const k = audioKey(VOICE_SAMPLE, v, PREVIEW_PROVIDER)
+      const eng = engineOf(v)
+      const k = audioKey(VOICE_SAMPLE, v, eng)
       let url = await getCachedAudio(k)
       if (!url) {
-        const data = await generateAudio(VOICE_SAMPLE, v, PREVIEW_PROVIDER)
+        const data = await generateAudio(VOICE_SAMPLE, v, eng)
         url = data?.url || null
         if (url) putCachedAudio(k, url)
       }
@@ -181,7 +172,7 @@ export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef
                   <button key={v.key} onClick={() => testVoice(v.key)} style={{ display: 'flex', alignItems: 'center', gap: 13, background: active ? 'var(--violet-soft)' : 'var(--card)', borderRadius: 20, padding: '13px 15px', textAlign: 'left', border: active ? '2px solid var(--violet)' : '2px solid transparent', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
                     <span style={{ fontSize: 26, flex: 'none' }}>{v.emoji}</span>
                     <span style={{ flex: 1 }}>
-                      <span style={{ display: 'block', fontSize: 17, fontWeight: 700 }}>{v.key}</span>
+                      <span style={{ display: 'block', fontSize: 17, fontWeight: 700 }}>{v.label} <span style={{ fontSize: 13, color: 'var(--ink2)' }}>{v.genre === 'f' ? '♀' : '♂'}</span></span>
                       <span style={{ display: 'block', fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500 }}>{v.desc}</span>
                     </span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--card)', borderRadius: 14, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: 'var(--ink)', flex: 'none', minWidth: 78, justifyContent: 'center' }}>{previewing === v.key ? '🎙️…' : (<><RawSvg html={playMini} />Écouter</>)}</span>

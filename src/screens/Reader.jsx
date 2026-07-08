@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import { speak, stopSpeak, ttsSupported } from '../lib/tts.js'
-import { generateAudio, generateImage } from '../lib/api.js'
+import { generateAudio, generateImage, resolveProvider } from '../lib/api.js'
 import { audioKey, getCachedAudio, putCachedAudio } from '../lib/audioCache.js'
 
 // Retire les balises d'émotion v3 [..] (ex. [softly]) pour l'AFFICHAGE et la voix du
@@ -30,6 +30,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   const [mutedHint, setMutedHint] = useState(false)
   const [loadingAudio, setLoadingAudio] = useState(false)
   const [fixImages, setFixImages] = useState({}) // index -> url (illustrations régénérées ici)
+  const [provider, setProvider] = useState(null) // moteur voix (selon la voix choisie), décidé 1× à l'ouverture
   const tokenRef = useRef(0)
   const hintRef = useRef(null)
   const audioRef = useRef(null)
@@ -60,6 +61,17 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
     setFixImages({})
     stopAll()
   }, [story?.id])
+
+  // Décide le moteur de narration selon la VOIX choisie (Gemini direct, ou ElevenLabs si crédits) —
+  // 1× par ouverture, appliqué à toutes les pages (cohérence). Se recalcule si on change de voix.
+  useEffect(() => {
+    let cancelled = false
+    setProvider(null)
+    const chars = pages.reduce((n, p) => { const t = typeof p === 'string' ? p : p && p.text; return n + ((t && t.length) || 0) }, 0)
+    resolveProvider(voice, chars).then((prov) => { if (!cancelled) setProvider(prov) })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [story?.id, voice])
 
   // Répare les illustrations manquantes : si on a quitté la création AVANT la fin des
   // images, la page a été sauvée avec son `prompt` mais sans image → on la régénère ici
@@ -106,8 +118,8 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       // on génère à la volée (puis cache) afin de respecter la sélection.
       let url = cur.audio && voice === 'Douce' ? cur.audio : null
       if (!url) {
-        // Fournisseur voix figé pour TOUTE l'histoire (décidé à la création) -> cohérence.
-        const provider = story?.audioProvider
+        if (!provider) { setLoadingAudio(true); return } // moteur pas encore décidé -> l'effet re-jouera
+        // Moteur figé pour TOUTE l'histoire (selon la voix choisie) -> cohérence.
         const key = audioKey(cur.text, voice, provider)
         url = await getCachedAudio(key) // déjà narré ? -> instantané, 0 crédit
         if (cancelled || tokenRef.current !== myToken) return
@@ -139,7 +151,7 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       stopAll()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, page, voice, soundOn, paywall])
+  }, [playing, page, voice, soundOn, paywall, provider])
 
   // Coupe l'audio en quittant le lecteur.
   useEffect(() => () => stopAll(), [])

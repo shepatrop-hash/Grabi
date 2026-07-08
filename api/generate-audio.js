@@ -12,24 +12,27 @@ const USE_BLOB = !!process.env.BLOB_READ_WRITE_TOKEN
 
 // --- Gemini TTS ---
 const GEMINI_MODEL = process.env.GEMINI_TTS_MODEL || 'gemini-2.5-pro-preview-tts'
-// Les 4 « humeurs » -> une voix Gemini + un ton (validées à l'oreille : Aoede féminine, Puck masculine).
+// 4 voix (clés partagées avec src/lib/voices.js). Voix Gemini validées : Aoede ♀, Puck ♂.
+// Pour Douce/Noe (voix ElevenLabs), l'entrée Gemini sert de REPLI si les crédits EL sont épuisés.
 const GEMINI_VOICES = {
+  Aria: { voice: 'Aoede', tone: 'une voix douce et féérique, tendre et rassurante pour le coucher' },
   Douce: { voice: 'Aoede', tone: 'une voix très douce, tendre et chaleureuse, rassurante pour le coucher' },
-  Rigolote: { voice: 'Puck', tone: "une voix rigolote, vive et espiègle, pleine d'entrain et de sourire" },
-  Magique: { voice: 'Aoede', tone: 'une voix douce et féérique, un peu mystérieuse et émerveillée' },
-  Robot: { voice: 'Aoede', tone: 'une voix de gentil petit robot rigolo, au ton régulier et amusant' },
+  Malo: { voice: 'Puck', tone: "une voix rigolote, vive et espiègle, pleine d'entrain et de sourire" },
+  Noe: { voice: 'Puck', tone: 'une voix chaleureuse et posée de gentil conteur du soir' },
 }
 
-// --- ElevenLabs (repli) ---
+// --- ElevenLabs ---
 const EL_MODEL = process.env.ELEVENLABS_MODEL || 'eleven_v3'
 const EL_FALLBACK = 'eleven_multilingual_v2'
 const env = (k, d) => process.env[k] || d
-const BASE = process.env.VOICE_BASE_ID || 'DguSKGFJeOJdyMI6NrYY'
+const BASE = process.env.VOICE_BASE_ID || 'DguSKGFJeOJdyMI6NrYY' // féminine (Koraly)
+const HOMME = process.env.VOICE_HOMME_ID || 'JBFqnCBsd6RMkjVDRZzb' // masculine (premade « George », surchargeable)
 const EL_VOICES = {
   Douce: { id: env('VOICE_DOUCE_ID', BASE), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.12, speed: 0.96, use_speaker_boost: true } },
-  Rigolote: { id: env('VOICE_RIGOLOTE_ID', BASE), settings: { stability: 0.4, similarity_boost: 0.75, style: 0.45, speed: 1.04, use_speaker_boost: true } },
-  Magique: { id: env('VOICE_MAGIQUE_ID', BASE), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.3, speed: 0.97, use_speaker_boost: true } },
-  Robot: { id: env('VOICE_ROBOT_ID', BASE), settings: { stability: 0.9, similarity_boost: 0.45, style: 0, speed: 0.92, use_speaker_boost: false } },
+  Noe: { id: HOMME, settings: { stability: 0.55, similarity_boost: 0.75, style: 0.1, speed: 0.96, use_speaker_boost: true } },
+  // Aria/Malo sont des voix Gemini : ces entrées ne servent que de repli d'urgence si Gemini échoue.
+  Aria: { id: env('VOICE_DOUCE_ID', BASE), settings: { stability: 0.5, similarity_boost: 0.8, style: 0.2, speed: 0.97, use_speaker_boost: true } },
+  Malo: { id: HOMME, settings: { stability: 0.4, similarity_boost: 0.75, style: 0.35, speed: 1.02, use_speaker_boost: true } },
 }
 
 export const config = { maxDuration: 60 }

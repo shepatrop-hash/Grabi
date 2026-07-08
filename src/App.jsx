@@ -23,7 +23,8 @@ import Published from './screens/Published.jsx'
 import TopBack from './components/BackButton.jsx'
 import BackgroundMusic from './components/BackgroundMusic.jsx'
 import RawSvg from './components/RawSvg.jsx'
-import { generateStory, generateImage, generateQuestions, generateAudio, audioPlan } from './lib/api.js'
+import { generateStory, generateImage, generateQuestions, generateAudio, resolveProvider } from './lib/api.js'
+import { normalizeVoice, DEFAULT_VOICE } from './lib/voices.js'
 import { audioKey, getCachedAudio, putCachedAudio } from './lib/audioCache.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
@@ -48,6 +49,16 @@ const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none
 
 function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPublish, allowPublish = true }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
+  const [provider, setProvider] = useState(null) // moteur voix pour l'histoire (selon la voix choisie)
+
+  // Décide le moteur de narration UNE fois : Gemini si voix Gemini, sinon ElevenLabs si crédits.
+  useEffect(() => {
+    if (!story?.pages) return
+    let cancelled = false
+    const chars = story.pages.reduce((n, p) => n + (p?.texte?.length || 0), 0)
+    resolveProvider(voice, chars).then((prov) => { if (!cancelled) setProvider(prov) })
+    return () => { cancelled = true }
+  }, [story, voice])
 
   useEffect(() => {
     if (!story?.pages) return
@@ -71,9 +82,8 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
   // Pré-génère la NARRATION de chaque page EN ARRIÈRE-PLAN (en même temps que les images)
   // et la met en cache → lecture INSTANTANÉE dans le lecteur (plus de « Grabi prépare sa voix »).
   useEffect(() => {
-    if (!story?.pages) return
+    if (!story?.pages || !provider) return // attend que le moteur soit décidé
     let cancelled = false
-    const provider = story.audioProvider // fournisseur figé pour TOUTE l'histoire
     story.pages.forEach((p) => {
       const text = p.texte
       if (!text) return
@@ -88,7 +98,7 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
     return () => {
       cancelled = true
     }
-  }, [story, voice])
+  }, [story, voice, provider])
 
   const assemble = () => {
     const pages = (story?.pages || []).map((p, i) => ({
@@ -106,7 +116,8 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
       personnages: story?.personnages || [],
       mood: story?.mood || 'calm',
       categorie: story?.categorie || 'fantastique',
-      audioProvider: story?.audioProvider || 'eleven', // fournisseur voix figé pour l'histoire
+      voice, // la voix (donc le moteur) avec laquelle l'histoire a été créée
+      audioProvider: provider || 'gemini', // indice de moteur (le lecteur re-décide selon la voix)
     }
   }
 
@@ -166,7 +177,7 @@ export default function App() {
   const [stories, setStories] = useState(() => load('stories', []))
   const [smiles, setSmiles] = useState(() => load('smiles', {}))
   const [given, setGiven] = useState(() => load('given', {}))
-  const [voice, setVoice] = useState(() => load('voice', 'Douce'))
+  const [voice, setVoice] = useState(() => normalizeVoice(load('voice', DEFAULT_VOICE)))
   // Deux réglages audio indépendants : la voix (narration des histoires) et les
   // sons/effets. Migration depuis l'ancien réglage unique « soundOn ».
   const [voiceOn, setVoiceOn] = useState(() => load('voiceOn', load('soundOn', true)))
@@ -304,14 +315,7 @@ export default function App() {
     setScreen('generating')
     try {
       const data = await generateStory(idea, answers)
-      const st = data.story
-      // Décide LE fournisseur de voix pour TOUTE l'histoire, UNE seule fois : ElevenLabs tant
-      // qu'il reste assez de crédits pour l'histoire entière, sinon Gemini. Ainsi toutes les
-      // pages sont narrées par le MÊME moteur (jamais un mélange en cours d'histoire).
-      const chars = (st?.pages || []).reduce((n, p) => n + (p?.texte?.length || 0), 0)
-      const plan = await audioPlan(chars, false)
-      st.audioProvider = plan?.provider || 'eleven'
-      setStory(st)
+      setStory(data.story)
       setScreen('ready')
     } catch (e) {
       setError(
