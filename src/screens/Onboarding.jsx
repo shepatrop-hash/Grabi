@@ -4,6 +4,7 @@ import RawSvg from '../components/RawSvg.jsx'
 import { VOICE_SAMPLE } from '../lib/grabiCustom.js'
 import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
 import { generateAudio } from '../lib/api.js'
+import AgeStepper from '../components/AgeStepper.jsx'
 
 // Premier lancement : bienvenue -> comment ça marche -> prénom/âge -> voix -> (paywall).
 // La voix est préchargée sur « Douce » par défaut ; l'enfant peut en écouter d'autres.
@@ -24,11 +25,7 @@ const STEPS_HOW = [
   { emoji: '🌙', title: 'Vous l\'écoutez ensemble', text: 'Une jolie voix la raconte, avec une musique douce pour s\'endormir.' },
 ]
 
-const MIN_AGE = 3
-const MAX_AGE = 12
-const TICKS = [3, 6, 9, 12]
-
-const primaryBtn = { width: '100%', background: 'var(--violet)', color: '#fff', borderRadius: 26, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }
+const primaryBtn ={ width: '100%', background: 'var(--violet)', color: '#fff', borderRadius: 26, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }
 
 export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef }) {
   const [step, setStep] = useState(0)
@@ -136,16 +133,8 @@ export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef
             </div>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12, marginLeft: 4, marginRight: 4 }}>
-                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Âge</label>
-                <span style={{ fontSize: 22, fontWeight: 800, color: 'var(--violet)' }}>{age} ans</span>
-              </div>
-              <input type="range" className="age-slider" min={MIN_AGE} max={MAX_AGE} step={1} value={age} onChange={(e) => setAge(parseInt(e.target.value, 10))} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, padding: '0 2px' }}>
-                {TICKS.map((a) => (
-                  <span key={a} style={{ fontSize: 13, fontWeight: 700, color: age === a ? 'var(--violet)' : 'var(--ink2)' }}>{a}</span>
-                ))}
-              </div>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 16, marginLeft: 4, textAlign: 'center' }}>Âge de l'enfant</label>
+              <AgeStepper age={age} setAge={setAge} />
             </div>
           </div>
         )}

@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import BackButton from '../components/BackButton.jsx'
+import AgeStepper from '../components/AgeStepper.jsx'
 
 // L'âge est stocké sous la forme « 5 ans ». On extrait le nombre pour la sélection.
 const parseAge = (age) => {
   const n = parseInt(String(age), 10)
   return Number.isFinite(n) ? n : 5
 }
-const MIN_AGE = 3
-const MAX_AGE = 12
-const TICKS = [3, 6, 9, 12]
 
 export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, onSave, onBack }) {
   const [name, setName] = useState(child.name || '')
@@ -48,25 +46,9 @@ export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, on
         </div>
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14, marginLeft: 4, marginRight: 4 }}>
-            <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Âge</label>
-            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--violet)' }}>{age} ans</span>
-          </div>
-          <input
-            type="range"
-            className="age-slider"
-            min={MIN_AGE}
-            max={MAX_AGE}
-            step={1}
-            value={age}
-            onChange={(e) => setAge(parseInt(e.target.value, 10))}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, padding: '0 2px' }}>
-            {TICKS.map((a) => (
-              <span key={a} style={{ fontSize: 13, fontWeight: 700, color: age === a ? 'var(--violet)' : 'var(--ink2)' }}>{a}</span>
-            ))}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500, marginTop: 12, marginLeft: 4 }}>Glisse Grabi pour choisir l'âge. Il adapte ses histoires en conséquence.</div>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--ink2)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 16, marginLeft: 4, textAlign: 'center' }}>Âge</label>
+          <AgeStepper age={age} setAge={setAge} />
+          <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500, marginTop: 16, marginLeft: 4, textAlign: 'center' }}>Grabi adapte ses histoires en fonction de l'âge.</div>
         </div>
       </div>
 
