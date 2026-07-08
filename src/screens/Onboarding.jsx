@@ -66,7 +66,7 @@ export default function Onboarding({ voice = 'Douce', onVoice, onFinish, backRef
     backRef.current = () => { if (step > 0) { back(); return true } return false }
     return () => { if (backRef) backRef.current = null }
   }, [step, backRef])
-  const finish = () => { stopPreview(); onFinish && onFinish({ name: name.trim() || 'Mon enfant', age: `${age} ans` }) }
+  const finish = () => { stopPreview(); onFinish && onFinish({ name: name.trim() || 'Mon enfant', age: `${age} ${age <= 1 ? 'an' : 'ans'}` }) }
 
   const Dots = () => (
     <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '4px 0 2px' }}>

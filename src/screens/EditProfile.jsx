@@ -15,7 +15,7 @@ export default function EditProfile({ child = { name: 'Léa', age: '5 ans' }, on
 
   const save = () => {
     const clean = name.trim() || child.name || 'Mon enfant'
-    onSave({ name: clean, age: `${age} ans` })
+    onSave({ name: clean, age: `${age} ${age <= 1 ? 'an' : 'ans'}` })
   }
 
   return (

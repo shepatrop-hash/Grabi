@@ -6,7 +6,7 @@ const icon = (d) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
 const minusSvg = icon('<path d="M5 12 H19"></path>')
 const plusSvg = icon('<path d="M12 5 V19 M5 12 H19"></path>')
 
-export default function AgeStepper({ age, setAge, min = 3, max = 12 }) {
+export default function AgeStepper({ age, setAge, min = 0, max = 12 }) {
   const dec = () => setAge((a) => Math.max(min, a - 1))
   const inc = () => setAge((a) => Math.min(max, a + 1))
   const round = (enabled) => ({
@@ -21,7 +21,7 @@ export default function AgeStepper({ age, setAge, min = 3, max = 12 }) {
       <button onClick={dec} disabled={age <= min} aria-label="Diminuer l'âge" style={round(age > min)}><RawSvg html={minusSvg} /></button>
       <div style={{ minWidth: 96, textAlign: 'center' }}>
         <span style={{ fontSize: 42, fontWeight: 800, color: 'var(--violet)', lineHeight: 1 }}>{age}</span>
-        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink2)', marginLeft: 6 }}>ans</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink2)', marginLeft: 6 }}>{age <= 1 ? 'an' : 'ans'}</span>
       </div>
       <button onClick={inc} disabled={age >= max} aria-label="Augmenter l'âge" style={round(age < max)}><RawSvg html={plusSvg} /></button>
     </div>
