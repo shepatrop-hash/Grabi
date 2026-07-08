@@ -36,10 +36,10 @@ Pour chaque scène, fournis aussi un "prompt_illustration" EN ANGLAIS, riche, im
   blue dungarees and yellow sneakers"). Reprends RIGOUREUSEMENT la même description à chaque scène pour
   que le personnage reste exactement le même. Chaque personnage est toujours décrit ENTIÈREMENT HABILLÉ ;
 - décrit l'action et le décor de façon précise, vivante et un peu drôle ;
-- se termine TOUJOURS par cette phrase exacte : "Soft pastel children's book illustration style, humorous and joyful mood, rounded shapes."
+- se termine TOUJOURS par cette phrase exacte : "Hand-drawn colored pencil and pastel crayon children's storybook illustration on textured paper, warm and joyful mood, rounded shapes."
 
 Exemple de "prompt_illustration" attendu :
-"The sky-blue crocodile Trama and the small tortoise Gaston push together the enormous orange polka-dot sofa, which slides smoothly on round books used as rollers, heading toward the front door. Both characters laugh with delight. Soft pastel children's book illustration style, humorous and joyful mood, rounded shapes."
+"The sky-blue crocodile Trama and the small tortoise Gaston push together the enormous orange polka-dot sofa, which slides smoothly on round books used as rollers, heading toward the front door. Both characters laugh with delight. Hand-drawn colored pencil and pastel crayon children's storybook illustration on textured paper, warm and joyful mood, rounded shapes."
 
 Fournis aussi "personnages" : 1 à 3 éléments clés (le héros principal, et au plus 1-2 personnages,
 objets ou lieux récurrents importants). Pour chacun : un "nom" court en français, et une "description"
