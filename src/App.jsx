@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Home from './screens/Home.jsx'
+import Onboarding from './screens/Onboarding.jsx'
 import Create from './screens/Create.jsx'
 import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
@@ -149,7 +150,9 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
 }
 
 export default function App() {
-  const [screen, setScreen] = useState('home')
+  // Premier lancement -> onboarding (bienvenue, prénom/âge, voix) puis paywall.
+  const [onboarded, setOnboarded] = useState(() => load('onboarded', false))
+  const [screen, setScreen] = useState(() => (load('onboarded', false) ? 'home' : 'onboarding'))
   const [storyText, setStoryText] = useState('')
   const [error, setError] = useState('')
   const [story, setStory] = useState(null) // histoire brute en cours (avant sauvegarde)
@@ -193,6 +196,7 @@ export default function App() {
   useEffect(() => save('musicOn', musicOn), [musicOn])
   useEffect(() => setEffectsEnabled(effectsOn), [effectsOn])
   useEffect(() => save('premium', premium), [premium])
+  useEffect(() => save('onboarded', onboarded), [onboarded])
 
   // Facturation (RevenueCat) : au démarrage, synchronise le vrai statut Premium (natif uniquement).
   useEffect(() => {
@@ -244,12 +248,16 @@ export default function App() {
   // navRef garde toujours l'écran courant pour que le listener (enregistré une fois) soit à jour.
   const navRef = useRef({ screen })
   navRef.current = { screen, origin: reader?.origin }
+  // Pendant l'onboarding, le bouton retour recule d'une étape (l'Onboarding pose ce
+  // callback ; il renvoie true s'il a consommé le retour, false si on est à la 1ère étape).
+  const onbBackRef = useRef(null)
   useEffect(() => {
     let handle
     import('@capacitor/app')
       .then(async (m) => {
         handle = await m.App.addListener('backButton', () => {
           const { screen: s, origin } = navRef.current
+          if (s === 'onboarding') { if (onbBackRef.current && onbBackRef.current()) return; return m.App.exitApp() }
           if (s === 'reader') return setScreen(origin || 'home')
           if (BACK_TARGET[s]) return setScreen(BACK_TARGET[s])
           m.App.exitApp() // sur l'accueil : quitter l'app
@@ -418,6 +426,14 @@ export default function App() {
     setScreen('settings')
   }
 
+  // Fin de l'onboarding : on enregistre le profil enfant + la voix (déjà posée en direct),
+  // on marque l'app comme découverte, et on amène à l'essai gratuit (paywall).
+  function finishOnboarding({ name, age }) {
+    setChild({ name: name || 'Mon enfant', age: age || '5 ans' })
+    setOnboarded(true)
+    setScreen('subscribe')
+  }
+
   async function toggleReminder() {
     if (reminder.on) {
       setReminder((r) => ({ ...r, on: false }))
@@ -447,6 +463,9 @@ export default function App() {
   return (
     <div className="app-shell" data-theme={nightMode ? 'night' : 'day'}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
+      {screen === 'onboarding' && (
+        <Onboarding voice={voice} onVoice={setVoice} onFinish={finishOnboarding} backRef={onbBackRef} />
+      )}
       {screen === 'home' && (
         <Home
           childName={child.name}
