@@ -1,5 +1,35 @@
 :root {
-  /* Palette reprise à l'identique du prototype Grabi (thème jour) */
+  /* Thème PAR DÉFAUT = « Pénombre » : un soir tamisé, doux pour les yeux.
+     Les accents vifs (jaune/rose/menthe/violet) restent éclatants pour garder
+     le côté joyeux ; seules les surfaces et les tons « soft » passent en sombre. */
+  --bg: linear-gradient(180deg, #2A2340 0%, #221B38 100%);
+  --ink: #F2ECFF;
+  --ink2: #B2A6D4;
+  --yellow: #FFCC3E;
+  --yellow-soft: #4C3B1E;
+  --pink: #FF7FB0;
+  --pink-soft: #4E2740;
+  --sky: #56C7FF;
+  --sky-soft: #26314F;
+  --mint: #3FD7B0;
+  --mint-soft: #1E4A42;
+  --violet: #A98CFF;
+  --violet-soft: #3A2F5C;
+  /* Surfaces */
+  --card: #322A4C;       /* fond des cartes */
+  --card-soft: #3C3358;  /* boutons/surfaces secondaires */
+  --card-border: #463B68;/* bordures douces */
+  --track-off: #4A3F70;  /* rail d'interrupteur éteint */
+  --knob: #F2ECFF;       /* pastille d'interrupteur */
+  /* Accents contextuels (navbar + sous-titres des cartes d'accueil) */
+  --nav-gold: #E7C15E;
+  --nav-idle: #7E7399;
+  --free-sub: #D9B876;
+  --create-sub: #C3B0F0;
+}
+
+/* ☀️ Thème clair (option dans « Mon coin ») = la DA claire d'origine du prototype. */
+[data-theme='light'] {
   --bg: #FFF7EC;
   --ink: #4A3A66;
   --ink2: #9789AE;
@@ -13,66 +43,30 @@
   --mint-soft: #C6F2E6;
   --violet: #A98CFF;
   --violet-soft: #E6DDFF;
-  /* Surfaces (variabilisées pour permettre le thème nuit) */
-  --card: #fff;          /* fond des cartes */
-  --card-soft: #F1EEF8;  /* boutons/surfaces secondaires */
-  --card-border: #EDE7F5;/* bordures douces */
-  --track-off: #D9D3E4;  /* rail d'interrupteur éteint */
-  --knob: #fff;          /* pastille d'interrupteur */
+  --card: #fff;
+  --card-soft: #F1EEF8;
+  --card-border: #EDE7F5;
+  --track-off: #D9D3E4;
+  --knob: #fff;
+  --nav-gold: #C1912E;
+  --nav-idle: #B3AAC4;
+  --free-sub: #a07d2a;
+  --create-sub: #7d5fc4;
 }
 
-/* 🌙 Thème nuit / galaxy : vrai ciel étoilé, on garde toute la DA de l'app.
-   Le fond empile des étoiles (petits points), des nébuleuses colorées (halos)
-   puis un dégradé de nuit profond. Les accents vifs (jaune/rose/menthe…) restent
-   éclatants pour conserver le côté joyeux ; seules les surfaces passent en galaxy. */
-[data-theme='night'] {
-  --bg:
-    radial-gradient(2px 2px at 12% 16%, rgba(255,255,255,.95) 50%, transparent 51%),
-    radial-gradient(2px 2px at 78% 11%, rgba(255,255,255,.8) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 45% 26%, rgba(201,230,255,.85) 50%, transparent 51%),
-    radial-gradient(2px 2px at 88% 34%, rgba(255,240,200,.9) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 23% 58%, rgba(255,255,255,.7) 50%, transparent 51%),
-    radial-gradient(2px 2px at 66% 70%, rgba(255,255,255,.7) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 7% 82%, rgba(201,230,255,.75) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 93% 80%, rgba(255,255,255,.75) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 52% 88%, rgba(255,224,233,.8) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 34% 8%, rgba(255,255,255,.65) 50%, transparent 51%),
-    radial-gradient(125% 80% at 50% -12%, rgba(135,98,235,.42) 0%, rgba(135,98,235,0) 55%),
-    radial-gradient(95% 62% at 86% 10%, rgba(86,199,255,.20) 0%, rgba(86,199,255,0) 55%),
-    radial-gradient(85% 60% at 8% 92%, rgba(255,127,176,.20) 0%, rgba(255,127,176,0) 58%),
-    linear-gradient(180deg, #1C1444 0%, #150E33 48%, #0E0926 100%);
-  --ink: #F1ECFF;
-  --ink2: #ABA0D4;
-  /* Tons « bijou » nuit : ambre chaud / orchidée / océan / sapin / indigo —
-     assez saturés pour ne pas faire boueux quand ils remplissent une carte. */
-  --yellow-soft: #5E4417;
-  --pink-soft: #5C2A4C;
-  --sky-soft: #1E3E62;
-  --mint-soft: #194A42;
-  --violet-soft: #3A2F70;
-  --card: #221A47;
-  --card-soft: #2E2558;
-  --card-border: #3A3170;
-  --track-off: #443A6E;
-  --knob: #F1ECFF;
-}
-
-/* En nuit, les sous-titres colorés des cartes d'accueil (olive/mauve/violet)
-   manquent de contraste sur les surfaces sombres → on les passe en ink2 lisible.
-   Le thème jour garde ses couleurs d'origine. */
-[data-theme='night'] .card-sub {
+/* En sombre (défaut), les sous-titres colorés des cartes d'accueil manquent de
+   contraste → on les passe en ink2 lisible. Le bandeau « sourires » (Mes histoires)
+   passe en surface sombre + texte clair. Le thème clair garde ses couleurs d'origine. */
+[data-theme='dark'] .card-sub {
   color: var(--ink2) !important;
 }
-
-/* Bandeau « sourires » (Mes histoires) : dégradé clair + texte sombre en jour,
-   surface galaxy + texte clair en nuit (sinon ça jure avec le sombre). */
-[data-theme='night'] .smiles-banner {
+[data-theme='dark'] .smiles-banner {
   background: var(--card-soft) !important;
 }
-[data-theme='night'] .smiles-banner .sb-h {
+[data-theme='dark'] .smiles-banner .sb-h {
   color: var(--ink) !important;
 }
-[data-theme='night'] .smiles-banner .sb-c {
+[data-theme='dark'] .smiles-banner .sb-c {
   color: var(--pink) !important;
 }
 
@@ -90,7 +84,7 @@ body,
 body {
   font-family: Fredoka, system-ui, -apple-system, sans-serif;
   color: var(--ink);
-  background: #e7e5df;
+  background: #211B38;
   -webkit-font-smoothing: antialiased;
 }
 

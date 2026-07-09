@@ -48,12 +48,12 @@ export default function Home({ childName = 'Léa', createStatus = {}, onOpenRead
           <button onClick={onGoFree} style={{ background: 'var(--yellow-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px rgba(255,180,40,.7)' }}>
             <div style={{ width: 54, height: 54, borderRadius: 18, background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconBooks} /></div>
             <div style={{ fontSize: 16.5, fontWeight: 800, marginTop: 12, lineHeight: 1.1 }}>Histoires<br />gratuites</div>
-            <div style={{ fontSize: 12.5, fontWeight: 600, color: '#a07d2a', marginTop: 4 }}>{FREE_STORIES.length} histoires</div>
+            <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--free-sub)', marginTop: 4 }}>{FREE_STORIES.length} histoires</div>
           </button>
           <button onClick={onGoCreate} style={{ background: 'var(--violet-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px rgba(169,140,255,.6)' }}>
             <div style={{ width: 54, height: 54, borderRadius: 18, background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconWand} /></div>
             <div style={{ fontSize: 16.5, fontWeight: 800, marginTop: 12, lineHeight: 1.1 }}>Crée ton<br />histoire</div>
-            <div style={{ fontSize: 12.5, fontWeight: 600, color: '#7d5fc4', marginTop: 4 }}>{createHint}</div>
+            <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--create-sub)', marginTop: 4 }}>{createHint}</div>
           </button>
         </div>
       </div>
