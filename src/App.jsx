@@ -41,7 +41,7 @@ const BACK_TARGET = {
   free: 'home', premium: 'home', subscribe: 'home', settings: 'home',
   'edit-profile': 'settings', legal: 'espace-parents', rewards: 'settings',
   'mon-grabi': 'settings', 'espace-parents': 'settings', 'mon-abonnement': 'settings',
-  community: 'home', mine: 'home', published: 'mine',
+  community: 'home', mine: 'settings', published: 'mine',
 }
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
@@ -494,7 +494,7 @@ export default function App() {
       {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
-        <Premium isPremium={premium} onBack={() => setScreen('home')} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} />
+        <Premium isPremium={premium} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={() => setScreen('community')} onSettings={() => setScreen('settings')} />
       )}
       {screen === 'subscribe' && (
         <Subscribe onClose={() => setScreen('home')} onStart={startSubscribe} />
@@ -511,7 +511,7 @@ export default function App() {
           onEspaceParents={() => setScreen('espace-parents')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
-          onCreate={() => setScreen('create')}
+          onDecouvrir={() => setScreen('premium')}
           onMine={() => setScreen('mine')}
         />
       )}
@@ -571,8 +571,7 @@ export default function App() {
           onGive={giveGrabi}
           onOpenReader={(s) => openReader(s, 'community')}
           onHome={() => setScreen('home')}
-          onCreate={() => setScreen('create')}
-          onMine={() => setScreen('mine')}
+          onDecouvrir={() => setScreen('premium')}
           onSettings={() => setScreen('settings')}
         />
       )}
@@ -588,6 +587,7 @@ export default function App() {
           onCreate={() => setScreen('create')}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
+          onDecouvrir={() => setScreen('premium')}
           onSettings={() => setScreen('settings')}
         />
       )}

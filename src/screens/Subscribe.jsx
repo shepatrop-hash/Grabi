@@ -51,8 +51,8 @@ export default function Subscribe({ onClose, onStart }) {
 
         {/* Choix de la formule — annuel par défaut */}
         <div style={{ display: 'flex', gap: 12, padding: '18px 24px 0' }}>
-          <PlanCard selected={plan === 'annual'} onClick={() => setPlan('annual')} title="Annuel" price="39,99 €" per="/ an" note="≈ 3,33 €/mois · 2 mois offerts" badge="Le + avantageux" />
-          <PlanCard selected={plan === 'monthly'} onClick={() => setPlan('monthly')} title="Mensuel" price="4,99 €" per="/ mois" note="Sans engagement" />
+          <PlanCard selected={plan === 'annual'} onClick={() => setPlan('annual')} title="Annuel" price="49,99 €" per="/ an" note="≈ 4,17 €/mois · 3 mois offerts" badge="Le + avantageux" />
+          <PlanCard selected={plan === 'monthly'} onClick={() => setPlan('monthly')} title="Mensuel" price="5,99 €" per="/ mois" note="Sans engagement" />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, margin: '16px 24px 0', background: 'var(--mint-soft)', color: '#0f9b76', borderRadius: 18, padding: '11px 14px', fontSize: 14, fontWeight: 700 }}>🎁 3 jours d'essai gratuit</div>
@@ -70,7 +70,7 @@ export default function Subscribe({ onClose, onStart }) {
       <div style={{ flex: 'none', padding: '6px 24px calc(env(safe-area-inset-bottom, 0px) + 20px)' }}>
         <button onClick={() => setChecking(true)} style={{ width: '100%', background: 'var(--violet)', color: '#fff', borderRadius: 28, height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }}>Commencer les 3 jours gratuits</button>
         <div style={{ textAlign: 'center', marginTop: 12, fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RawSvg html={lockSmall} />3 jours gratuits, puis {plan === 'annual' ? '39,99 €/an' : '4,99 €/mois'}.</span><br />Résiliable en 1 clic à tout moment.
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RawSvg html={lockSmall} />3 jours gratuits, puis {plan === 'annual' ? '49,99 €/an' : '5,99 €/mois'}.</span><br />Résiliable en 1 clic à tout moment.
         </div>
       </div>
     </div>

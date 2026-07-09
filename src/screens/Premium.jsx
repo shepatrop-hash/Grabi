@@ -1,5 +1,6 @@
 import RawSvg from '../components/RawSvg.jsx'
 import Grabi from '../components/Grabi.jsx'
+import BottomNav from '../components/BottomNav.jsx'
 import { WEEKLY_STORY, FREE_STORIES } from '../lib/samples.js'
 
 const backIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
@@ -13,15 +14,17 @@ const crownW = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><pat
 // Histoires bonus débloquées avec Premium (réutilise des histoires intégrées).
 const BONUS = FREE_STORIES.slice(2, 6)
 
-export default function Premium({ isPremium, onBack, onSubscribe, onOpenReader }) {
+export default function Premium({ isPremium, onSubscribe, onOpenReader, onHome, onCommunity, onSettings }) {
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'var(--violet-soft)', opacity: 0.7 }} />
 
       {/* En-tête */}
       <div style={{ padding: '6px 24px 8px', display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 2, flex: 'none' }}>
-        <button onClick={onBack} style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(74,58,102,.12)', flex: 'none' }}><RawSvg html={backIcon} /></button>
-        <div style={{ fontSize: 23, fontWeight: 700, lineHeight: 1.05, flex: 1 }}>Histoires de la semaine</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 24, fontWeight: 800, lineHeight: 1.05 }}>Découvrir</div>
+          <div style={{ fontSize: 13.5, color: 'var(--ink2)', fontWeight: 500, marginTop: 2 }}>La semaine &amp; les épisodes animés</div>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#FFD86A,#FFB23F)', color: '#7a4a00', fontSize: 13, fontWeight: 700, padding: '7px 12px', borderRadius: 20, boxShadow: '0 6px 14px -4px rgba(255,160,40,.6)', flex: 'none' }}><RawSvg html={crownBadge} />{isPremium ? 'Actif' : 'Premium'}</div>
       </div>
 
@@ -81,18 +84,19 @@ export default function Premium({ isPremium, onBack, onSubscribe, onOpenReader }
             ))}
           </div>
         </div>
+        {/* Abonnement / statut — dans le défilement (la navbar occupe le bas) */}
+        {isPremium ? (
+          <div style={{ margin: '22px 24px 8px' }}>
+            <div style={{ background: 'var(--mint-soft)', color: '#1f9e7a', borderRadius: 24, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 16, fontWeight: 700 }}>✨ Tu as accès à tout l'univers Grabi</div>
+          </div>
+        ) : (
+          <button onClick={onSubscribe} style={{ display: 'block', width: 'calc(100% - 48px)', margin: '22px 24px 8px' }}>
+            <div style={{ background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 28, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }}><RawSvg html={crownW} />Débloquer tout l'univers</div>
+          </button>
+        )}
       </div>
 
-      {/* Bas : abonnement ou statut */}
-      {isPremium ? (
-        <div style={{ flex: 'none', padding: '6px 24px calc(env(safe-area-inset-bottom, 0px) + 24px)', position: 'relative', zIndex: 2 }}>
-          <div style={{ background: 'var(--mint-soft)', color: '#1f9e7a', borderRadius: 24, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 16, fontWeight: 700 }}>✨ Tu as accès à tout l'univers Grabi</div>
-        </div>
-      ) : (
-        <button onClick={onSubscribe} style={{ width: '100%', flex: 'none', padding: '6px 24px calc(env(safe-area-inset-bottom, 0px) + 24px)', position: 'relative', zIndex: 2 }}>
-          <div style={{ background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 28, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }}><RawSvg html={crownW} />Débloquer tout l'univers</div>
-        </button>
-      )}
+      <BottomNav active="decouvrir" onAccueil={onHome} onDecouvrir={() => {}} onCopains={onCommunity} onMonCoin={onSettings} />
     </div>
   )
 }
