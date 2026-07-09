@@ -502,7 +502,6 @@ export default function App() {
       {screen === 'home' && (
         <Home
           childName={child.name}
-          reads={reads}
           createStatus={creationStatus(plan, creations)}
           onOpenReader={openReader}
           onGoFree={() => setScreen('free')}

@@ -1,7 +1,6 @@
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BottomNav from '../components/BottomNav.jsx'
-import { playGrabiSound } from '../lib/sounds.js'
 import { WEEKLY_STORY, FREE_STORIES } from '../lib/samples.js'
 
 const iconBooks = `<svg width="40" height="40" viewBox="0 0 46 46"><rect x="8" y="27" width="30" height="9" rx="3.5" fill="#FF7FB0"></rect><rect x="6" y="17.5" width="34" height="9" rx="3.5" fill="#56C7FF"></rect><rect x="10" y="8" width="26" height="9" rx="3.5" fill="#3FD7B0"></rect></svg>`
@@ -10,9 +9,7 @@ const playWhite = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#7d5fc4
 
 // Accueil volontairement épuré : le parcours du soir (écouter la semaine, gratuites, créer).
 // Les copains et les épisodes animés vivent dans leurs onglets (Copains, Découvrir).
-export default function Home({ childName = 'Léa', reads = {}, createStatus = {}, onOpenReader, onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoSettings }) {
-  // Petit compteur de « complicité » avec Grabi : grandit avec les jours de lecture d'affilée.
-  const bond = Math.min(99, 42 + (reads.streak || 0) * 9)
+export default function Home({ childName = 'Léa', createStatus = {}, onOpenReader, onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoSettings }) {
   // Indice de quota sur la carte « Crée ton histoire » (selon l'abonnement).
   const createHint = createStatus.plan === 'paid' ? `${createStatus.left} / 10 ce mois`
     : createStatus.plan === 'trial' ? (createStatus.left > 0 ? '1 histoire offerte ✨' : 'Passe au premium')
@@ -28,10 +25,7 @@ export default function Home({ childName = 'Léa', reads = {}, createStatus = {}
           <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink2)' }}>Bonsoir {childName}&nbsp;🌙</div>
           <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.12, maxWidth: 200, marginTop: 3 }}>Prêt·e pour l'histoire du soir&nbsp;?</div>
         </div>
-        <div style={{ position: 'relative', flex: 'none' }}>
-          <div onClick={() => playGrabiSound()} style={{ cursor: 'pointer' }}><Grabi size={96} /></div>
-          <div style={{ position: 'absolute', right: 2, bottom: 4, background: 'var(--card)', borderRadius: 14, padding: '3px 8px', fontSize: 12, fontWeight: 800, boxShadow: '0 6px 14px -6px rgba(74,58,102,.4)', display: 'flex', alignItems: 'center', gap: 3 }}><span style={{ color: '#FF5C9A' }}>❤</span><span>{bond}%</span></div>
-        </div>
+        <div style={{ flex: 'none' }}><Grabi size={96} /></div>
       </div>
 
       {/* Contenu défilable */}
