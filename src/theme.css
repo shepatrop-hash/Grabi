@@ -77,6 +77,13 @@
   --hero-btn-ink: #4A3A66;
 }
 
+/* Surfaces à dégradé pastel codé en dur : violet profond en sombre (défaut), pastel
+   d'origine en clair. Le contenu (titre = --ink, blanc, confettis) reste lisible sur les deux. */
+.veil-weekly { background: linear-gradient(135deg, #5B4A8E, #7E5788); }
+[data-theme='light'] .veil-weekly { background: linear-gradient(150deg, #FFC9E0, #D9C4FF); }
+.veil-create { background: linear-gradient(165deg, #2C2A52 0%, #3A3068 52%, #5B3F6E 100%); }
+[data-theme='light'] .veil-create { background: linear-gradient(165deg, #8FD9FF 0%, #B6A8FF 52%, #FFA9CE 100%); }
+
 /* En sombre (défaut), les sous-titres colorés des cartes d'accueil manquent de
    contraste → on les passe en ink2 lisible. Le bandeau « sourires » (Mes histoires)
    passe en surface sombre + texte clair. Le thème clair garde ses couleurs d'origine. */

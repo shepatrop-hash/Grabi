@@ -51,7 +51,7 @@ export default function Premium({ isPremium, onSubscribe, onOpenReader, onHome, 
         </div>
 
         {/* Histoire de la semaine (faite main, format long) */}
-        <button onClick={() => onOpenReader(WEEKLY_STORY)} style={{ display: 'block', width: 'calc(100% - 48px)', textAlign: 'left', margin: '18px 24px 0', borderRadius: 32, padding: 20, background: 'linear-gradient(150deg,#FFC9E0,#D9C4FF)', boxShadow: '0 14px 30px -12px rgba(169,140,255,.6)' }}>
+        <button onClick={() => onOpenReader(WEEKLY_STORY)} className="veil-weekly" style={{ display: 'block', width: 'calc(100% - 48px)', textAlign: 'left', margin: '18px 24px 0', borderRadius: 32, padding: 20, boxShadow: '0 14px 30px -12px rgba(169,140,255,.6)' }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 12.5, fontWeight: 800, color: '#9b3f76', background: 'rgba(255,255,255,.6)', padding: '4px 10px', borderRadius: 14 }}>✨ Nouvelle chaque semaine</span>
             <span style={{ fontSize: 12.5, fontWeight: 800, color: '#5b3fa0', background: 'rgba(255,255,255,.6)', padding: '4px 10px', borderRadius: 14 }}>📖 Histoire longue</span>
@@ -70,7 +70,7 @@ export default function Premium({ isPremium, onSubscribe, onOpenReader, onHome, 
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink2)', marginBottom: 12 }}>{isPremium ? 'Tes histoires premium' : 'Bientôt débloquées'}</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             {BONUS.map((s) => (
-              <button key={s.id} onClick={() => (isPremium ? onOpenReader(s) : onSubscribe())} style={{ background: isPremium ? s.bg : '#F0ECF6', borderRadius: 26, height: 120, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 8 }}>
+              <button key={s.id} onClick={() => (isPremium ? onOpenReader(s) : onSubscribe())} style={{ background: isPremium ? s.bg : 'var(--card-soft)', borderRadius: 26, height: 120, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 8 }}>
                 {!isPremium && <div style={{ position: 'absolute', top: 10, right: 10, background: '#A98CFF', color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 9px', borderRadius: 14 }}>Premium</div>}
                 {isPremium ? (
                   <>
