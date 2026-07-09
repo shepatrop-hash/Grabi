@@ -36,7 +36,7 @@ export default function MonAbonnement({ premium, onSubscribe, onCancel, onRestor
             <span style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(255,255,255,.25)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><RawSvg html={crownIcon} /></span>
             <div>
               <div style={{ fontSize: 21, fontWeight: 700 }}>{premium ? 'Grabi Premium' : 'Grabi Gratuit'}</div>
-              <div style={{ fontSize: 13, fontWeight: 500, opacity: 0.95 }}>{premium ? '4,99 € / mois · renouvellement auto' : 'Histoires gratuites & compagnon'}</div>
+              <div style={{ fontSize: 13, fontWeight: 500, opacity: 0.95 }}>{premium ? '5,99 € / mois · renouvellement auto' : 'Histoires gratuites & compagnon'}</div>
             </div>
           </div>
         </div>
@@ -68,11 +68,11 @@ export default function MonAbonnement({ premium, onSubscribe, onCancel, onRestor
             <div style={sectionTitle}>Passe à Premium</div>
             <div style={{ background: 'var(--card)', borderRadius: 22, padding: '18px', boxShadow: '0 6px 16px -12px rgba(74,58,102,.3)' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                <span style={{ fontSize: 30, fontWeight: 700 }}>4,99 €</span>
+                <span style={{ fontSize: 30, fontWeight: 700 }}>5,99 €</span>
                 <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600 }}>/ mois</span>
                 <span style={{ marginLeft: 'auto', background: 'var(--mint)', color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 14 }}>7 jours offerts</span>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500, marginTop: 2 }}>ou 39,99 € / an · 2 mois offerts</div>
+              <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500, marginTop: 2 }}>ou 49,99 € / an · 3 mois offerts</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginTop: 16 }}>
                 {FEATURES.map((f) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
