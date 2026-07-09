@@ -17,7 +17,7 @@ export default function Home({ childName = 'Léa', createStatus = {}, onOpenRead
 
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
-      <div style={{ position: 'absolute', top: -70, right: -60, width: 220, height: 220, borderRadius: '50%', background: 'var(--yellow-soft)', opacity: 0.6 }} />
+      <div style={{ position: 'absolute', top: -70, right: -60, width: 220, height: 220, borderRadius: '50%', background: 'var(--halo)', opacity: 0.6 }} />
 
       {/* En-tête : salutation + mascotte */}
       <div style={{ flex: 'none', padding: 'calc(env(safe-area-inset-top, 14px) + 18px) 24px 4px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
@@ -45,12 +45,12 @@ export default function Home({ childName = 'Léa', createStatus = {}, onOpenRead
 
         {/* Deux entrées : gratuites + créer */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <button onClick={onGoFree} style={{ background: 'var(--yellow-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px rgba(255,180,40,.7)' }}>
+          <button onClick={onGoFree} style={{ background: 'var(--yellow-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px var(--glow-free)' }}>
             <div style={{ width: 54, height: 54, borderRadius: 18, background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconBooks} /></div>
             <div style={{ fontSize: 16.5, fontWeight: 800, marginTop: 12, lineHeight: 1.1 }}>Histoires<br />gratuites</div>
             <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--free-sub)', marginTop: 4 }}>{FREE_STORIES.length} histoires</div>
           </button>
-          <button onClick={onGoCreate} style={{ background: 'var(--violet-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px rgba(169,140,255,.6)' }}>
+          <button onClick={onGoCreate} style={{ background: 'var(--violet-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px var(--glow-create)' }}>
             <div style={{ width: 54, height: 54, borderRadius: 18, background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconWand} /></div>
             <div style={{ fontSize: 16.5, fontWeight: 800, marginTop: 12, lineHeight: 1.1 }}>Crée ton<br />histoire</div>
             <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--create-sub)', marginTop: 4 }}>{createHint}</div>

@@ -26,6 +26,11 @@
   --nav-idle: #7E7399;
   --free-sub: #D9B876;
   --create-sub: #C3B0F0;
+  /* Halo décoratif de l'accueil : violet doux en sombre (le jaune virait au marron) */
+  --halo: #4A3E72;
+  /* Lueurs des cartes : neutralisées en sombre (une ombre chaude fait de la boue) */
+  --glow-free: rgba(0, 0, 0, .45);
+  --glow-create: rgba(0, 0, 0, .45);
 }
 
 /* ☀️ Thème clair (option dans « Mon coin ») = la DA claire d'origine du prototype. */
@@ -52,6 +57,9 @@
   --nav-idle: #B3AAC4;
   --free-sub: #a07d2a;
   --create-sub: #7d5fc4;
+  --halo: #FFEAAE;
+  --glow-free: rgba(255, 180, 40, .7);
+  --glow-create: rgba(169, 140, 255, .6);
 }
 
 /* En sombre (défaut), les sous-titres colorés des cartes d'accueil manquent de
