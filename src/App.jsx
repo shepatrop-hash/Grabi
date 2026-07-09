@@ -473,6 +473,9 @@ export default function App() {
       {screen === 'home' && (
         <Home
           childName={child.name}
+          community={communityList}
+          reads={reads}
+          onOpenReader={openReader}
           onGoFree={() => setScreen('free')}
           onGoPremium={() => setScreen('premium')}
           onGoCreate={() => setScreen('create')}
