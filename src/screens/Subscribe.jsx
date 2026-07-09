@@ -9,7 +9,7 @@ const check = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" strok
 const lockSmall = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9789AE" stroke-width="2.2"><rect x="4" y="10" width="16" height="11" rx="2.5"></rect><path d="M8 10 V7 a4 4 0 0 1 8 0 V10"></path></svg>`
 
 const FEATURES = [
-  'Crée des histoires personnalisées',
+  'Jusqu’à 10 histoires à créer chaque mois',
   '1 nouvelle histoire longue chaque semaine',
   'Lecture audio de toutes les histoires',
   'Sans publicité, pour des écrans apaisés',
@@ -29,9 +29,10 @@ function PlanCard({ selected, onClick, title, price, per, note, badge }) {
   )
 }
 
-export default function Subscribe({ onClose, onStart }) {
+export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
   const [plan, setPlan] = useState('annual') // annuel sélectionné par défaut
   const [checking, setChecking] = useState(false)
+  const trialDone = reason === 'trial-done' // essai déjà utilisé → on ne repropose pas « 3 jours gratuits »
 
   if (checking) return <ParentCheck onSuccess={() => onStart(plan)} onCancel={() => setChecking(false)} />
 
@@ -46,7 +47,7 @@ export default function Subscribe({ onClose, onStart }) {
         <div style={{ textAlign: 'center', padding: '6px 28px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}><Grabi size={78} /></div>
           <div style={{ fontSize: 27, fontWeight: 700, marginTop: 2 }}>Grabi Premium</div>
-          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>3 jours offerts, puis crée autant d'histoires que tu veux.</div>
+          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>{trialDone ? 'Tu as adoré créer ton histoire ? Abonne-toi pour en créer 10 chaque mois.' : '3 jours offerts pour créer ta première histoire, puis 10 par mois.'}</div>
         </div>
 
         {/* Choix de la formule — annuel par défaut */}
@@ -55,7 +56,7 @@ export default function Subscribe({ onClose, onStart }) {
           <PlanCard selected={plan === 'monthly'} onClick={() => setPlan('monthly')} title="Mensuel" price="5,99 €" per="/ mois" note="Sans engagement" />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, margin: '16px 24px 0', background: 'var(--mint-soft)', color: '#0f9b76', borderRadius: 18, padding: '11px 14px', fontSize: 14, fontWeight: 700 }}>🎁 3 jours d'essai gratuit</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, margin: '16px 24px 0', background: 'var(--mint-soft)', color: '#0f9b76', borderRadius: 18, padding: '11px 14px', fontSize: 14, fontWeight: 700 }}>{trialDone ? '📖 10 histoires à créer chaque mois' : '🎁 3 jours d’essai · 1 histoire à créer'}</div>
 
         <div style={{ padding: '18px 26px 8px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {FEATURES.map((f) => (
@@ -68,9 +69,9 @@ export default function Subscribe({ onClose, onStart }) {
       </div>
 
       <div style={{ flex: 'none', padding: '6px 24px calc(env(safe-area-inset-bottom, 0px) + 20px)' }}>
-        <button onClick={() => setChecking(true)} style={{ width: '100%', background: 'var(--violet)', color: '#fff', borderRadius: 28, height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }}>Commencer les 3 jours gratuits</button>
+        <button onClick={() => setChecking(true)} style={{ width: '100%', background: 'var(--violet)', color: '#fff', borderRadius: 28, height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }}>{trialDone ? 'M’abonner maintenant' : 'Commencer les 3 jours gratuits'}</button>
         <div style={{ textAlign: 'center', marginTop: 12, fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RawSvg html={lockSmall} />3 jours gratuits, puis {plan === 'annual' ? '49,99 €/an' : '5,99 €/mois'}.</span><br />Résiliable en 1 clic à tout moment.
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RawSvg html={lockSmall} />{trialDone ? `${plan === 'annual' ? '49,99 €/an' : '5,99 €/mois'}, sans engagement.` : `3 jours gratuits, puis ${plan === 'annual' ? '49,99 €/an' : '5,99 €/mois'}.`}</span><br />Résiliable en 1 clic à tout moment.
         </div>
       </div>
     </div>

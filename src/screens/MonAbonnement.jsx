@@ -8,8 +8,8 @@ const restoreIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
 const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 L15 12 L9 18"></path></svg>`
 
 const FEATURES = [
+  'Jusqu’à 10 histoires à créer chaque mois',
   '1 nouvelle histoire longue chaque semaine',
-  'Accès à « Crée ton histoire »',
   'Lecture audio de toutes les histoires',
   'Sans publicité, pour des écrans apaisés',
 ]
@@ -70,7 +70,7 @@ export default function MonAbonnement({ premium, onSubscribe, onCancel, onRestor
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
                 <span style={{ fontSize: 30, fontWeight: 700 }}>5,99 €</span>
                 <span style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 600 }}>/ mois</span>
-                <span style={{ marginLeft: 'auto', background: 'var(--mint)', color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 14 }}>7 jours offerts</span>
+                <span style={{ marginLeft: 'auto', background: 'var(--mint)', color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 14 }}>3 jours offerts</span>
               </div>
               <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500, marginTop: 2 }}>ou 49,99 € / an · 3 mois offerts</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginTop: 16 }}>
