@@ -1,10 +1,7 @@
 import RawSvg from './RawSvg.jsx'
 
 // Navbar à 4 onglets : Accueil · Découvrir (semaine + épisodes animés) · Copains (communauté)
-// · Mon coin (mes histoires + Grabi + réglages). Onglet actif surligné en doré (maquette).
-const GOLD = '#C1912E'
-const IDLE = '#B3AAC4'
-
+// · Mon coin (mes histoires + Grabi + réglages). Onglet actif en doré (var. selon le thème).
 const homeIcon = (c) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round"><path d="M4 11.5 L12 4.5 L20 11.5 V20 H4 Z"></path></svg>`
 const starIcon = (c) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="${c}"><path d="M12 3 l2.7 5.5 6 .9 -4.35 4.2 1.03 6 -5.38 -2.83 -5.38 2.83 1.03 -6 -4.35 -4.2 6 -.9 Z"></path></svg>`
 const heartIcon = (c) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="${c}"><path d="M12 21 C5 15 3 11.5 3 8.5 A4.3 4.3 0 0 1 12 6.5 A4.3 4.3 0 0 1 21 8.5 C21 11.5 19 15 12 21 Z"></path></svg>`
@@ -25,12 +22,12 @@ export default function BottomNav({ active, onAccueil, onDecouvrir, onCopains, o
         {TABS.map((t) => {
           const on = active === t.key
           return (
-            <button key={t.key} onClick={handlers[t.key]} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, width: 76 }}>
+            <button key={t.key} onClick={handlers[t.key]} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, width: 76, color: on ? 'var(--nav-gold)' : 'var(--nav-idle)' }}>
               <div style={{ position: 'relative', width: 50, height: 34, borderRadius: 13, background: on ? 'var(--yellow-soft)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s ease' }}>
-                <RawSvg html={t.icon(on ? GOLD : IDLE)} />
+                <RawSvg html={t.icon('currentColor')} />
                 {t.dot && !on && <span style={{ position: 'absolute', top: 1, right: 12, width: 8, height: 8, borderRadius: '50%', background: '#FF6F9C', border: '1.5px solid var(--card)' }} />}
               </div>
-              <span style={{ fontSize: 11, fontWeight: 800, color: on ? GOLD : IDLE, whiteSpace: 'nowrap' }}>{t.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}>{t.label}</span>
             </button>
           )
         })}

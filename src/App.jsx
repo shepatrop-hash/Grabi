@@ -198,7 +198,9 @@ export default function App() {
   const [allowPublish, setAllowPublish] = useState(() => load('allowPublish', true))
   const [reminder, setReminder] = useState(() => load('reminder', { on: false, time: '20:00' }))
   const [decor, setDecor] = useState(() => load('decor', 'none'))
-  const [nightMode, setNightMode] = useState(() => load('nightMode', false))
+  // Thème : SOMBRE (« Pénombre ») par défaut pour tout le monde ; clair en option
+  // dans « Mon coin ». (On ignore l'ancien « nightMode » : le nouveau défaut est sombre.)
+  const [darkMode, setDarkMode] = useState(() => load('darkMode', true))
   // Suivi du temps d'écran du jour : { date, seconds (utilisées), bonus (min ajoutées par un parent) }
   const [usage, setUsage] = useState(() => {
     const u = load('usage', { date: todayKey(), seconds: 0, bonus: 0 })
@@ -228,7 +230,7 @@ export default function App() {
   useEffect(() => save('allowPublish', allowPublish), [allowPublish])
   useEffect(() => save('reminder', reminder), [reminder])
   useEffect(() => save('decor', decor), [decor])
-  useEffect(() => save('nightMode', nightMode), [nightMode])
+  useEffect(() => save('darkMode', darkMode), [darkMode])
   useEffect(() => save('usage', usage), [usage])
 
   // Compte le temps passé dans l'app (par tranches de 20 s), avec remise à zéro
@@ -494,7 +496,7 @@ export default function App() {
   const musicTrack = screen === 'reader' ? musicFor(reader?.story?.mood) : MUSIC.app
 
   return (
-    <div className="app-shell" data-theme={nightMode ? 'night' : 'day'}>
+    <div className="app-shell" data-theme={darkMode ? 'dark' : 'light'}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
       {screen === 'onboarding' && (
         <Onboarding voice={voice} onVoice={setVoice} onFinish={finishOnboarding} backRef={onbBackRef} />
@@ -530,8 +532,8 @@ export default function App() {
         <Settings
           premium={premium}
           child={child}
-          nightMode={nightMode}
-          onToggleNight={() => setNightMode((n) => !n)}
+          darkMode={darkMode}
+          onToggleDark={() => setDarkMode((d) => !d)}
           onEditProfile={() => setScreen('edit-profile')}
           onMonGrabi={() => setScreen('mon-grabi')}
           onRewards={() => setScreen('rewards')}
