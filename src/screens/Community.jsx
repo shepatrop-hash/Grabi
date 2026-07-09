@@ -3,7 +3,7 @@ import BottomNav from '../components/BottomNav.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { COMMUNITY_FILTERS, catOf } from '../lib/categories.js'
 
-export default function Community({ list = [], smilesOf = () => 0, given = {}, onGive, onOpenReader, onHome, onCreate, onMine, onSettings }) {
+export default function Community({ list = [], smilesOf = () => 0, given = {}, onGive, onOpenReader, onHome, onDecouvrir, onSettings }) {
   const [filter, setFilter] = useState('populaire')
 
   let stories
@@ -77,7 +77,7 @@ export default function Community({ list = [], smilesOf = () => 0, given = {}, o
         )}
       </div>
 
-      <BottomNav active="community" onHome={onHome} onCreate={onCreate} onMine={onMine} onSettings={onSettings} />
+      <BottomNav active="copains" onAccueil={onHome} onDecouvrir={onDecouvrir} onCopains={() => {}} onMonCoin={onSettings} />
     </div>
   )
 }

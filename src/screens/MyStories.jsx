@@ -23,7 +23,7 @@ function Thumb({ s }) {
 
 const iconBtn = (bg) => ({ width: 40, height: 40, borderRadius: '50%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' })
 
-export default function MyStories({ stories = [], favoriteStories = [], favorites = {}, onToggleFavorite, onDelete, smilesOf = () => 0, onOpenReader, onCreate, onHome, onCommunity, onSettings }) {
+export default function MyStories({ stories = [], favoriteStories = [], favorites = {}, onToggleFavorite, onDelete, smilesOf = () => 0, onOpenReader, onCreate, onHome, onCommunity, onDecouvrir, onSettings }) {
   const [tab, setTab] = useState('mine')
   const total = stories.reduce((n, s) => n + smilesOf(s), 0)
   const list = tab === 'mine' ? stories : favoriteStories
@@ -94,7 +94,7 @@ export default function MyStories({ stories = [], favoriteStories = [], favorite
         </div>
       )}
 
-      <BottomNav active="mine" onHome={onHome} onCommunity={onCommunity} onCreate={onCreate} onSettings={onSettings} />
+      <BottomNav active="moncoin" onAccueil={onHome} onDecouvrir={onDecouvrir} onCopains={onCommunity} onMonCoin={onSettings} />
     </div>
   )
 }

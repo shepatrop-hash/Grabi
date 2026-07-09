@@ -7,6 +7,7 @@ const grabiIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" s
 const parentIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A8AC0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><circle cx="16.5" cy="9" r="2.6"></circle><path d="M3.5 19 c0-3.5 3-5 5.5-5 s5.5 1.5 5.5 5 M16 14 c2 0 4 1.4 4 4.5"></path></svg>`
 const heartIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#e8638f"><path d="M12 21 C5 15 3 11.5 3 8.5 A4.3 4.3 0 0 1 12 6.5 A4.3 4.3 0 0 1 21 8.5 C21 11.5 19 15 12 21 Z"></path></svg>`
 const trophyIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#E0B84A"><path d="M12 3 l2.6 5.3 5.8 .8 -4.2 4.1 1 5.8 -5.2 -2.7 -5.2 2.7 1 -5.8 -4.2 -4.1 5.8 -.8 Z"></path></svg>`
+const storiesIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e8638f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 H17 V20 L12 16 L7 20 Z"></path></svg>`
 
 // Grande carte de catégorie (titre + sous-titre + icône colorée).
 function CategoryCard({ onClick, bg, iconBg, icon, title, subtitle, badge, badgeColor, badgeBg }) {
@@ -23,13 +24,13 @@ function CategoryCard({ onClick, bg, iconBg, icon, title, subtitle, badge, badge
   )
 }
 
-export default function Settings({ premium, child = { name: 'Léa', age: '5 ans' }, nightMode = false, onToggleNight, onEditProfile, onMonGrabi, onPlayGrabi, onRewards, onEspaceParents, onHome, onCommunity, onCreate, onMine }) {
+export default function Settings({ premium, child = { name: 'Léa', age: '5 ans' }, nightMode = false, onToggleNight, onEditProfile, onMonGrabi, onPlayGrabi, onRewards, onEspaceParents, onHome, onCommunity, onDecouvrir, onMine }) {
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, right: -40, width: 170, height: 170, borderRadius: '50%', background: 'var(--sky-soft)', opacity: 0.55 }} />
       <div style={{ padding: '6px 24px 0', flex: 'none', position: 'relative', zIndex: 2 }}>
-        <div style={{ fontSize: 26, fontWeight: 700 }}>Paramètres</div>
-        <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500 }}>Réglages &amp; espace parents</div>
+        <div style={{ fontSize: 26, fontWeight: 700 }}>Mon coin</div>
+        <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500 }}>Tes histoires, ton Grabi &amp; les réglages</div>
       </div>
 
       <button onClick={onEditProfile} style={{ margin: '16px 24px 0', background: 'var(--card)', borderRadius: 26, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 8px 20px -12px rgba(74,58,102,.28)', position: 'relative', zIndex: 2, textAlign: 'left' }}>
@@ -39,6 +40,7 @@ export default function Settings({ premium, child = { name: 'Léa', age: '5 ans'
       </button>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 12px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 2 }}>
+        <CategoryCard onClick={onMine} bg="var(--card)" iconBg="var(--pink-soft)" icon={storiesIcon} title="Mes histoires" subtitle="Tes créations & tes favoris" />
         <CategoryCard onClick={onMonGrabi} bg="var(--card)" iconBg="var(--violet-soft)" icon={grabiIcon} title="Mon Grabi" subtitle="Apparence, voix & accessoires" />
         <CategoryCard onClick={onRewards} bg="var(--card)" iconBg="var(--yellow-soft)" icon={trophyIcon} title="Mes récompenses" subtitle="Tes badges et tes histoires" />
         <CategoryCard onClick={onEspaceParents} bg="var(--card)" iconBg="var(--sky-soft)" icon={parentIcon} title="Espace parents" subtitle="Abonnement, temps d'écran, sécurité" badge={premium ? 'Premium' : 'Gratuit'} badgeColor={premium ? '#a07d2a' : '#7d5fc4'} badgeBg={premium ? 'var(--yellow-soft)' : 'var(--violet-soft)'} />
@@ -56,7 +58,7 @@ export default function Settings({ premium, child = { name: 'Léa', age: '5 ans'
         <div style={{ fontSize: 11, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', padding: '8px 12px 0' }}>Grabi v1.0 · Fait avec 💜</div>
       </div>
 
-      <BottomNav active="settings" onHome={onHome} onCommunity={onCommunity} onCreate={onCreate} onMine={onMine} onSettings={() => {}} />
+      <BottomNav active="moncoin" onAccueil={onHome} onDecouvrir={onDecouvrir} onCopains={onCommunity} onMonCoin={() => {}} />
     </div>
   )
 }
