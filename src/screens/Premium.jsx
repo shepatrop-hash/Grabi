@@ -50,7 +50,7 @@ export default function Premium({ isPremium, onBack, onSubscribe, onOpenReader }
         {/* Histoire de la semaine (faite main, format long) */}
         <button onClick={() => onOpenReader(WEEKLY_STORY)} style={{ display: 'block', width: 'calc(100% - 48px)', textAlign: 'left', margin: '18px 24px 0', borderRadius: 32, padding: 20, background: 'linear-gradient(150deg,#FFC9E0,#D9C4FF)', boxShadow: '0 14px 30px -12px rgba(169,140,255,.6)' }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12.5, fontWeight: 800, color: '#9b3f76', background: 'rgba(255,255,255,.6)', padding: '4px 10px', borderRadius: 14 }}>✨ Nouvelle cette semaine</span>
+            <span style={{ fontSize: 12.5, fontWeight: 800, color: '#9b3f76', background: 'rgba(255,255,255,.6)', padding: '4px 10px', borderRadius: 14 }}>✨ Nouvelle chaque semaine</span>
             <span style={{ fontSize: 12.5, fontWeight: 800, color: '#5b3fa0', background: 'rgba(255,255,255,.6)', padding: '4px 10px', borderRadius: 14 }}>📖 Histoire longue</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
