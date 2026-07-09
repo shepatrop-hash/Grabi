@@ -19,8 +19,12 @@ const CHIPS = [
   { label: '🐙 Une pieuvre musicienne', bg: 'var(--yellow-soft)', text: 'Une pieuvre musicienne' },
 ]
 
-export default function Create({ storyText, setStoryText, onBack, onCreate, busy, error }) {
+export default function Create({ storyText, setStoryText, createStatus = {}, onBack, onCreate, busy, error }) {
   const disabled = busy || !storyText.trim()
+  // Petit rappel du quota restant (10/mois en payant, 1 pendant l'essai).
+  const quotaLabel = createStatus.plan === 'paid' ? `${createStatus.left} / 10 ce mois`
+    : createStatus.plan === 'trial' ? `${createStatus.left} histoire offerte`
+    : ''
   const [listening, setListening] = useState(false)
   const recRef = useRef(null)
   const baseRef = useRef('') // texte déjà présent avant la dictée (pour AJOUTER, pas remplacer)
@@ -88,6 +92,7 @@ export default function Create({ storyText, setStoryText, onBack, onCreate, busy
           <RawSvg html={backIcon} />
         </button>
         <div style={{ fontSize: 26, fontWeight: 700 }}>Crée ton histoire</div>
+        {quotaLabel && <span style={{ marginLeft: 'auto', flex: 'none', background: 'var(--violet-soft)', color: '#7d5fc4', fontSize: 12.5, fontWeight: 700, padding: '6px 12px', borderRadius: 16 }}>{quotaLabel}</span>}
       </div>
 
       <div style={{ textAlign: 'center', padding: '12px 24px 0', position: 'relative', zIndex: 2 }}>

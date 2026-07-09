@@ -19,32 +19,38 @@ const isNative = () => {
 // La facturation n'est réellement utilisable que dans l'app native ET avec une clé configurée.
 export const billingReady = () => isNative() && !!RC_KEY
 
-const hasPremium = (customerInfo) => !!customerInfo?.entitlements?.active?.[ENTITLEMENT]
+// Plan actif d'après RevenueCat : 'none' (pas d'entitlement), 'trial' (période d'essai/intro),
+// ou 'paid' (période normale = payant). Sert à appliquer le quota de créations.
+const planOf = (customerInfo) => {
+  const ent = customerInfo?.entitlements?.active?.[ENTITLEMENT]
+  if (!ent) return 'none'
+  return ent.periodType === 'normal' ? 'paid' : 'trial'
+}
 
 let configured = false
 
-// Configure RevenueCat (une seule fois) et renvoie true si l'utilisateur a déjà le Premium.
+// Configure RevenueCat (une seule fois) et renvoie le plan actif ('none' | 'trial' | 'paid').
 export async function initBilling() {
-  if (!billingReady()) return false
+  if (!billingReady()) return 'none'
   try {
     if (!configured) {
       await Purchases.configure({ apiKey: RC_KEY })
       configured = true
     }
-    return await isPremiumActive()
+    return await activePlan()
   } catch (e) {
     console.warn('[billing] init', e)
-    return false
+    return 'none'
   }
 }
 
-export async function isPremiumActive() {
-  if (!billingReady()) return false
+export async function activePlan() {
+  if (!billingReady()) return 'none'
   try {
     const { customerInfo } = await Purchases.getCustomerInfo()
-    return hasPremium(customerInfo)
+    return planOf(customerInfo)
   } catch {
-    return false
+    return 'none'
   }
 }
 
@@ -69,16 +75,16 @@ export async function purchase(aPackage) {
   }
   if (!pkg) throw new Error('no-offering')
   const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg })
-  return hasPremium(customerInfo)
+  return planOf(customerInfo)
 }
 
-// Restaure les achats (changement d'appareil / réinstallation).
+// Restaure les achats (changement d'appareil / réinstallation). Renvoie le plan actif.
 export async function restore() {
-  if (!billingReady()) return false
+  if (!billingReady()) return 'none'
   try {
     const { customerInfo } = await Purchases.restorePurchases()
-    return hasPremium(customerInfo)
+    return planOf(customerInfo)
   } catch {
-    return false
+    return 'none'
   }
 }

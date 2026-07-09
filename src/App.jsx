@@ -30,6 +30,7 @@ import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { initBilling, purchase, restore as restoreBilling, billingReady } from './lib/billing.js'
+import { creationStatus, recordCreation, normalizeCreations } from './lib/quota.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
@@ -183,7 +184,13 @@ export default function App() {
   const [voiceOn, setVoiceOn] = useState(() => load('voiceOn', load('soundOn', true)))
   const [effectsOn, setEffectsOn] = useState(() => load('effectsOn', true))
   const [musicOn, setMusicOn] = useState(() => load('musicOn', true))
-  const [premium, setPremium] = useState(() => load('premium', false))
+  // Plan d'abonnement : 'none' (rien) · 'trial' (essai 3 j) · 'paid' (payant). Migration
+  // depuis l'ancien booléen « premium » (true = payant). « premium » (accès lecture) en découle.
+  const [plan, setPlan] = useState(() => load('plan', load('premium', false) ? 'paid' : 'none'))
+  const premium = plan === 'trial' || plan === 'paid'
+  // Compteur de créations : 1 pendant l'essai, 10 par mois en payant (voir lib/quota.js).
+  const [creations, setCreations] = useState(() => normalizeCreations(load('creations', {})))
+  const [payReason, setPayReason] = useState('subscribe') // motif d'ouverture du paywall
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 0))
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
@@ -206,12 +213,13 @@ export default function App() {
   useEffect(() => save('effectsOn', effectsOn), [effectsOn])
   useEffect(() => save('musicOn', musicOn), [musicOn])
   useEffect(() => setEffectsEnabled(effectsOn), [effectsOn])
-  useEffect(() => save('premium', premium), [premium])
+  useEffect(() => save('plan', plan), [plan])
+  useEffect(() => save('creations', creations), [creations])
   useEffect(() => save('onboarded', onboarded), [onboarded])
 
-  // Facturation (RevenueCat) : au démarrage, synchronise le vrai statut Premium (natif uniquement).
+  // Facturation (RevenueCat) : au démarrage, synchronise le vrai plan (natif uniquement).
   useEffect(() => {
-    initBilling().then((active) => { if (active) setPremium(true) }).catch(() => {})
+    initBilling().then((p) => { if (p && p !== 'none') setPlan(p) }).catch(() => {})
   }, [])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
@@ -316,6 +324,8 @@ export default function App() {
     try {
       const data = await generateStory(idea, answers)
       setStory(data.story)
+      // Création réussie → on décompte du quota (1 en essai, 10/mois en payant).
+      setCreations((c) => recordCreation(plan, c))
       setScreen('ready')
     } catch (e) {
       setError(
@@ -337,28 +347,47 @@ export default function App() {
     setScreen(published ? 'published' : 'mine')
   }
 
-  // Abonnement : achat réel via Google Play (natif) ; sur le web, on débloque en mock pour tester le parcours.
+  // Abonnement : achat réel via Google Play (natif) ; sur le web, on simule le tunnel pour tester.
   async function startSubscribe() {
     if (billingReady()) {
       try {
-        const ok = await purchase()
-        if (ok) { setPremium(true); setScreen('home') }
+        const p = await purchase() // 'none' | 'trial' | 'paid'
+        if (p && p !== 'none') { setPlan(p); setScreen('home') }
       } catch (e) {
         console.warn('[subscribe]', e) // achat annulé ou erreur : on ne débloque pas
       }
     } else {
-      setPremium(true)
+      // Web (pas de facturation réelle) : 1er abonnement → essai (1 création),
+      // puis, une fois l'essai épuisé, un 2e passage → payant (10/mois).
+      setPlan((cur) => (cur === 'none' ? 'trial' : 'paid'))
       setScreen('home')
     }
   }
   async function restorePremium() {
     if (billingReady()) {
-      const ok = await restoreBilling()
-      setPremium(ok)
-      window.alert(ok ? 'Ton abonnement a été restauré ✨' : "Aucun achat à restaurer.")
+      const p = await restoreBilling()
+      setPlan(p)
+      window.alert(p !== 'none' ? 'Ton abonnement a été restauré ✨' : "Aucun achat à restaurer.")
     } else {
       window.alert(premium ? 'Tes achats sont déjà actifs ✨' : "Aucun achat à restaurer pour le moment.")
     }
+  }
+
+  // Ouvre le paywall avec un motif (adapte le message : 1re fois, essai épuisé…).
+  function openPaywall(reason = 'subscribe') {
+    setPayReason(reason)
+    setScreen('subscribe')
+  }
+
+  // Entrée « Crée ton histoire » : applique le quota avant d'ouvrir l'atelier.
+  function goCreate() {
+    const st = creationStatus(plan, creations)
+    if (st.canCreate) { setScreen('create'); return }
+    if (st.reason === 'month-done') {
+      window.alert('Tu as créé tes 10 histoires ce mois-ci 🌙\nElles reviennent au début du mois prochain !')
+      return
+    }
+    openPaywall(st.reason) // 'subscribe' (pas d'abo) ou 'trial-done' (essai épuisé)
   }
   // « Écouter mon histoire » : on garde l'histoire ET on ouvre le lecteur directement.
   function saveAndListen(assembled) {
@@ -435,7 +464,7 @@ export default function App() {
   function finishOnboarding({ name, age }) {
     setChild({ name: name || 'Mon enfant', age: age || '5 ans' })
     setOnboarded(true)
-    setScreen('subscribe')
+    openPaywall('subscribe')
   }
 
   async function toggleReminder() {
@@ -475,17 +504,18 @@ export default function App() {
           childName={child.name}
           community={communityList}
           reads={reads}
+          createStatus={creationStatus(plan, creations)}
           onOpenReader={openReader}
           onGoFree={() => setScreen('free')}
           onGoPremium={() => setScreen('premium')}
-          onGoCreate={() => setScreen('create')}
+          onGoCreate={goCreate}
           onGoCommunity={() => setScreen('community')}
           onGoMine={() => setScreen('mine')}
           onGoSettings={() => setScreen('settings')}
         />
       )}
       {screen === 'create' && (
-        <Create storyText={storyText} setStoryText={setStoryText} onBack={() => setScreen('home')} onCreate={startQcm} busy={false} error={error} />
+        <Create storyText={storyText} setStoryText={setStoryText} createStatus={creationStatus(plan, creations)} onBack={() => setScreen('home')} onCreate={startQcm} busy={false} error={error} />
       )}
       {screen === 'qcm' && (
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
@@ -494,10 +524,10 @@ export default function App() {
       {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
-        <Premium isPremium={premium} onSubscribe={() => setScreen('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={() => setScreen('community')} onSettings={() => setScreen('settings')} />
+        <Premium isPremium={premium} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={() => setScreen('community')} onSettings={() => setScreen('settings')} />
       )}
       {screen === 'subscribe' && (
-        <Subscribe onClose={() => setScreen('home')} onStart={startSubscribe} />
+        <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
       )}
       {screen === 'settings' && (
         <Settings
@@ -557,8 +587,8 @@ export default function App() {
       {screen === 'mon-abonnement' && (
         <MonAbonnement
           premium={premium}
-          onSubscribe={() => setScreen('subscribe')}
-          onCancel={() => { if (window.confirm("Résilier ton abonnement Premium ?")) setPremium(false) }}
+          onSubscribe={() => openPaywall('subscribe')}
+          onCancel={() => { if (window.confirm("Résilier ton abonnement Premium ?")) setPlan('none') }}
           onRestore={restorePremium}
           onBack={() => setScreen('settings')}
         />
@@ -584,7 +614,7 @@ export default function App() {
           onDelete={deleteStory}
           smilesOf={smilesOf}
           onOpenReader={(s) => openReader(s, 'mine')}
-          onCreate={() => setScreen('create')}
+          onCreate={goCreate}
           onHome={() => setScreen('home')}
           onCommunity={() => setScreen('community')}
           onDecouvrir={() => setScreen('premium')}
@@ -601,7 +631,7 @@ export default function App() {
           isFavorite={!!favorites[reader?.story?.id]}
           onToggleFavorite={() => reader?.story?.id && toggleFavorite(reader.story.id)}
           onClose={() => setScreen(reader?.origin || 'home')}
-          onSubscribe={() => setScreen('subscribe')}
+          onSubscribe={() => openPaywall('subscribe')}
           onImage={(i, url) => persistStoryImage(reader?.story?.id, i, url)}
         />
       )}

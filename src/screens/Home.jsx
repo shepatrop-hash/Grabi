@@ -24,10 +24,14 @@ function CommunityCard({ s, onClick }) {
   )
 }
 
-export default function Home({ childName = 'Léa', community = [], reads = {}, onOpenReader, onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoMine, onGoSettings }) {
+export default function Home({ childName = 'Léa', community = [], reads = {}, createStatus = {}, onOpenReader, onGoFree, onGoPremium, onGoCreate, onGoCommunity, onGoMine, onGoSettings }) {
   const copains = community.slice(0, 8)
   // Petit compteur de « complicité » avec Grabi : grandit avec les jours de lecture d'affilée.
   const bond = Math.min(99, 42 + (reads.streak || 0) * 9)
+  // Indice de quota sur la carte « Crée ton histoire » (selon l'abonnement).
+  const createHint = createStatus.plan === 'paid' ? `${createStatus.left} / 10 ce mois`
+    : createStatus.plan === 'trial' ? (createStatus.left > 0 ? '1 histoire offerte ✨' : 'Passe au premium')
+    : '📖 ou 🎤'
 
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
@@ -95,7 +99,7 @@ export default function Home({ childName = 'Léa', community = [], reads = {}, o
           <button onClick={onGoCreate} style={{ background: 'var(--violet-soft)', borderRadius: 26, padding: '16px 16px 18px', textAlign: 'left', boxShadow: '0 12px 24px -14px rgba(169,140,255,.6)' }}>
             <div style={{ width: 54, height: 54, borderRadius: 18, background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconWand} /></div>
             <div style={{ fontSize: 16.5, fontWeight: 800, marginTop: 12, lineHeight: 1.1 }}>Crée ton<br />histoire</div>
-            <div style={{ fontSize: 12.5, fontWeight: 600, color: '#7d5fc4', marginTop: 4 }}>📖 ou 🎤</div>
+            <div style={{ fontSize: 12.5, fontWeight: 600, color: '#7d5fc4', marginTop: 4 }}>{createHint}</div>
           </button>
         </div>
       </div>
