@@ -31,16 +31,16 @@ export default function Home({ childName = 'Léa', createStatus = {}, onOpenRead
       {/* Contenu défilable */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px 18px', display: 'flex', flexDirection: 'column', gap: 22, position: 'relative', zIndex: 2 }}>
         {/* Histoire de la semaine — mise en avant */}
-        <div style={{ background: WEEKLY_STORY.bg, borderRadius: 30, padding: '20px 22px', boxShadow: '0 16px 32px -16px rgba(150,110,220,.6)', position: 'relative', flexShrink: 0 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,.85)', color: '#7d5fc4', fontSize: 12.5, fontWeight: 800, padding: '5px 12px', borderRadius: 16 }}>✨ Nouvelle chaque semaine</span>
+        <div style={{ background: 'var(--hero-bg)', borderRadius: 30, padding: '20px 22px', boxShadow: '0 16px 32px -16px rgba(150,110,220,.6)', position: 'relative', flexShrink: 0 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--hero-badge-bg)', color: 'var(--hero-badge-ink)', fontSize: 12.5, fontWeight: 800, padding: '5px 12px', borderRadius: 16 }}>✨ Nouvelle chaque semaine</span>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 14 }}>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.15, color: '#3B2D5A' }}>{WEEKLY_STORY.title}</div>
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: '#6E5FA0', marginTop: 5 }}>Une histoire plus longue à savourer</div>
+              <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.15, color: 'var(--hero-ink)' }}>{WEEKLY_STORY.title}</div>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--hero-ink2)', marginTop: 5 }}>Une histoire plus longue à savourer</div>
             </div>
             <div style={{ width: 82, height: 82, borderRadius: '50%', background: 'rgba(255,255,255,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><div style={{ transform: 'scale(.9)' }}><RawSvg html={WEEKLY_STORY.svg} /></div></div>
           </div>
-          <button onClick={() => onOpenReader && onOpenReader(WEEKLY_STORY, 'home')} style={{ marginTop: 16, background: 'var(--card)', borderRadius: 22, padding: '11px 20px', display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15.5, fontWeight: 800, color: 'var(--ink)', boxShadow: '0 8px 18px -8px rgba(74,58,102,.4)' }}><RawSvg html={playWhite} />Écouter</button>
+          <button onClick={() => onOpenReader && onOpenReader(WEEKLY_STORY, 'home')} style={{ marginTop: 16, background: 'var(--hero-btn-bg)', borderRadius: 22, padding: '11px 20px', display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15.5, fontWeight: 800, color: 'var(--hero-btn-ink)', boxShadow: '0 8px 18px -8px rgba(74,58,102,.4)' }}><RawSvg html={playWhite} />Écouter</button>
         </div>
 
         {/* Deux entrées : gratuites + créer */}
