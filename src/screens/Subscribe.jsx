@@ -10,7 +10,7 @@ const lockSmall = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
 
 const FEATURES = [
   'Crée des histoires personnalisées',
-  '1 nouvelle histoire chaque semaine',
+  '1 nouvelle histoire longue chaque semaine',
   'Lecture audio de toutes les histoires',
   'Sans publicité, pour des écrans apaisés',
 ]

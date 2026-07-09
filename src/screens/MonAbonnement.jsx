@@ -8,7 +8,7 @@ const restoreIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
 const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 L15 12 L9 18"></path></svg>`
 
 const FEATURES = [
-  '1 nouvelle histoire chaque semaine',
+  '1 nouvelle histoire longue chaque semaine',
   'Accès à « Crée ton histoire »',
   'Lecture audio de toutes les histoires',
   'Sans publicité, pour des écrans apaisés',
