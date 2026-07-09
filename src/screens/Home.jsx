@@ -1,5 +1,6 @@
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
+import BottomNav from '../components/BottomNav.jsx'
 import { playGrabiSound } from '../lib/sounds.js'
 import { WEEKLY_STORY, FREE_STORIES } from '../lib/samples.js'
 
@@ -8,13 +9,6 @@ const iconWand = `<svg width="38" height="38" viewBox="0 0 46 46"><line x1="11" 
 const playWhite = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#7d5fc4"><path d="M8 5 L19 12 L8 19 Z"></path></svg>`
 const playBig = `<svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5 L19 12 L8 19 Z"></path></svg>`
 
-const iconHome = `<svg width="23" height="23" viewBox="0 0 24 24" fill="none"><path d="M4 11.5 L12 4.5 L20 11.5 V20 H4 Z" fill="#fff"></path></svg>`
-const iconCommunity = `<svg width="28" height="28" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="#C3BBD2" stroke-width="2.6"></circle><circle cx="15" cy="19" r="2.2" fill="#C3BBD2"></circle><circle cx="25" cy="19" r="2.2" fill="#C3BBD2"></circle><path d="M15,25 Q20,29 25,25" stroke="#C3BBD2" stroke-width="2.2" fill="none" stroke-linecap="round"></path></svg>`
-const iconBookmark = `<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 H17 V20 L12 16 L7 20 Z"></path></svg>`
-const iconGear = `<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35C8.66 5.59 8.12 5.92 7.63 6.29L5.24 5.33c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58C4.84 11.36 4.8 11.69 4.8 12s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"></path></svg>`
-const fabPlus = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><path d="M12 5 V19 M5 12 H19"></path></svg>`
-
-const navBtn = { width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const section = { fontSize: 18, fontWeight: 800, letterSpacing: '-.01em' }
 
 // Vignette d'une histoire de la communauté (illustration SVG ou image de couverture).
@@ -55,7 +49,7 @@ export default function Home({ childName = 'Léa', community = [], reads = {}, o
       {/* Contenu défilable */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px 18px', display: 'flex', flexDirection: 'column', gap: 22, position: 'relative', zIndex: 2 }}>
         {/* Histoire de la semaine — mise en avant */}
-        <div style={{ background: WEEKLY_STORY.bg, borderRadius: 30, padding: '20px 22px', boxShadow: '0 16px 32px -16px rgba(150,110,220,.6)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: WEEKLY_STORY.bg, borderRadius: 30, padding: '20px 22px', boxShadow: '0 16px 32px -16px rgba(150,110,220,.6)', position: 'relative', flexShrink: 0 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,.85)', color: '#7d5fc4', fontSize: 12.5, fontWeight: 800, padding: '5px 12px', borderRadius: 16 }}>✨ Nouvelle cette semaine</span>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 14 }}>
             <div style={{ minWidth: 0 }}>
@@ -107,16 +101,7 @@ export default function Home({ childName = 'Léa', community = [], reads = {}, o
         </div>
       </div>
 
-      {/* Barre de navigation */}
-      <div style={{ flex: 'none', padding: '10px 26px calc(20px + env(safe-area-inset-bottom, 0px))', position: 'relative', zIndex: 2 }}>
-        <div style={{ background: 'var(--card)', borderRadius: 30, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'space-around', boxShadow: '0 10px 26px -8px rgba(74,58,102,.28)' }}>
-          <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--violet)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={iconHome} /></div>
-          <button onClick={onGoCommunity} style={navBtn}><RawSvg html={iconCommunity} /></button>
-          <button onClick={onGoCreate} style={{ width: 62, height: 62, borderRadius: '50%', background: 'linear-gradient(135deg,#FFD23F,#FF7FB0)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: -24, boxShadow: '0 12px 22px -6px rgba(255,127,176,.75)' }}><RawSvg html={fabPlus} /></button>
-          <button onClick={onGoMine} style={navBtn}><RawSvg html={iconBookmark} /></button>
-          <button onClick={onGoSettings} style={navBtn}><RawSvg html={iconGear} /></button>
-        </div>
-      </div>
+      <BottomNav active="accueil" onAccueil={() => {}} onDecouvrir={onGoPremium} onCopains={onGoCommunity} onMonCoin={onGoSettings} />
     </div>
   )
 }
