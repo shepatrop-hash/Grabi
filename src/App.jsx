@@ -502,7 +502,6 @@ export default function App() {
       {screen === 'home' && (
         <Home
           childName={child.name}
-          community={communityList}
           reads={reads}
           createStatus={creationStatus(plan, creations)}
           onOpenReader={openReader}
@@ -510,7 +509,6 @@ export default function App() {
           onGoPremium={() => setScreen('premium')}
           onGoCreate={goCreate}
           onGoCommunity={() => setScreen('community')}
-          onGoMine={() => setScreen('mine')}
           onGoSettings={() => setScreen('settings')}
         />
       )}
