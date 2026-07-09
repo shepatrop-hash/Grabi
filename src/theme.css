@@ -31,6 +31,14 @@
   /* Lueurs des cartes : neutralisées en sombre (une ombre chaude fait de la boue) */
   --glow-free: rgba(0, 0, 0, .45);
   --glow-create: rgba(0, 0, 0, .45);
+  /* Carte « histoire de la semaine » : violet profond du soir en sombre (au lieu du pastel clair) */
+  --hero-bg: linear-gradient(135deg, #5B4A8E 0%, #7E5788 100%);
+  --hero-ink: #F6EFFF;
+  --hero-ink2: #D6C7F2;
+  --hero-badge-bg: rgba(255, 255, 255, .16);
+  --hero-badge-ink: #ECDCFF;
+  --hero-btn-bg: rgba(255, 255, 255, .95);
+  --hero-btn-ink: #3B2D5A;
 }
 
 /* ☀️ Thème clair (option dans « Mon coin ») = la DA claire d'origine du prototype. */
@@ -60,6 +68,13 @@
   --halo: #FFEAAE;
   --glow-free: rgba(255, 180, 40, .7);
   --glow-create: rgba(169, 140, 255, .6);
+  --hero-bg: linear-gradient(160deg, #C7B4FF, #FFD6EA);
+  --hero-ink: #3B2D5A;
+  --hero-ink2: #6E5FA0;
+  --hero-badge-bg: rgba(255, 255, 255, .85);
+  --hero-badge-ink: #7d5fc4;
+  --hero-btn-bg: #fff;
+  --hero-btn-ink: #4A3A66;
 }
 
 /* En sombre (défaut), les sous-titres colorés des cartes d'accueil manquent de
