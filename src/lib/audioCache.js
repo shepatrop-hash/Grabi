@@ -5,7 +5,10 @@
 // ~100 Ko chacun et localStorage est trop petit.
 const DB_NAME = 'grabi-audio'
 const STORE = 'clips'
-const MAX_CLIPS = 200 // au-delà, on évince les plus anciens (~26 Mo max)
+// On évince par TAILLE (pas par nombre) : les voix Gemini sont en WAV (~1,4 Mo) et
+// ElevenLabs en mp3 (~130 Ko) -> un budget en octets garde un max de voix sans exploser.
+// Avec le cache partagé Blob activé, on ne stocke ici que de petites URLs -> des milliers tiennent.
+const MAX_BYTES = 400 * 1024 * 1024 // ~400 Mo par appareil
 const VERSION = 'g4'  // change-le pour invalider tout le cache si la voix change (g4 = passage à Gemini)
 
 // Purge le cache si VERSION a changé (ex. nouvelle voix) : les histoires déjà narrées
@@ -70,26 +73,30 @@ export async function getCachedAudio(key) {
   }
 }
 
-// Stocke l'audio + évince le plus ancien si on dépasse MAX_CLIPS. Ne lève jamais.
+// Stocke l'audio + évince les plus anciens tant que le total dépasse MAX_BYTES. Ne lève jamais.
 export async function putCachedAudio(key, url) {
   if (!url) return
   try {
     const db = await openDb()
     const store = db.transaction(STORE, 'readwrite').objectStore(STORE)
-    store.put({ url, t: Date.now() }, key)
-    const countReq = store.count()
-    countReq.onsuccess = () => {
-      if (countReq.result <= MAX_CLIPS) return
-      let oldest = null
-      const cur = store.openCursor()
-      cur.onsuccess = (e) => {
-        const c = e.target.result
-        if (c) {
-          if (!oldest || c.value.t < oldest.t) oldest = { key: c.key, t: c.value.t }
-          c.continue()
-        } else if (oldest) {
-          store.delete(oldest.key)
-        }
+    store.put({ url, t: Date.now(), size: url.length }, key)
+    // Fait la somme des tailles ; si on dépasse le budget, on supprime du plus ancien au plus récent.
+    const items = []
+    const cur = store.openCursor()
+    cur.onsuccess = (e) => {
+      const c = e.target.result
+      if (c) {
+        items.push({ key: c.key, t: c.value.t || 0, size: c.value.size || (c.value.url ? c.value.url.length : 0) })
+        c.continue()
+        return
+      }
+      let total = items.reduce((s, it) => s + it.size, 0)
+      if (total <= MAX_BYTES) return
+      items.sort((a, b) => a.t - b.t) // plus ancien d'abord
+      for (const it of items) {
+        if (total <= MAX_BYTES) break
+        store.delete(it.key)
+        total -= it.size
       }
     }
   } catch {
