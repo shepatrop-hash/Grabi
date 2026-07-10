@@ -3,12 +3,12 @@
 // - épisodes animés (Découvrir)
 // - histoires longues (catalogue)
 //
-// Stocké dans un unique JSON sur Vercel Blob (clé fixe). L'app le lit via GET (public) ;
-// l'espace admin l'écrit via POST protégé par ADMIN_PASSWORD (env Vercel).
+// Stocké dans un unique JSON sur Vercel Blob (store PRIVÉ). L'app le lit via GET
+// (lecture serveur authentifiée) ; l'admin l'écrit via POST protégé par ADMIN_PASSWORD.
 //   GET  /api/content                      -> { featuredEvent, episodes, longStories }
 //   POST /api/content { password, action:'check' }      -> 200 si mot de passe OK
 //   POST /api/content { password, content }             -> enregistre et renvoie le contenu
-import { put, list } from '@vercel/blob'
+import { put, get } from '@vercel/blob'
 
 const KEY = 'admin/content.json'
 const EMPTY = { featuredEvent: null, episodes: [], longStories: [] }
@@ -17,15 +17,14 @@ const hasBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN
 async function readContent() {
   if (!hasBlob()) return EMPTY
   try {
-    const { blobs } = await list({ prefix: KEY, limit: 1 })
-    if (!blobs.length) return EMPTY
-    // Cache-buster : le Blob public est servi par le CDN ; on veut toujours la dernière version.
-    const res = await fetch(`${blobs[0].url}?ts=${Date.now()}`, { cache: 'no-store' })
-    if (!res.ok) return EMPTY
-    const data = await res.json()
-    return { ...EMPTY, ...data }
+    // Store privé : lecture serveur authentifiée (get renvoie un flux). useCache:false pour
+    // toujours avoir la dernière version après une écriture admin.
+    const res = await get(KEY, { access: 'private', useCache: false })
+    if (!res || !res.stream) return EMPTY
+    const text = await new Response(res.stream).text()
+    return { ...EMPTY, ...JSON.parse(text) }
   } catch {
-    return EMPTY
+    return EMPTY // BlobNotFoundError si le contenu n'existe pas encore -> vide
   }
 }
 
@@ -62,7 +61,7 @@ export default async function handler(req, res) {
     }
     try {
       const clean = sanitize(content)
-      await put(KEY, JSON.stringify(clean), { access: 'public', addRandomSuffix: false, contentType: 'application/json' })
+      await put(KEY, JSON.stringify(clean), { access: 'private', addRandomSuffix: false, contentType: 'application/json' })
       return res.status(200).json({ ok: true, content: clean })
     } catch (e) {
       return res.status(500).json({ error: String(e?.message || e) })
