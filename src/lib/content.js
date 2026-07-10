@@ -1,6 +1,6 @@
 // Accès au contenu éditable à distance (cf. api/content.js). L'app le lit au démarrage ;
 // l'espace admin l'écrit. Repli sur des valeurs vides si l'API/Blob n'est pas dispo.
-const DEFAULTS = { featuredEvent: null, episodes: [], longStories: [] }
+const DEFAULTS = { featuredEvent: null, seasons: [], longStories: [] }
 
 export async function fetchContent() {
   try {

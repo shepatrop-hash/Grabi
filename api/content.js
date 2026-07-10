@@ -11,7 +11,7 @@
 import { put, get } from '@vercel/blob'
 
 const KEY = 'admin/content.json'
-const EMPTY = { featuredEvent: null, episodes: [], longStories: [] }
+const EMPTY = { featuredEvent: null, seasons: [], longStories: [] }
 const hasBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN
 
 async function readContent() {
@@ -30,9 +30,17 @@ async function readContent() {
 
 function sanitize(content) {
   const c = content && typeof content === 'object' ? content : {}
+  // Épisodes animés organisés en SAISONS : [{ id, title, episodes:[{id,title,subtitle,emoji,videoUrl}] }].
+  const seasons = Array.isArray(c.seasons)
+    ? c.seasons.slice(0, 30).map((s) => ({
+        id: String(s?.id || ''),
+        title: String(s?.title || ''),
+        episodes: Array.isArray(s?.episodes) ? s.episodes.slice(0, 100) : [],
+      }))
+    : []
   return {
     featuredEvent: c.featuredEvent && typeof c.featuredEvent === 'object' ? c.featuredEvent : null,
-    episodes: Array.isArray(c.episodes) ? c.episodes.slice(0, 50) : [],
+    seasons,
     longStories: Array.isArray(c.longStories) ? c.longStories.slice(0, 200) : [],
   }
 }
@@ -61,7 +69,8 @@ export default async function handler(req, res) {
     }
     try {
       const clean = sanitize(content)
-      await put(KEY, JSON.stringify(clean), { access: 'private', addRandomSuffix: false, contentType: 'application/json' })
+      // allowOverwrite: on réécrit TOUJOURS le même fichier (admin/content.json).
+      await put(KEY, JSON.stringify(clean), { access: 'private', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' })
       return res.status(200).json({ ok: true, content: clean })
     } catch (e) {
       return res.status(500).json({ error: String(e?.message || e) })
