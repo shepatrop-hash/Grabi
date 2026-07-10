@@ -13,6 +13,11 @@ const robot = `<svg width="110" height="92" viewBox="0 0 120 100"><circle cx="60
 const FREE_MOODS = ['funny', 'calm', 'cozy', 'dreamy', 'cozy', 'dreamy']
 export const FREE_STORIES = freeStories.map((s, i) => ({ ...s, mood: s.mood || FREE_MOODS[i] || 'calm', audioProvider: 'eleven' }))
 
+// Encart « événement » de l'accueil : null = pas de gros encart (cas par défaut). Quand un
+// événement arrive (ex. un épisode animé Grabi qui sort), y mettre un objet, ex. :
+//   { badge: '🎬 Nouvel épisode', title: 'Grabi en 3D', subtitle: 'Le tout premier dessin animé !', emoji: '🎬' }
+export const FEATURED_EVENT = null
+
 // Histoire premium de la semaine : la 1ère page est libre, la suite demande Premium.
 export const WEEKLY_STORY = {
   id: 'weekly-chateau', title: 'Le château dans les nuages', bg: 'linear-gradient(160deg,#C7B4FF,#FFD6EA)', svg: castle,
