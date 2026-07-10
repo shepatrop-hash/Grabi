@@ -14,7 +14,8 @@ const crownW = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><pat
 // Histoires bonus débloquées avec Premium (réutilise des histoires intégrées).
 const BONUS = FREE_STORIES.slice(2, 6)
 
-export default function Premium({ isPremium, onSubscribe, onOpenReader, onHome, onCommunity, onSettings }) {
+export default function Premium({ isPremium, episodes = [], longStories = [], onSubscribe, onOpenReader, onHome, onCommunity, onSettings }) {
+  const openVideo = (url) => { if (url) { try { window.open(url, '_blank', 'noopener') } catch {} } }
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'var(--violet-soft)', opacity: 0.7 }} />
@@ -31,24 +32,41 @@ export default function Premium({ isPremium, onSubscribe, onOpenReader, onHome, 
       {/* Contenu défilable */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0 12px', position: 'relative', zIndex: 2 }}>
 
-        {/* ⭐ ÉPISODE ANIMÉ 3D — à la une */}
-        <div style={{ margin: '4px 24px 0', borderRadius: 30, padding: '22px 22px 20px', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#3B2D5A 0%,#6E4FA8 48%,#D06CA0 100%)', boxShadow: '0 18px 38px -14px rgba(59,45,90,.65)' }}>
-          <div style={{ position: 'absolute', top: 16, right: 22, width: 3, height: 3, borderRadius: '50%', background: '#fff', opacity: .9 }} />
-          <div style={{ position: 'absolute', top: 40, right: 60, width: 2, height: 2, borderRadius: '50%', background: '#fff', opacity: .7 }} />
-          <div style={{ position: 'absolute', top: 70, right: 30, width: 2.5, height: 2.5, borderRadius: '50%', background: '#FFD86A', opacity: .9 }} />
-          <span style={{ position: 'absolute', top: 16, left: 20, background: 'rgba(255,255,255,.22)', color: '#fff', fontSize: 11.5, fontWeight: 800, letterSpacing: '.05em', padding: '5px 11px', borderRadius: 20, backdropFilter: 'blur(3px)' }}>🎬 BIENTÔT</span>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 26 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: '#FFD86A', letterSpacing: '.06em' }}>ÉPISODE ANIMÉ</div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginTop: 5 }}>Grabi en 3D</div>
-              <div style={{ fontSize: 13.5, color: 'rgba(255,255,255,.82)', marginTop: 8, lineHeight: 1.4, maxWidth: 200 }}>Un vrai dessin animé de Grabi, rien que pour toi. Arrive très bientôt&nbsp;!</div>
-            </div>
-            <div style={{ position: 'relative', flex: 'none' }}>
-              <Grabi size={96} />
-              <span style={{ position: 'absolute', bottom: -2, right: -2, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 16px -4px rgba(0,0,0,.4)' }}><RawSvg html={bigPlay} /></span>
+        {/* ⭐ ÉPISODES ANIMÉS — les vrais (gérés dans l'admin) sinon un teaser « bientôt » */}
+        {episodes.length > 0 ? (
+          <div style={{ padding: '4px 24px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {episodes.map((e) => (
+              <button key={e.id} onClick={() => openVideo(e.videoUrl)} style={{ display: 'block', width: '100%', textAlign: 'left', borderRadius: 30, padding: '20px 22px', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#3B2D5A 0%,#6E4FA8 48%,#D06CA0 100%)', boxShadow: '0 18px 38px -14px rgba(59,45,90,.65)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#FFD86A', letterSpacing: '.06em' }}>ÉPISODE ANIMÉ</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', lineHeight: 1.12, marginTop: 5 }}>{e.title}</div>
+                    {e.subtitle && <div style={{ fontSize: 13, color: 'rgba(255,255,255,.82)', marginTop: 6, lineHeight: 1.4 }}>{e.subtitle}</div>}
+                  </div>
+                  <div style={{ position: 'relative', flex: 'none', width: 66, height: 66, borderRadius: '50%', background: 'rgba(255,255,255,.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30 }}>{e.emoji || '🎬'}<span style={{ position: 'absolute', bottom: -2, right: -2, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 16px -4px rgba(0,0,0,.4)' }}><RawSvg html={bigPlay} /></span></div>
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div style={{ margin: '4px 24px 0', borderRadius: 30, padding: '22px 22px 20px', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#3B2D5A 0%,#6E4FA8 48%,#D06CA0 100%)', boxShadow: '0 18px 38px -14px rgba(59,45,90,.65)' }}>
+            <div style={{ position: 'absolute', top: 16, right: 22, width: 3, height: 3, borderRadius: '50%', background: '#fff', opacity: .9 }} />
+            <div style={{ position: 'absolute', top: 40, right: 60, width: 2, height: 2, borderRadius: '50%', background: '#fff', opacity: .7 }} />
+            <div style={{ position: 'absolute', top: 70, right: 30, width: 2.5, height: 2.5, borderRadius: '50%', background: '#FFD86A', opacity: .9 }} />
+            <span style={{ position: 'absolute', top: 16, left: 20, background: 'rgba(255,255,255,.22)', color: '#fff', fontSize: 11.5, fontWeight: 800, letterSpacing: '.05em', padding: '5px 11px', borderRadius: 20, backdropFilter: 'blur(3px)' }}>🎬 BIENTÔT</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 26 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 800, color: '#FFD86A', letterSpacing: '.06em' }}>ÉPISODE ANIMÉ</div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', lineHeight: 1.1, marginTop: 5 }}>Grabi en 3D</div>
+                <div style={{ fontSize: 13.5, color: 'rgba(255,255,255,.82)', marginTop: 8, lineHeight: 1.4, maxWidth: 200 }}>Un vrai dessin animé de Grabi, rien que pour toi. Arrive très bientôt&nbsp;!</div>
+              </div>
+              <div style={{ position: 'relative', flex: 'none' }}>
+                <Grabi size={96} />
+                <span style={{ position: 'absolute', bottom: -2, right: -2, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 16px -4px rgba(0,0,0,.4)' }}><RawSvg html={bigPlay} /></span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Histoire de la semaine (faite main, format long) */}
         <button onClick={() => onOpenReader(WEEKLY_STORY)} className="veil-weekly" style={{ display: 'block', width: 'calc(100% - 48px)', textAlign: 'left', margin: '18px 24px 0', borderRadius: 32, padding: 20, boxShadow: '0 14px 30px -12px rgba(169,140,255,.6)' }}>
@@ -64,6 +82,23 @@ export default function Premium({ isPremium, onSubscribe, onOpenReader, onHome, 
             <div style={{ width: 96, height: 96, borderRadius: '50%', background: 'rgba(255,255,255,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><RawSvg html={castle} /></div>
           </div>
         </button>
+
+        {/* Histoires longues publiées (catalogue géré dans l'admin) */}
+        {longStories.length > 0 && (
+          <div style={{ padding: '20px 24px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink2)' }}>Histoires longues</div>
+            {longStories.map((s) => (
+              <button key={s.id} onClick={() => onOpenReader(s)} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--card)', borderRadius: 22, padding: '12px 14px', textAlign: 'left', width: '100%', boxShadow: '0 8px 20px -14px rgba(74,58,102,.4)' }}>
+                <div style={{ width: 58, height: 58, borderRadius: 16, background: 'var(--violet-soft)', overflow: 'hidden', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>{s.cover ? <img src={s.cover} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📖'}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.15 }}>{s.title}</div>
+                  <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 600, marginTop: 3 }}>📖 Histoire longue</div>
+                </div>
+                <span style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--violet)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><RawSvg html={playIcon} /></span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Grille bonus */}
         <div style={{ padding: '20px 24px 4px' }}>

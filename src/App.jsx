@@ -20,6 +20,7 @@ import Reader from './screens/Reader.jsx'
 import Community from './screens/Community.jsx'
 import MyStories from './screens/MyStories.jsx'
 import Published from './screens/Published.jsx'
+import Admin from './screens/Admin.jsx'
 import TopBack from './components/BackButton.jsx'
 import BackgroundMusic from './components/BackgroundMusic.jsx'
 import RawSvg from './components/RawSvg.jsx'
@@ -31,6 +32,7 @@ import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { initBilling, purchase, restore as restoreBilling, billingReady } from './lib/billing.js'
 import { creationStatus, recordCreation, normalizeCreations } from './lib/quota.js'
+import { fetchContent, saveContent } from './lib/content.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY, FEATURED_EVENT } from './lib/samples.js'
@@ -42,13 +44,13 @@ const BACK_TARGET = {
   free: 'home', premium: 'home', subscribe: 'home', settings: 'home',
   'edit-profile': 'settings', legal: 'espace-parents', rewards: 'settings',
   'mon-grabi': 'settings', 'espace-parents': 'settings', 'mon-abonnement': 'settings',
-  community: 'home', mine: 'settings', published: 'mine',
+  community: 'home', mine: 'settings', published: 'mine', admin: 'home',
 }
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
 
-function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPublish, allowPublish = true }) {
+function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPublish, allowPublish = true, adminPublish = null }) {
   const [images, setImages] = useState({}) // index -> url | 'error'
   const [provider, setProvider] = useState(null) // moteur voix pour l'histoire (selon la voix choisie)
 
@@ -147,9 +149,14 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
       </div>
 
       {/* Actions */}
-      <button onClick={() => onListen(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 26, background: 'linear-gradient(135deg,#FFD23F,#FFB43A)', color: '#4A3A66', borderRadius: 26, padding: '17px 12px', fontSize: 17, fontWeight: 800, boxShadow: '0 12px 26px -10px rgba(255,180,40,.75)' }}>▶&nbsp;&nbsp;Écouter mon histoire</button>
+      <button onClick={() => onListen(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 26, background: 'linear-gradient(135deg,#FFD23F,#FFB43A)', color: '#4A3A66', borderRadius: 26, padding: '17px 12px', fontSize: 17, fontWeight: 800, boxShadow: '0 12px 26px -10px rgba(255,180,40,.75)' }}>▶&nbsp;&nbsp;{adminPublish ? 'Écouter (aperçu)' : 'Écouter mon histoire'}</button>
 
-      {allowPublish ? (
+      {adminPublish ? (
+        <>
+          <button onClick={() => adminPublish(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 12, background: 'var(--violet)', color: '#fff', borderRadius: 26, padding: '15px 12px', fontSize: 15.5, fontWeight: 800, boxShadow: '0 12px 26px -10px rgba(169,140,255,.7)' }}>📚 Publier au catalogue</button>
+          <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Elle rejoindra « Histoires longues » pour tout le monde.</div>
+        </>
+      ) : allowPublish ? (
         <>
           <button onClick={() => onPublish(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 12, background: 'transparent', border: '2px solid var(--card-soft)', color: 'var(--ink)', borderRadius: 26, padding: '15px 12px', fontSize: 15, fontWeight: 700 }}>Partager avec les copains</button>
           <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Papa ou maman valide avant que ton histoire soit visible.</div>
@@ -191,6 +198,12 @@ export default function App() {
   // Compteur de créations : 1 pendant l'essai, 10 par mois en payant (voir lib/quota.js).
   const [creations, setCreations] = useState(() => normalizeCreations(load('creations', {})))
   const [payReason, setPayReason] = useState('subscribe') // motif d'ouverture du paywall
+  // Contenu éditable à distance (événement à la une, épisodes, histoires longues) — lu au
+  // démarrage depuis /api/content. adminPass = mot de passe admin en session ; adminDraft =
+  // l'histoire en cours de création est destinée au CATALOGUE (pas au compte perso).
+  const [content, setContent] = useState({ featuredEvent: null, episodes: [], longStories: [] })
+  const [adminPass, setAdminPass] = useState('')
+  const [adminDraft, setAdminDraft] = useState(false)
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 0))
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
@@ -222,6 +235,12 @@ export default function App() {
   // Facturation (RevenueCat) : au démarrage, synchronise le vrai plan (natif uniquement).
   useEffect(() => {
     initBilling().then((p) => { if (p && p !== 'none') setPlan(p) }).catch(() => {})
+  }, [])
+
+  // Contenu à distance : chargé au démarrage. URL ?admin -> ouvre l'espace admin.
+  useEffect(() => {
+    fetchContent().then(setContent).catch(() => {})
+    try { if (window.location.search.includes('admin')) setScreen('admin') } catch {}
   }, [])
   useEffect(() => save('child', child), [child])
   useEffect(() => save('screenTime', screenTime), [screenTime])
@@ -327,7 +346,8 @@ export default function App() {
       const data = await generateStory(idea, answers)
       setStory(data.story)
       // Création réussie → on décompte du quota (1 en essai, 10/mois en payant).
-      setCreations((c) => recordCreation(plan, c))
+      // Sauf pour un brouillon admin (destiné au catalogue, pas au compte perso).
+      if (!adminDraft) setCreations((c) => recordCreation(plan, c))
       setScreen('ready')
     } catch (e) {
       setError(
@@ -390,6 +410,7 @@ export default function App() {
 
   // Entrée « Crée ton histoire » : applique le quota avant d'ouvrir l'atelier.
   function goCreate() {
+    setAdminDraft(false) // création normale (pas un brouillon catalogue)
     const st = creationStatus(plan, creations)
     if (st.canCreate) { setScreen('create'); return }
     if (st.reason === 'month-done') {
@@ -397,6 +418,35 @@ export default function App() {
       return
     }
     openPaywall(st.reason) // 'subscribe' (pas d'abo) ou 'trial-done' (essai épuisé)
+  }
+
+  // --- Espace admin : contenu à distance ---
+  // Enregistre le contenu complet (via mot de passe) et met à jour l'état local.
+  async function persistContent(next) {
+    const saved = await saveContent(adminPass, next)
+    setContent(saved)
+    return saved
+  }
+  // Lance la création d'une histoire longue DESTINÉE AU CATALOGUE (pas de quota, pas au compte perso).
+  function startAdminStory() {
+    setAdminDraft(true)
+    setStoryText('')
+    setStory(null)
+    setScreen('create')
+  }
+  // Publie l'histoire assemblée dans le catalogue partagé (Blob), puis retour à l'admin.
+  async function publishLongStory(assembled) {
+    const entry = { id: newId(), ...assembled, premium: true, createdAt: Date.now() }
+    try {
+      await persistContent({ ...content, longStories: [entry, ...content.longStories] })
+      setAdminDraft(false)
+      setStoryText('')
+      setStory(null)
+      window.alert('Histoire publiée au catalogue ✨')
+      setScreen('admin')
+    } catch (e) {
+      window.alert('Échec de la publication : ' + (e?.message || e))
+    }
   }
   // « Écouter mon histoire » : on garde l'histoire ET on ouvre le lecteur directement.
   function saveAndListen(assembled) {
@@ -511,7 +561,7 @@ export default function App() {
       {screen === 'home' && (
         <Home
           childName={child.name}
-          event={FEATURED_EVENT}
+          event={content.featuredEvent || FEATURED_EVENT}
           isPremium={premium}
           createStatus={creationStatus(plan, creations)}
           onGoFree={() => setScreen('free')}
@@ -523,16 +573,16 @@ export default function App() {
         />
       )}
       {screen === 'create' && (
-        <Create storyText={storyText} setStoryText={setStoryText} createStatus={creationStatus(plan, creations)} onBack={() => setScreen('home')} onCreate={startQcm} busy={false} error={error} />
+        <Create storyText={storyText} setStoryText={setStoryText} createStatus={adminDraft ? {} : creationStatus(plan, creations)} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
       )}
       {screen === 'qcm' && (
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
       )}
       {screen === 'generating' && <Generating />}
-      {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
+      {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} adminPublish={adminDraft ? publishLongStory : null} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
-        <Premium isPremium={premium} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={goCommunity} onSettings={() => setScreen('settings')} />
+        <Premium isPremium={premium} episodes={content.episodes} longStories={content.longStories} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={goCommunity} onSettings={() => setScreen('settings')} />
       )}
       {screen === 'subscribe' && (
         <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
@@ -630,6 +680,16 @@ export default function App() {
         />
       )}
       {screen === 'published' && <Published onMine={() => setScreen('mine')} onHome={() => setScreen('home')} />}
+      {screen === 'admin' && (
+        <Admin
+          content={content}
+          password={adminPass}
+          onAuth={setAdminPass}
+          onSave={persistContent}
+          onCreateLong={startAdminStory}
+          onClose={() => setScreen('home')}
+        />
+      )}
       {screen === 'reader' && (
         <Reader
           story={reader?.story}
