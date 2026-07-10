@@ -69,8 +69,8 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
               <span style={{ position: 'absolute', top: 12, right: 12, display: 'inline-flex', alignItems: 'center', gap: 3, background: 'var(--card)', color: 'var(--violet)', fontSize: 10.5, fontWeight: 800, padding: '4px 8px', borderRadius: 12 }}><RawSvg html={lockChip} />Premium</span>
             )}
             <div style={iconBox}><RawSvg html={iconFriends} /></div>
-            <div style={cardTitle}>Histoires<br />des copains</div>
-            <div style={{ ...cardSub, color: 'var(--ink2)' }}>Par d'autres enfants</div>
+            <div style={cardTitle}>Les histoires<br />des enfants</div>
+            <div style={{ ...cardSub, color: 'var(--ink2)' }}>À lire et à aimer</div>
           </button>
 
           <button onClick={onGoCreate} style={{ ...cardBase, background: 'var(--violet-soft)', boxShadow: '0 12px 24px -14px var(--glow-create)' }}>
