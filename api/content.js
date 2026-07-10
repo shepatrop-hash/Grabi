@@ -61,7 +61,8 @@ export default async function handler(req, res) {
     }
     try {
       const clean = sanitize(content)
-      await put(KEY, JSON.stringify(clean), { access: 'private', addRandomSuffix: false, contentType: 'application/json' })
+      // allowOverwrite: on réécrit TOUJOURS le même fichier (admin/content.json).
+      await put(KEY, JSON.stringify(clean), { access: 'private', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' })
       return res.status(200).json({ ok: true, content: clean })
     } catch (e) {
       return res.status(500).json({ error: String(e?.message || e) })
