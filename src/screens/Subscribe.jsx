@@ -33,6 +33,7 @@ export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
   const [plan, setPlan] = useState('annual') // annuel sélectionné par défaut
   const [checking, setChecking] = useState(false)
   const trialDone = reason === 'trial-done' // essai déjà utilisé → on ne repropose pas « 3 jours gratuits »
+  const forCommunity = reason === 'community' // arrivé par « les histoires des copains »
 
   if (checking) return <ParentCheck onSuccess={() => onStart(plan)} onCancel={() => setChecking(false)} />
 
@@ -47,7 +48,7 @@ export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
         <div style={{ textAlign: 'center', padding: '6px 28px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}><Grabi size={78} /></div>
           <div style={{ fontSize: 27, fontWeight: 700, marginTop: 2 }}>Grabi Premium</div>
-          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>{trialDone ? 'Tu as adoré créer ton histoire ? Abonne-toi pour en créer 10 chaque mois.' : '3 jours offerts pour créer ta première histoire, puis 10 par mois.'}</div>
+          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>{trialDone ? 'Tu as adoré créer ton histoire ? Abonne-toi pour en créer 10 chaque mois.' : forCommunity ? 'Découvre les histoires des autres enfants — inclus dans ton essai gratuit.' : '3 jours offerts pour créer ta première histoire, puis 10 par mois.'}</div>
         </div>
 
         {/* Choix de la formule — annuel par défaut */}

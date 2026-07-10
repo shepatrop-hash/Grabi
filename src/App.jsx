@@ -33,7 +33,7 @@ import { initBilling, purchase, restore as restoreBilling, billingReady } from '
 import { creationStatus, recordCreation, normalizeCreations } from './lib/quota.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
-import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY } from './lib/samples.js'
+import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY, FEATURED_EVENT } from './lib/samples.js'
 
 // Cible du bouton « retour » Android pour chaque écran (le lecteur gère son origine ;
 // l'accueil quitte l'app). Évite que « retour » ferme l'app depuis un sous-menu.
@@ -381,6 +381,13 @@ export default function App() {
     setScreen('subscribe')
   }
 
+  // Les « histoires des copains » (publiées par d'autres enfants) sont réservées aux
+  // abonnés et à l'essai gratuit. Sans abo → paywall.
+  function goCommunity() {
+    if (plan !== 'none') { setScreen('community'); return }
+    openPaywall('community')
+  }
+
   // Entrée « Crée ton histoire » : applique le quota avant d'ouvrir l'atelier.
   function goCreate() {
     const st = creationStatus(plan, creations)
@@ -504,12 +511,14 @@ export default function App() {
       {screen === 'home' && (
         <Home
           childName={child.name}
+          event={FEATURED_EVENT}
+          isPremium={premium}
           createStatus={creationStatus(plan, creations)}
-          onOpenReader={openReader}
           onGoFree={() => setScreen('free')}
+          onGoLong={() => setScreen('premium')}
           onGoPremium={() => setScreen('premium')}
           onGoCreate={goCreate}
-          onGoCommunity={() => setScreen('community')}
+          onGoCommunity={goCommunity}
           onGoSettings={() => setScreen('settings')}
         />
       )}
@@ -523,7 +532,7 @@ export default function App() {
       {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
-        <Premium isPremium={premium} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={() => setScreen('community')} onSettings={() => setScreen('settings')} />
+        <Premium isPremium={premium} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={goCommunity} onSettings={() => setScreen('settings')} />
       )}
       {screen === 'subscribe' && (
         <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
@@ -539,7 +548,7 @@ export default function App() {
           onRewards={() => setScreen('rewards')}
           onEspaceParents={() => setScreen('espace-parents')}
           onHome={() => setScreen('home')}
-          onCommunity={() => setScreen('community')}
+          onCommunity={goCommunity}
           onDecouvrir={() => setScreen('premium')}
           onMine={() => setScreen('mine')}
         />
@@ -615,7 +624,7 @@ export default function App() {
           onOpenReader={(s) => openReader(s, 'mine')}
           onCreate={goCreate}
           onHome={() => setScreen('home')}
-          onCommunity={() => setScreen('community')}
+          onCommunity={goCommunity}
           onDecouvrir={() => setScreen('premium')}
           onSettings={() => setScreen('settings')}
         />
