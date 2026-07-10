@@ -14,6 +14,10 @@ export const VOICES = [
 export const VOICE_KEYS = VOICES.map((v) => v.key)
 export const DEFAULT_VOICE = 'Aria' // Gemini par défaut (économies)
 
+// Extrait de voix EMBARQUÉ (public/voices/<key>.mp3), généré une fois puis livré avec l'app
+// → lecture INSTANTANÉE dans le choix de voix, sans appel API ni coût (regénérer coûte des sous).
+export const voiceSampleUrl = (key) => `/voices/${key}.mp3`
+
 // Moteur d'une voix ('gemini' | 'eleven'). Voix inconnue -> gemini (le moins cher).
 export const engineOf = (key) => (VOICES.find((v) => v.key === key)?.engine || 'gemini')
 

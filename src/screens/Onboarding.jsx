@@ -3,9 +3,7 @@ import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { VOICE_SAMPLE } from '../lib/grabiCustom.js'
 import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
-import { generateAudio } from '../lib/api.js'
-import { audioKey, getCachedAudio, putCachedAudio } from '../lib/audioCache.js'
-import { VOICES, engineOf } from '../lib/voices.js'
+import { VOICES, voiceSampleUrl } from '../lib/voices.js'
 import AgeStepper from '../components/AgeStepper.jsx'
 
 // Premier lancement : bienvenue -> comment ça marche -> prénom/âge -> voix -> (paywall).
@@ -33,39 +31,18 @@ export default function Onboarding({ voice = 'Aria', onVoice, onFinish, backRef 
   useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); stopSpeak() }, [])
   const stopPreview = () => { if (audioRef.current) { audioRef.current.pause(); audioRef.current = null } stopSpeak(); setPreviewing('') }
 
-  // Précharge les 4 aperçus de voix EN ARRIÈRE-PLAN dès l'ouverture de l'onboarding, et les
-  // met en cache -> lecture INSTANTANÉE au tap (plus d'attente « la voix se prépare »).
+  // Précharge les 4 extraits EMBARQUÉS (public/voices) dès l'ouverture -> lecture instantanée.
   useEffect(() => {
-    let cancelled = false
-    VOICES.forEach(({ key: v }) => {
-      const eng = engineOf(v)
-      const k = audioKey(VOICE_SAMPLE, v, eng)
-      getCachedAudio(k).then((cached) => {
-        if (cancelled || cached) return
-        generateAudio(VOICE_SAMPLE, v, eng)
-          .then((d) => { if (!cancelled && d?.url) putCachedAudio(k, d.url) })
-          .catch(() => {})
-      })
-    })
-    return () => { cancelled = true }
+    VOICES.forEach(({ key }) => { fetch(voiceSampleUrl(key)).catch(() => {}) })
   }, [])
 
-  // Aperçu de la VRAIE voix (instantané si préchargé ; repli navigateur si indispo).
+  // Aperçu de la voix : joue l'extrait embarqué (instantané, 0 crédit) ; repli voix navigateur.
   const testVoice = async (v) => {
     onVoice && onVoice(v)
     stopPreview()
     setPreviewing(v)
     try {
-      const eng = engineOf(v)
-      const k = audioKey(VOICE_SAMPLE, v, eng)
-      let url = await getCachedAudio(k)
-      if (!url) {
-        const data = await generateAudio(VOICE_SAMPLE, v, eng)
-        url = data?.url || null
-        if (url) putCachedAudio(k, url)
-      }
-      if (!url) throw new Error('no audio')
-      const a = new Audio(url)
+      const a = new Audio(voiceSampleUrl(v))
       audioRef.current = a
       a.onended = () => setPreviewing('')
       a.onerror = () => { setPreviewing(''); if (ttsSupported()) speak(VOICE_SAMPLE, v) }
