@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BottomNav from '../components/BottomNav.jsx'
@@ -16,10 +17,13 @@ const cardSub = { fontSize: 12.5, fontWeight: 600, marginTop: 4 }
 
 // Accueil = un petit lanceur : les 4 entrées principales. Le gros encart n'apparaît
 // QUE s'il y a un événement (ex. sortie d'un épisode animé Grabi) → prop `event`.
-export default function Home({ childName = 'Léa', event = null, isPremium = false, createStatus = {}, onGoFree, onGoLong, onGoCommunity, onGoCreate, onGoPremium, onGoSettings }) {
+export default function Home({ childName = 'Léa', event = null, isPremium = false, editing = false, content = {}, onSaveContent, createStatus = {}, onGoFree, onGoLong, onGoCommunity, onGoCreate, onGoPremium, onGoSettings }) {
+  const [evForm, setEvForm] = useState(null)
   const createHint = createStatus.plan === 'paid' ? `${createStatus.left} / 10 ce mois`
     : createStatus.plan === 'trial' ? (createStatus.left > 0 ? '1 histoire offerte ✨' : 'Passe au premium')
     : '📖 ou 🎤'
+  const saveEvent = (ev) => { onSaveContent && onSaveContent({ ...content, featuredEvent: ev }); setEvForm(null) }
+  const removeEvent = () => { if (window.confirm("Retirer l'événement de l'accueil ?")) onSaveContent && onSaveContent({ ...content, featuredEvent: null }) }
 
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
@@ -36,19 +40,29 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
 
       {/* Contenu défilable */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 24px 18px', display: 'flex', flexDirection: 'column', gap: 16, position: 'relative', zIndex: 2 }}>
-        {/* Encart ÉVÉNEMENT (uniquement s'il y en a un, ex. nouvel épisode animé) */}
-        {event && (
-          <button onClick={onGoPremium} className="veil-weekly" style={{ display: 'block', width: '100%', textAlign: 'left', borderRadius: 30, padding: '20px 22px', boxShadow: '0 16px 32px -16px rgba(150,110,220,.6)', flexShrink: 0 }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--hero-badge-bg)', color: 'var(--hero-badge-ink)', fontSize: 12.5, fontWeight: 800, padding: '5px 12px', borderRadius: 16 }}>{event.badge}</span>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 14 }}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.15, color: 'var(--ink)' }}>{event.title}</div>
-                <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink2)', marginTop: 5 }}>{event.subtitle}</div>
+        {/* Encart ÉVÉNEMENT à la une (éditable en mode admin) */}
+        {event ? (
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button onClick={() => (editing ? setEvForm({ ...event }) : onGoPremium())} className="veil-weekly" style={{ display: 'block', width: '100%', textAlign: 'left', borderRadius: 30, padding: '20px 22px', boxShadow: '0 16px 32px -16px rgba(150,110,220,.6)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--hero-badge-bg)', color: 'var(--hero-badge-ink)', fontSize: 12.5, fontWeight: 800, padding: '5px 12px', borderRadius: 16 }}>{event.badge}</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 14 }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.15, color: 'var(--ink)' }}>{event.title}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink2)', marginTop: 5 }}>{event.subtitle}</div>
+                </div>
+                <div style={{ fontSize: 44, flex: 'none' }}>{event.emoji || '🎬'}</div>
               </div>
-              <div style={{ fontSize: 44, flex: 'none' }}>{event.emoji || '🎬'}</div>
-            </div>
-          </button>
-        )}
+            </button>
+            {editing && (
+              <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 6 }}>
+                <button onClick={() => setEvForm({ ...event })} style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(255,255,255,.92)', color: '#7d5fc4', fontSize: 15, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>✏️</button>
+                <button onClick={removeEvent} style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(255,255,255,.92)', color: '#C24A7A', fontSize: 15, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>🗑</button>
+              </div>
+            )}
+          </div>
+        ) : editing ? (
+          <button onClick={() => setEvForm({ badge: '🎬 Nouvel épisode', title: '', subtitle: '', emoji: '🎬' })} style={{ flexShrink: 0, border: '2px dashed var(--card-border)', color: 'var(--ink2)', borderRadius: 24, padding: '18px', fontSize: 15, fontWeight: 700, background: 'transparent' }}>＋ Ajouter un événement à la une</button>
+        ) : null}
 
         {/* Les 4 entrées de l'accueil */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -81,7 +95,30 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
         </div>
       </div>
 
+      {evForm && <EventForm form={evForm} onChange={setEvForm} onSubmit={saveEvent} onCancel={() => setEvForm(null)} />}
+
       <BottomNav active="accueil" onAccueil={() => {}} onDecouvrir={onGoPremium} onCopains={onGoCommunity} onMonCoin={onGoSettings} />
+    </div>
+  )
+}
+
+// Éditeur de l'événement à la une (feuille en bas d'écran).
+const inp = { width: '100%', background: 'var(--card-soft)', border: '2px solid var(--card-border)', borderRadius: 12, padding: '10px 12px', fontSize: 15, fontWeight: 600, color: 'var(--ink)', outline: 'none' }
+function EventForm({ form, onChange, onSubmit, onCancel }) {
+  const set = (patch) => onChange({ ...form, ...patch })
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(20,14,40,.55)', display: 'flex', alignItems: 'flex-end' }} onClick={onCancel}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', background: 'var(--card)', borderRadius: '26px 26px 0 0', padding: '20px 22px calc(env(safe-area-inset-bottom, 0px) + 22px)', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -14px 40px -10px rgba(0,0,0,.5)' }}>
+        <div style={{ fontSize: 18, fontWeight: 800 }}>Événement à la une</div>
+        <input value={form.badge} onChange={(e) => set({ badge: e.target.value })} placeholder="Badge (ex. 🎬 Nouvel épisode)" style={inp} />
+        <input value={form.title} onChange={(e) => set({ title: e.target.value })} placeholder="Titre (ex. Grabi en 3D)" style={inp} autoFocus />
+        <input value={form.subtitle} onChange={(e) => set({ subtitle: e.target.value })} placeholder="Sous-titre" style={inp} />
+        <input value={form.emoji} onChange={(e) => set({ emoji: e.target.value })} placeholder="🎬" style={{ ...inp, width: 70, textAlign: 'center' }} />
+        <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+          <button onClick={onCancel} style={{ flex: 1, background: 'var(--card-soft)', color: 'var(--ink)', borderRadius: 16, padding: '12px', fontSize: 15, fontWeight: 700 }}>Annuler</button>
+          <button onClick={() => onSubmit(form)} style={{ flex: 1, background: 'var(--violet)', color: '#fff', borderRadius: 16, padding: '12px', fontSize: 15, fontWeight: 800 }}>Enregistrer</button>
+        </div>
+      </div>
     </div>
   )
 }

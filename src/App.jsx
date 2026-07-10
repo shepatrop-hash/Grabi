@@ -201,9 +201,10 @@ export default function App() {
   // Contenu éditable à distance (événement à la une, épisodes, histoires longues) — lu au
   // démarrage depuis /api/content. adminPass = mot de passe admin en session ; adminDraft =
   // l'histoire en cours de création est destinée au CATALOGUE (pas au compte perso).
-  const [content, setContent] = useState({ featuredEvent: null, episodes: [], longStories: [] })
+  const [content, setContent] = useState({ featuredEvent: null, seasons: [], longStories: [] })
   const [adminPass, setAdminPass] = useState('')
   const [adminDraft, setAdminDraft] = useState(false)
+  const [editing, setEditing] = useState(false) // mode édition admin sur l'app réelle
   const [child, setChild] = useState(() => load('child', { name: 'Léa', age: '5 ans' }))
   const [screenTime, setScreenTime] = useState(() => load('screenTime', 0))
   const [favorites, setFavorites] = useState(() => load('favorites', {}))
@@ -421,11 +422,15 @@ export default function App() {
   }
 
   // --- Espace admin : contenu à distance ---
-  // Enregistre le contenu complet (via mot de passe) et met à jour l'état local.
+  // Enregistre le contenu (optimiste : l'app reflète l'édition tout de suite, puis persiste).
   async function persistContent(next) {
-    const saved = await saveContent(adminPass, next)
-    setContent(saved)
-    return saved
+    setContent(next)
+    try {
+      await saveContent(adminPass, next)
+    } catch (e) {
+      window.alert("Échec de l'enregistrement : " + (e?.message || e))
+    }
+    return next
   }
   // Lance la création d'une histoire longue DESTINÉE AU CATALOGUE (pas de quota, pas au compte perso).
   function startAdminStory() {
@@ -563,6 +568,9 @@ export default function App() {
           childName={child.name}
           event={content.featuredEvent || FEATURED_EVENT}
           isPremium={premium}
+          editing={editing}
+          onSaveContent={persistContent}
+          content={content}
           createStatus={creationStatus(plan, creations)}
           onGoFree={() => setScreen('free')}
           onGoLong={() => setScreen('premium')}
@@ -582,7 +590,7 @@ export default function App() {
       {screen === 'ready' && <Ready story={story} voice={voice} childName={child.name} onKeep={(s) => saveStory(s, false)} onListen={(s) => saveAndListen(s)} onPublish={(s) => saveStory(s, true)} allowPublish={allowPublish} adminPublish={adminDraft ? publishLongStory : null} />}
       {screen === 'free' && <Free onBack={() => setScreen('home')} onOpenReader={(s) => openReader(s, 'free')} />}
       {screen === 'premium' && (
-        <Premium isPremium={premium} episodes={content.episodes} longStories={content.longStories} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={goCommunity} onSettings={() => setScreen('settings')} />
+        <Premium isPremium={premium} content={content} editing={editing} onSaveContent={persistContent} longStories={content.longStories} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={goCommunity} onSettings={() => setScreen('settings')} />
       )}
       {screen === 'subscribe' && (
         <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
@@ -682,13 +690,17 @@ export default function App() {
       {screen === 'published' && <Published onMine={() => setScreen('mine')} onHome={() => setScreen('home')} />}
       {screen === 'admin' && (
         <Admin
-          content={content}
-          password={adminPass}
-          onAuth={setAdminPass}
-          onSave={persistContent}
-          onCreateLong={startAdminStory}
+          onAuth={(pass) => { setAdminPass(pass); setEditing(true); setScreen('home') }}
           onClose={() => setScreen('home')}
         />
+      )}
+
+      {/* Barre flottante « mode édition » : présente sur toute l'app quand l'admin édite. */}
+      {editing && (
+        <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)', zIndex: 9999, display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 24, padding: '9px 10px 9px 16px', boxShadow: '0 14px 30px -8px rgba(169,140,255,.7)' }}>
+          <span style={{ fontSize: 13.5, fontWeight: 800 }}>✏️ Mode édition</span>
+          <button onClick={() => setEditing(false)} style={{ background: 'rgba(255,255,255,.9)', color: '#7d5fc4', borderRadius: 16, padding: '7px 13px', fontSize: 13, fontWeight: 800 }}>Quitter</button>
+        </div>
       )}
       {screen === 'reader' && (
         <Reader
