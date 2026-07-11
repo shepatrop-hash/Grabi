@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import { speak, stopSpeak, ttsSupported } from '../lib/tts.js'
 import { generateAudio, generateImage, resolveProvider } from '../lib/api.js'
-import { audioKey, getCachedAudio, putCachedAudio } from '../lib/audioCache.js'
+import { audioKey, getCachedAudio, getOrGenerateAudio } from '../lib/audioCache.js'
 
 // Retire les balises d'émotion v3 [..] (ex. [softly]) pour l'AFFICHAGE et la voix du
 // navigateur. La vraie voix ElevenLabs v3, elle, reçoit le texte AVEC les balises.
@@ -125,13 +125,10 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
         if (cancelled || tokenRef.current !== myToken) return
         if (!url) {
           setLoadingAudio(true)
-          try {
-            const d = await generateAudio(cur.text, voice, provider)
-            url = d?.url || null
-            if (url) putCachedAudio(key, url) // on garde pour les prochaines fois
-          } catch {
-            url = null
-          }
+          // getOrGenerateAudio PARTAGE la génération avec le préchargement lancé à la création :
+          // si cette page est déjà en cours de préchauffage, on attend la MÊME promesse (0 doublon,
+          // 0 crédit en plus) ; sinon on la génère ici. Le résultat est mis en cache dans tous les cas.
+          url = await getOrGenerateAudio(key, () => generateAudio(cur.text, voice, provider).then((d) => d?.url || null))
           if (!cancelled && tokenRef.current === myToken) setLoadingAudio(false)
         }
       }
