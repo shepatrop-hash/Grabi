@@ -153,6 +153,34 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
   // Coupe l'audio en quittant le lecteur.
   useEffect(() => () => stopAll(), [])
 
+  // Garde l'écran ALLUMÉ pendant la narration (Screen Wake Lock) : une histoire du soir se
+  // joue sans qu'on touche l'écran → sinon il se met en veille en pleine lecture. Relâché
+  // à la pause / fin d'histoire (playing repasse à false) → l'écran peut s'éteindre tout
+  // seul une fois l'histoire terminée (idéal au coucher).
+  useEffect(() => {
+    if (!playing || typeof navigator === 'undefined' || !('wakeLock' in navigator)) return
+    let sentinel = null
+    let stopped = false
+    const acquire = async () => {
+      try {
+        sentinel = await navigator.wakeLock.request('screen')
+        sentinel.addEventListener('release', () => { sentinel = null })
+      } catch {
+        /* refusé (batterie faible, onglet caché…) : sans gravité */
+      }
+    }
+    // Le système relâche le verrou quand l'app passe en arrière-plan → on le reprend au retour.
+    const onVisible = () => { if (!stopped && document.visibilityState === 'visible' && !sentinel) acquire() }
+    acquire()
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      stopped = true
+      document.removeEventListener('visibilitychange', onVisible)
+      try { sentinel && sentinel.release() } catch {}
+      sentinel = null
+    }
+  }, [playing])
+
   const close = () => {
     stopAll()
     onClose && onClose()
