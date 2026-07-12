@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import Grabi from '../components/Grabi.jsx'
-import BottomNav from '../components/BottomNav.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 
 const heartFull = `<svg width="20" height="20" viewBox="0 0 24 24" fill="#FF5C9A"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
@@ -101,7 +100,7 @@ export default function MyStories({ stories = [], favoriteStories = [], favorite
         </div>
       )}
 
-      <BottomNav active="moncoin" onAccueil={onHome} onDecouvrir={onDecouvrir} onCopains={onCommunity} onMonCoin={onSettings} />
+      <div style={{ flex: 'none', height: 'calc(env(safe-area-inset-bottom, 0px) + 92px)' }} />
     </div>
   )
 }

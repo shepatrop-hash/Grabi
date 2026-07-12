@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import BottomNav from '../components/BottomNav.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import { COMMUNITY_FILTERS, catOf } from '../lib/categories.js'
 
@@ -77,7 +76,7 @@ export default function Community({ list = [], smilesOf = () => 0, given = {}, o
         )}
       </div>
 
-      <BottomNav active="copains" onAccueil={onHome} onDecouvrir={onDecouvrir} onCopains={() => {}} onMonCoin={onSettings} />
+      <div style={{ flex: 'none', height: 'calc(env(safe-area-inset-bottom, 0px) + 92px)' }} />
     </div>
   )
 }
