@@ -1,4 +1,5 @@
 import { fal } from '@fal-ai/client'
+import { abuseBlocked } from './_guard.js'
 
 // Interroge la file Fal pour un job soumis par /api/generate-image.
 // Réponses : { url, model } si terminé, sinon { status: 'IN_QUEUE' | 'IN_PROGRESS' }.
@@ -9,6 +10,7 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Méthode non autorisée.' })
     return
   }
+  if (abuseBlocked(req, res)) return
   if (!process.env.FAL_KEY) {
     res.status(500).json({ error: 'FAL_KEY manquante.' })
     return
