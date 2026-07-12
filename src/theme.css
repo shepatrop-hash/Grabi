@@ -197,19 +197,21 @@ button:active:not(:disabled) {
   }
 }
 
-/* Animations reprises du prototype */
+/* Animations reprises du prototype. NB : plus d'opacité 0 à l'entrée d'un écran → le nouvel
+   écran est visible tout de suite (fini l'effet « tout disparaît » entre deux écrans) ; on ne
+   garde que le mouvement. */
 @keyframes gn-fadein {
-  from { opacity: 0; transform: translateY(10px) scale(0.99); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { transform: translateY(7px); }
+  to { transform: translateY(0); }
 }
 
 /* Transitions de navigation. Le conteneur d'écrans reçoit une classe selon l'action :
    - glissement latéral (swipe) entre onglets frères de la navbar (sens = ordre des onglets) ;
    - zoom en ENTRANT dans une carte (Histoires gratuites, longues, créer…).
    La classe surcharge l'anim d'entrée par défaut de l'écran (!important > style inline). */
-@keyframes gn-zoom-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
-@keyframes gn-slide-in-fwd { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes gn-slide-in-back { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes gn-zoom-in { from { transform: scale(0.93); } to { transform: scale(1); } }
+@keyframes gn-slide-in-fwd { from { transform: translateX(34px); } to { transform: translateX(0); } }
+@keyframes gn-slide-in-back { from { transform: translateX(-34px); } to { transform: translateX(0); } }
 .gn-zoom > * { animation: gn-zoom-in 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) !important; }
 .gn-slide-fwd > * { animation: gn-slide-in-fwd 0.38s cubic-bezier(0.22, 0.61, 0.36, 1) !important; }
 .gn-slide-back > * { animation: gn-slide-in-back 0.38s cubic-bezier(0.22, 0.61, 0.36, 1) !important; }
