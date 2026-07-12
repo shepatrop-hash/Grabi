@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import RawSvg from '../components/RawSvg.jsx'
 import Grabi from '../components/Grabi.jsx'
-import BottomNav from '../components/BottomNav.jsx'
 import { newId } from '../lib/store.js'
 
 // Sans abonnement : on lit ce nombre de pages d'une histoire longue, puis paywall (freemium).
@@ -156,7 +155,7 @@ export default function Premium({ isPremium, content = {}, editing = false, onSa
 
       {epForm && <EpisodeForm form={epForm} onChange={setEpForm} onSubmit={submitEp} onCancel={() => setEpForm(null)} />}
 
-      <BottomNav active="decouvrir" onAccueil={onHome} onDecouvrir={() => {}} onCopains={onCommunity} onMonCoin={onSettings} />
+      <div style={{ flex: 'none', height: 'calc(env(safe-area-inset-bottom, 0px) + 92px)' }} />
     </div>
   )
 }

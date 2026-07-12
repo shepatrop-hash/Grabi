@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
-import BottomNav from '../components/BottomNav.jsx'
 import { FREE_STORIES } from '../lib/samples.js'
 import { crystalSvg } from '../lib/crystals.js'
 
@@ -96,7 +95,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
 
       {evForm && <EventForm form={evForm} onChange={setEvForm} onSubmit={saveEvent} onCancel={() => setEvForm(null)} />}
 
-      <BottomNav active="accueil" onAccueil={() => {}} onDecouvrir={onGoPremium} onCopains={onGoCommunity} onMonCoin={onGoSettings} />
+      <div style={{ flex: 'none', height: 'calc(env(safe-area-inset-bottom, 0px) + 92px)' }} />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
 import Subscribe from './screens/Subscribe.jsx'
 import Boutique from './screens/Boutique.jsx'
+import BottomNav from './components/BottomNav.jsx'
 import Settings from './screens/Settings.jsx'
 import MonGrabi from './screens/MonGrabi.jsx'
 import EspaceParents from './screens/EspaceParents.jsx'
@@ -50,6 +51,9 @@ const BACK_TARGET = {
 
 // Ordre des 4 onglets de la navbar → sens du glissement (swipe) entre onglets frères.
 const TAB_INDEX = { home: 0, premium: 1, community: 2, settings: 3 }
+const TAB_ORDER = ['home', 'premium', 'community', 'settings']
+// Écran → onglet actif de la navbar (et écrans qui AFFICHENT la navbar persistante).
+const NAV_ACTIVE = { home: 'accueil', premium: 'decouvrir', community: 'copains', settings: 'moncoin', mine: 'moncoin' }
 
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
@@ -590,8 +594,28 @@ export default function App() {
 
   const screenAnim = navAnim // classe d'anim, calculée au moment de la navigation (persiste pendant l'anim)
 
+  // Navigation vers un onglet (navbar OU swipe). Copains est gaté (abo requis).
+  const navTab = (target) => { if (target === 'community') goCommunity(); else setScreen(target) }
+  // Swipe horizontal (droite ↔ gauche) = changer d'onglet, comme cliquer sur la navbar.
+  // Seulement quand on est sur un onglet, et seulement pour un geste franchement horizontal.
+  const swipeRef = useRef(null)
+  const justSwipedRef = useRef(false)
+  const onSwipeStart = (e) => { justSwipedRef.current = false; swipeRef.current = TAB_INDEX[screen] != null ? { x: e.clientX, y: e.clientY } : null }
+  const onSwipeEnd = (e) => {
+    const s = swipeRef.current
+    swipeRef.current = null
+    if (!s) return
+    const dx = e.clientX - s.x
+    const dy = e.clientY - s.y
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.4) return // pas un swipe horizontal franc
+    const next = TAB_ORDER[TAB_INDEX[screen] + (dx < 0 ? 1 : -1)] // vers la gauche → onglet suivant
+    if (next) { justSwipedRef.current = true; navTab(next) }
+  }
+  // Après un swipe, on annule le clic qui suivrait (sinon on ouvrirait aussi la carte sous le doigt).
+  const onSwipeClickCapture = (e) => { if (justSwipedRef.current) { justSwipedRef.current = false; e.preventDefault(); e.stopPropagation() } }
+
   return (
-    <div className="app-shell" data-theme={darkMode ? 'dark' : 'light'}>
+    <div className="app-shell" data-theme={darkMode ? 'dark' : 'light'} onPointerDown={onSwipeStart} onPointerUp={onSwipeEnd} onClickCapture={onSwipeClickCapture}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
       <div style={{ display: 'contents' }} className={screenAnim || undefined}>
       {screen === 'onboarding' && (
@@ -735,6 +759,13 @@ export default function App() {
       )}
 
       </div>
+      {/* Navbar PERSISTANTE : rendue une seule fois, FIXE et HORS de l'animation d'écran → elle
+          ne bouge plus pendant les transitions. Affichée seulement sur les onglets. */}
+      {NAV_ACTIVE[screen] && (
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 40 }}>
+          <BottomNav active={NAV_ACTIVE[screen]} onAccueil={() => navTab('home')} onDecouvrir={() => navTab('premium')} onCopains={() => navTab('community')} onMonCoin={() => navTab('settings')} />
+        </div>
+      )}
       {/* Barre flottante « mode édition » : présente sur toute l'app quand l'admin édite. */}
       {editing && (
         <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)', zIndex: 9999, display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 24, padding: '9px 10px 9px 16px', boxShadow: '0 14px 30px -8px rgba(169,140,255,.7)' }}>

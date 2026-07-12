@@ -1,6 +1,5 @@
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
-import BottomNav from '../components/BottomNav.jsx'
 
 const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C3BBD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 L15 12 L9 18"></path></svg>`
 const grabiIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="9" cy="11" r="1.1" fill="#7d5fc4"></circle><circle cx="15" cy="11" r="1.1" fill="#7d5fc4"></circle><path d="M9 15 q3 2.6 6 0"></path></svg>`
@@ -58,7 +57,7 @@ export default function Settings({ premium, child = { name: 'Léa', age: '5 ans'
         <div style={{ fontSize: 11, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', padding: '8px 12px 0' }}>Grabi v1.0 · Fait avec 💜</div>
       </div>
 
-      <BottomNav active="moncoin" onAccueil={onHome} onDecouvrir={onDecouvrir} onCopains={onCommunity} onMonCoin={() => {}} />
+      <div style={{ flex: 'none', height: 'calc(env(safe-area-inset-bottom, 0px) + 92px)' }} />
     </div>
   )
 }
