@@ -19,7 +19,7 @@ export default function Boutique({ crystals = 0, onBuy, onSubscribe, onClose }) 
           <div style={{ display: 'flex', justifyContent: 'center' }}><Grabi size={72} /></div>
           <div style={{ fontSize: 26, fontWeight: 800, marginTop: 2 }}>Boutique de cristaux</div>
           <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, marginTop: 4 }}>1 cristal = 1 histoire à inventer ✨</div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 18, padding: '8px 16px', fontSize: 16, fontWeight: 800, marginTop: 14 }}><RawSvg html={crystalSvg(20)} /> {crystals} <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)' }}>cristaux</span></div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 18, padding: '8px 16px', fontSize: 16, fontWeight: 800, marginTop: 14 }}><RawSvg html={crystalSvg(20)} /> {crystals} <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)' }}>{crystals > 1 ? 'cristaux' : 'cristal'}</span></div>
         </div>
 
         <div style={{ padding: '20px 24px 4px', display: 'flex', flexDirection: 'column', gap: 12 }}>
