@@ -1,3 +1,4 @@
+import { abuseBlocked } from './_guard.js'
 // Effets sonores via ElevenLabs Sound Effects (sound-generation).
 // Sert pour : (1) les petits bruits mignons de Grabi (onomatopées, courts) ;
 // (2) les musiques d'ambiance en BOUCLE PARFAITE (loop: true) pour le fond de l'app
@@ -10,6 +11,7 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Méthode non autorisée.' })
     return
   }
+  if (abuseBlocked(req, res)) return
   if (!process.env.ELEVENLABS_API_KEY) {
     res.status(500).json({ error: 'ELEVENLABS_API_KEY manquante (voir .env.example).' })
     return

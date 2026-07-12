@@ -1,4 +1,5 @@
 import { fal } from '@fal-ai/client'
+import { abuseBlocked } from './_guard.js'
 
 // Génération d'illustration. Deux fournisseurs :
 // - PROVIDER=gemini  -> Nano Banana 2 (gemini-3.1-flash-image), synchrone, renvoie l'image direct.
@@ -94,6 +95,7 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Méthode non autorisée.' })
     return
   }
+  if (abuseBlocked(req, res)) return
 
   const { prompt, image_urls } = req.body || {}
   if (!prompt || typeof prompt !== 'string') {

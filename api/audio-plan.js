@@ -1,3 +1,4 @@
+import { abuseBlocked } from './_guard.js'
 // Décide LE fournisseur de voix pour une histoire ENTIÈRE (cohérence : tout ElevenLabs
 // OU tout Gemini, jamais un mélange en cours d'histoire). Appelé UNE fois avant de narrer.
 // - admin (histoires gratuites / de la semaine faites par toi) -> ElevenLabs toujours.
@@ -28,6 +29,7 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Méthode non autorisée.' })
     return
   }
+  if (abuseBlocked(req, res)) return
   const { chars = 0, admin = false } = req.body || {}
 
   // Contenu admin -> toujours ElevenLabs (le repli dans generate-audio protège si échec).

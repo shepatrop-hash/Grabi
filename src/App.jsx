@@ -155,7 +155,7 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
       ) : allowPublish ? (
         <>
           <button onClick={() => onPublish(assemble())} style={{ width: '100%', maxWidth: 360, marginTop: 12, background: 'transparent', border: '2px solid var(--card-soft)', color: 'var(--ink)', borderRadius: 26, padding: '15px 12px', fontSize: 15, fontWeight: 700 }}>Partager avec les copains</button>
-          <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Papa ou maman valide avant que ton histoire soit visible.</div>
+          <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Elle rejoindra « Les histoires des enfants ».</div>
         </>
       ) : (
         <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, textAlign: 'center', marginTop: 16, maxWidth: 300, lineHeight: 1.45 }}>Le partage est désactivé dans l'Espace parents.</div>
@@ -231,7 +231,11 @@ export default function App() {
 
   // Facturation (RevenueCat) : au démarrage, synchronise le vrai plan (natif uniquement).
   useEffect(() => {
-    initBilling().then((p) => { if (p && p !== 'none') setPlan(p) }).catch(() => {})
+    initBilling().then((p) => {
+      if (p === 'trial' || p === 'paid') setPlan(p) // abo confirmé par RevenueCat -> surclasse
+      else if (p === 'none' && billingReady()) setPlan('none') // natif + "aucun abo" -> rétrograde (anti-triche)
+      // p === null (indéterminé) -> on ne touche à rien (ne pas rétrograder un vrai payant sur erreur réseau)
+    }).catch(() => {})
   }, [])
 
   // Contenu à distance : chargé au démarrage. URL ?admin -> ouvre l'espace admin.

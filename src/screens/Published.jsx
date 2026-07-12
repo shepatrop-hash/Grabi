@@ -17,7 +17,7 @@ export default function Published({ onMine, onHome }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 36px', textAlign: 'center', width: '100%' }}>
         <div style={{ animation: 'gn-pop 2.4s ease-in-out infinite' }}><Grabi size={150} /></div>
         <div style={{ fontSize: 32, fontWeight: 700, marginTop: 18 }}>C'est publié&nbsp;! 🎉</div>
-        <div style={{ fontSize: 17, fontWeight: 500, color: '#6b5e86', lineHeight: 1.45, marginTop: 8, maxWidth: 280 }}>Ton histoire part faire sourire les copains. Grabi est tout fier de toi&nbsp;!</div>
+        <div style={{ fontSize: 17, fontWeight: 500, color: '#6b5e86', lineHeight: 1.45, marginTop: 8, maxWidth: 280 }}>Ton histoire est rangée dans « Les histoires des enfants ». Grabi est tout fier de toi&nbsp;!</div>
         <button onClick={onMine} style={{ marginTop: 30, background: 'var(--violet)', color: '#fff', borderRadius: 28, height: 62, width: '100%', maxWidth: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, boxShadow: '0 14px 28px -10px rgba(169,140,255,.7)' }}>Voir mes histoires</button>
         <button onClick={onHome} style={{ marginTop: 18, fontSize: 15, fontWeight: 600, color: '#7d6fa6' }}>Revenir à l'accueil</button>
       </div>

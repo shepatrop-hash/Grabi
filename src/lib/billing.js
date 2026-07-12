@@ -40,17 +40,19 @@ export async function initBilling() {
     return await activePlan()
   } catch (e) {
     console.warn('[billing] init', e)
-    return 'none'
+    return null // indéterminé (erreur) -> l'appelant ne doit PAS rétrograder
   }
 }
 
+// 'none' = RevenueCat confirme qu'il n'y a AUCUN abo (autoritatif). null = on n'a pas pu savoir
+// (erreur réseau/SDK) -> l'appelant garde le plan actuel plutôt que de rétrograder un vrai payant.
 export async function activePlan() {
   if (!billingReady()) return 'none'
   try {
     const { customerInfo } = await Purchases.getCustomerInfo()
     return planOf(customerInfo)
   } catch {
-    return 'none'
+    return null
   }
 }
 
