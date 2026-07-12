@@ -12,7 +12,7 @@ export default function Community({ list = [], smilesOf = () => 0, given = {}, o
   else stories = list.filter((s) => s.categorie === filter).sort((a, b) => smilesOf(b) - smilesOf(a))
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '6px 24px 0', flex: 'none' }}>
         <div style={{ fontSize: 26, fontWeight: 700 }}>Les histoires des enfants</div>
         <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500 }}>Publiées par des enfants comme toi</div>

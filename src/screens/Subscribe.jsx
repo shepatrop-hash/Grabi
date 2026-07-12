@@ -38,7 +38,7 @@ export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
   if (checking) return <ParentCheck onSuccess={() => onStart(plan)} onCancel={() => setChecking(false)} />
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--card)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--card)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '4px 24px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flex: 'none' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--card-soft)', color: 'var(--ink2)', fontSize: 13, fontWeight: 600, padding: '7px 13px', borderRadius: 18 }}><RawSvg html={parentIcon} />Espace parents</div>
         <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--card-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={closeIcon} /></button>
