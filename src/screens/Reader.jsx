@@ -18,7 +18,10 @@ const lockBig = `<svg width="56" height="62" viewBox="0 0 40 46"><path d="M11,20
 const heartFull = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#FF5C9A"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
 const heartLine = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C6F95" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20.5 C12 20.5 3.5 14.6 3.5 8.8 A4.4 4.4 0 0 1 12 6.3 A4.4 4.4 0 0 1 20.5 8.8 C20.5 14.6 12 20.5 12 20.5 Z"></path></svg>`
 
-export default function Reader({ story, isPremium, voice = 'Douce', soundOn = true, onClose, onSubscribe, onImage, isFavorite, onToggleFavorite }) {
+const sendLine = `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#8B7BB8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 L11 13 M22 2 L15 22 L11 13 L2 9 Z"></path></svg>`
+const sendFull = `<svg width="21" height="21" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 L11 13 M22 2 L15 22 L11 13 L2 9 Z"></path></svg>`
+
+export default function Reader({ story, isPremium, voice = 'Douce', soundOn = true, onClose, onSubscribe, onImage, isFavorite, onToggleFavorite, isShared, onToggleShare }) {
   const pages = story?.pages || []
   const total = pages.length || 1
   const locked = !!story?.premium && !isPremium
@@ -219,6 +222,9 @@ export default function Reader({ story, isPremium, voice = 'Douce', soundOn = tr
       <div style={{ position: 'relative', height: 'min(46dvh, 480px)', flex: 'none', overflow: 'hidden' }}>
         {hero}
         <button onClick={close} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', left: 22, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)' }}><RawSvg html={backIcon} /></button>
+        {onToggleShare && (
+          <button onClick={onToggleShare} aria-label={isShared ? 'Ne plus partager' : 'Partager avec les copains'} title={isShared ? 'Ne plus partager' : 'Partager avec les copains'} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', right: 78, width: 46, height: 46, borderRadius: '50%', background: isShared ? 'rgba(169,140,255,.95)' : 'rgba(255,255,255,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)', transition: 'transform .15s ease', transform: isShared ? 'scale(1.06)' : 'scale(1)' }}><RawSvg html={isShared ? sendFull : sendLine} /></button>
+        )}
         {onToggleFavorite && (
           <button onClick={onToggleFavorite} aria-label={isFavorite ? 'Retirer des favoris' : 'Mettre en favori'} style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 22px)', right: 22, width: 46, height: 46, borderRadius: '50%', background: 'rgba(255,255,255,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(74,58,102,.15)', transition: 'transform .15s ease', transform: isFavorite ? 'scale(1.08)' : 'scale(1)' }}><RawSvg html={isFavorite ? heartFull : heartLine} /></button>
         )}
