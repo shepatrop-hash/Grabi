@@ -3,6 +3,7 @@ import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BottomNav from '../components/BottomNav.jsx'
 import { FREE_STORIES } from '../lib/samples.js'
+import { crystalSvg } from '../lib/crystals.js'
 
 const iconBooks = `<svg width="40" height="40" viewBox="0 0 46 46"><rect x="8" y="27" width="30" height="9" rx="3.5" fill="#FF7FB0"></rect><rect x="6" y="17.5" width="34" height="9" rx="3.5" fill="#56C7FF"></rect><rect x="10" y="8" width="26" height="9" rx="3.5" fill="#3FD7B0"></rect></svg>`
 const iconLong = `<svg width="38" height="38" viewBox="0 0 46 46"><rect x="9" y="8" width="28" height="30" rx="5" fill="#56C7FF"></rect><rect x="9" y="8" width="8" height="30" rx="4" fill="#38ABE8"></rect><path d="M22 16 H32 M22 22 H32 M22 28 H29" stroke="#fff" stroke-width="2.4" stroke-linecap="round"></path></svg>`
@@ -17,9 +18,8 @@ const cardSub = { fontSize: 12.5, fontWeight: 600, marginTop: 4 }
 
 // Accueil = un petit lanceur : les 4 entrées principales. Le gros encart n'apparaît
 // QUE s'il y a un événement (ex. sortie d'un épisode animé Grabi) → prop `event`.
-export default function Home({ childName = 'Léa', event = null, isPremium = false, editing = false, content = {}, onSaveContent, coins = 0, onGoFree, onGoLong, onGoCommunity, onGoCreate, onGoBoutique, onGoPremium, onGoSettings }) {
+export default function Home({ childName = 'Léa', event = null, isPremium = false, editing = false, content = {}, onSaveContent, crystals = 0, onGoFree, onGoLong, onGoCommunity, onGoCreate, onGoBoutique, onGoPremium, onGoSettings }) {
   const [evForm, setEvForm] = useState(null)
-  const createHint = `🪙 ${coins} ${coins > 1 ? 'pièces' : 'pièce'}`
   const saveEvent = (ev) => { onSaveContent && onSaveContent({ ...content, featuredEvent: ev }); setEvForm(null) }
   const removeEvent = () => { if (window.confirm("Retirer l'événement de l'accueil ?")) onSaveContent && onSaveContent({ ...content, featuredEvent: null }) }
 
@@ -32,7 +32,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
         <div style={{ paddingTop: 6 }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink2)' }}>Bonsoir {childName}&nbsp;🌙</div>
           <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.12, maxWidth: 200, marginTop: 3 }}>Prêt·e pour l'histoire du soir&nbsp;?</div>
-          <button onClick={onGoBoutique} aria-label="Mes pièces d'or" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 16, padding: '6px 12px', fontSize: 14.5, fontWeight: 800 }}>🪙 {coins}<span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink2)' }}>{coins > 1 ? 'pièces' : 'pièce'}</span></button>
+          <button onClick={onGoBoutique} aria-label="Mes cristaux" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 16, padding: '6px 12px', fontSize: 14.5, fontWeight: 800 }}><RawSvg html={crystalSvg(17)} /> {crystals}<span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink2)' }}>cristaux</span></button>
         </div>
         <div style={{ flex: 'none' }}><Grabi size={96} /></div>
       </div>
@@ -89,7 +89,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
           <button onClick={onGoCreate} style={{ ...cardBase, background: 'var(--violet-soft)', boxShadow: '0 12px 24px -14px var(--glow-create)' }}>
             <div style={iconBox}><RawSvg html={iconWand} /></div>
             <div style={cardTitle}>Crée ton<br />histoire</div>
-            <div style={{ ...cardSub, color: 'var(--create-sub)' }}>{createHint}</div>
+            <div style={{ ...cardSub, color: 'var(--create-sub)', display: 'flex', alignItems: 'center', gap: 4 }}><RawSvg html={crystalSvg(15)} /> {crystals} cristaux</div>
           </button>
         </div>
       </div>
