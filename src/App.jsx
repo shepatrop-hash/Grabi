@@ -48,6 +48,9 @@ const BACK_TARGET = {
   community: 'home', mine: 'settings', published: 'mine', admin: 'home',
 }
 
+// Ordre des 4 onglets de la navbar → sens du glissement (swipe) entre onglets frères.
+const TAB_INDEX = { home: 0, premium: 1, community: 2, settings: 3 }
+
 const musicOnIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle></svg>`
 const musicOffIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C24A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 V6 l10-2 V16"></path><circle cx="6.5" cy="18" r="2.5"></circle><circle cx="16.5" cy="16" r="2.5"></circle><path d="M3 3 L21 21"></path></svg>`
 
@@ -168,7 +171,17 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
 export default function App() {
   // Premier lancement -> onboarding (bienvenue, prénom/âge, voix) puis paywall.
   const [onboarded, setOnboarded] = useState(() => load('onboarded', false))
-  const [screen, setScreen] = useState(() => (load('onboarded', false) ? 'home' : 'onboarding'))
+  const [screen, _setScreen] = useState(() => (load('onboarded', false) ? 'home' : 'onboarding'))
+  const [navAnim, setNavAnim] = useState('') // classe d'anim de la transition d'écran en cours
+  // Navigation via la navbar entre onglets frères → glissement latéral (sens = ordre des onglets).
+  // Sinon fondu. `go(x, anim)` force une anim précise (zoom en entrant dans une carte).
+  const setScreen = (x) => {
+    const from = TAB_INDEX[screen]
+    const to = TAB_INDEX[x]
+    setNavAnim(from != null && to != null && from !== to ? (to > from ? 'gn-slide-fwd' : 'gn-slide-back') : '')
+    _setScreen(x)
+  }
+  const go = (x, anim) => { setNavAnim(anim || ''); _setScreen(x) }
   const [storyText, setStoryText] = useState('')
   const [error, setError] = useState('')
   const [story, setStory] = useState(null) // histoire brute en cours (avant sauvegarde)
@@ -419,7 +432,7 @@ export default function App() {
   //  - abonné à sec → boutique de cristaux.
   function goCreate() {
     setAdminDraft(false) // création normale (pas un brouillon catalogue)
-    if (canCreate(crystals)) { setScreen('create'); return }
+    if (canCreate(crystals)) { go('create', 'gn-zoom'); return }
     if (plan === 'none') { openPaywall('create'); return }
     setScreen('boutique')
   }
@@ -575,9 +588,12 @@ export default function App() {
   // Musique de fond : ambiance de l'histoire dans le lecteur, sinon musique de l'app.
   const musicTrack = screen === 'reader' ? musicFor(reader?.story?.mood) : MUSIC.app
 
+  const screenAnim = navAnim // classe d'anim, calculée au moment de la navigation (persiste pendant l'anim)
+
   return (
     <div className="app-shell" data-theme={darkMode ? 'dark' : 'light'}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
+      <div style={{ display: 'contents' }} className={screenAnim || undefined}>
       {screen === 'onboarding' && (
         <Onboarding voice={voice} onVoice={setVoice} onFinish={finishOnboarding} backRef={onbBackRef} />
       )}
@@ -590,8 +606,8 @@ export default function App() {
           onSaveContent={persistContent}
           content={content}
           crystals={crystals.balance}
-          onGoFree={() => setScreen('free')}
-          onGoLong={() => setScreen('premium')}
+          onGoFree={() => go('free', 'gn-zoom')}
+          onGoLong={() => go('premium', 'gn-zoom')}
           onGoPremium={() => setScreen('premium')}
           onGoCreate={goCreate}
           onGoBoutique={() => setScreen('boutique')}
@@ -718,6 +734,7 @@ export default function App() {
         />
       )}
 
+      </div>
       {/* Barre flottante « mode édition » : présente sur toute l'app quand l'admin édite. */}
       {editing && (
         <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)', zIndex: 9999, display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(135deg,#FF8FB6,#A98CFF)', color: '#fff', borderRadius: 24, padding: '9px 10px 9px 16px', boxShadow: '0 14px 30px -8px rgba(169,140,255,.7)' }}>
