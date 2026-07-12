@@ -74,7 +74,7 @@ export default function Onboarding({ voice = 'Aria', onVoice, onFinish, backRef 
   )
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 14px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 14px)' }}>
       {/* Bulles décoratives */}
       <div style={{ position: 'absolute', top: -60, right: -50, width: 190, height: 190, borderRadius: '50%', background: 'var(--yellow-soft)', opacity: 0.5 }} />
       <div style={{ position: 'absolute', bottom: -70, left: -60, width: 200, height: 200, borderRadius: '50%', background: 'var(--violet-soft)', opacity: 0.5 }} />

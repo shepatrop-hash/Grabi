@@ -4,7 +4,7 @@ import { FREE_STORIES } from '../lib/samples.js'
 
 export default function Free({ onBack, onOpenReader }) {
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ position: 'absolute', top: -50, left: -40, width: 170, height: 170, borderRadius: '50%', background: 'var(--mint-soft)', opacity: 0.7 }} />
       <div style={{ padding: '14px 24px 12px', display: 'flex', alignItems: 'center', gap: 14, position: 'relative', zIndex: 2 }}>
         <BackButton onClick={onBack} />

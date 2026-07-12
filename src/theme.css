@@ -175,12 +175,32 @@ button {
   border: none;
   background: none;
   cursor: pointer;
+  /* Retour tactile fluide au toucher (les boutons avec transform en ligne gardent le leur). */
+  transition: transform 0.16s cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* Défilement fluide + on évite le rebond horizontal. */
+* { -webkit-overflow-scrolling: touch; }
+
+/* Accessibilité : coupe les animations si l'utilisateur préfère moins de mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Animations reprises du prototype */
 @keyframes gn-fadein {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes grabi-bob {
   0%, 100% { transform: translateY(0) rotate(-1.5deg); }

@@ -24,7 +24,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
   const removeEvent = () => { if (window.confirm("Retirer l'événement de l'accueil ?")) onSaveContent && onSaveContent({ ...content, featuredEvent: null }) }
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)' }}>
       <div style={{ position: 'absolute', top: -70, right: -60, width: 220, height: 220, borderRadius: '50%', background: 'var(--halo)', opacity: 0.6 }} />
 
       {/* En-tête : salutation + mascotte */}

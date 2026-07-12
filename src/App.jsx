@@ -125,7 +125,7 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
   const cover = (story?.pages || []).map((_, i) => images[i]).find((u) => u && u !== 'error') || null
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', position: 'relative', overflow: 'hidden', padding: 'calc(env(safe-area-inset-top, 14px) + 20px) 28px calc(env(safe-area-inset-bottom, 0px) + 28px)', animation: 'gn-fadein .35s ease' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', position: 'relative', overflow: 'hidden', padding: 'calc(env(safe-area-inset-top, 14px) + 20px) 28px calc(env(safe-area-inset-bottom, 0px) + 28px)', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)' }}>
       <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 14px) + 14px)', left: 20, zIndex: 3 }}><TopBack onClick={() => onKeep(assemble())} /></div>
 
       <div style={{ fontSize: 24, fontWeight: 800, textAlign: 'center', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 8 }}>✨ Ton histoire est prête&nbsp;!</div>

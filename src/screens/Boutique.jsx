@@ -9,7 +9,7 @@ const closeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" s
 // informe que ça arrive bientôt. Le prix RÉEL en € est toujours affiché sur chaque pack.
 export default function Boutique({ crystals = 0, onBuy, onSubscribe, onClose }) {
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--card)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .35s ease', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--card)', position: 'relative', overflow: 'hidden', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)', paddingTop: 'calc(env(safe-area-inset-top, 14px) + 16px)' }}>
       <div style={{ padding: '4px 24px 0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flex: 'none' }}>
         <button onClick={onClose} aria-label="Fermer" style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--card-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={closeIcon} /></button>
       </div>

@@ -15,7 +15,7 @@ export default function ScreenLock({ onGrantMore }) {
   const [wrong, setWrong] = useState(false)
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'linear-gradient(180deg,#3A2D5A 0%,#5B4A86 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 32px', textAlign: 'center', animation: 'gn-fadein .35s ease' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'linear-gradient(180deg,#3A2D5A 0%,#5B4A86 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 32px', textAlign: 'center', animation: 'gn-fadein .4s cubic-bezier(.22,.61,.36,1)' }}>
       <div style={{ opacity: 0.95 }}><Grabi size={140} overlay={false} /></div>
       <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginTop: 18 }}>C'est l'heure de la pause&nbsp;🌙</div>
       <div style={{ fontSize: 16, color: 'rgba(255,255,255,.85)', fontWeight: 500, lineHeight: 1.5, marginTop: 10, maxWidth: 320 }}>Grabi a besoin de se reposer. On se retrouve plus tard pour de nouvelles histoires&nbsp;!</div>
