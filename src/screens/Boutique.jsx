@@ -1,6 +1,6 @@
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
-import { CRYSTAL_PACKS, STORY_COST, MONTHLY_CRYSTALS, crystalSvg } from '../lib/crystals.js'
+import { CRYSTAL_PACKS, MONTHLY_CRYSTALS, crystalSvg } from '../lib/crystals.js'
 
 const closeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9789AE" stroke-width="2.6" stroke-linecap="round"><path d="M6 6 L18 18 M18 6 L6 18"></path></svg>`
 
@@ -18,7 +18,7 @@ export default function Boutique({ crystals = 0, onBuy, onSubscribe, onClose }) 
         <div style={{ textAlign: 'center', padding: '2px 28px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}><Grabi size={72} /></div>
           <div style={{ fontSize: 26, fontWeight: 800, marginTop: 2 }}>Boutique de cristaux</div>
-          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, marginTop: 4 }}>Une histoire à inventer = {STORY_COST} cristaux ✨</div>
+          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, marginTop: 4 }}>1 cristal = 1 histoire à inventer ✨</div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 18, padding: '8px 16px', fontSize: 16, fontWeight: 800, marginTop: 14 }}><RawSvg html={crystalSvg(20)} /> {crystals} <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink2)' }}>cristaux</span></div>
         </div>
 
@@ -29,7 +29,7 @@ export default function Boutique({ crystals = 0, onBuy, onSubscribe, onClose }) 
               <div style={{ width: 52, height: 52, borderRadius: 16, background: 'var(--violet-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><RawSvg html={crystalSvg(30)} /></div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 17, fontWeight: 800 }}>{p.crystals} cristaux</div>
-                <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 600, marginTop: 2 }}>≈ {Math.floor(p.crystals / STORY_COST)} histoires</div>
+                <div style={{ fontSize: 12.5, color: 'var(--ink2)', fontWeight: 600, marginTop: 2 }}>{p.crystals} histoires à inventer</div>
               </div>
               <span style={{ flex: 'none', background: 'var(--violet)', color: '#fff', borderRadius: 16, padding: '11px 16px', fontSize: 15, fontWeight: 800 }}>{p.price}</span>
             </button>

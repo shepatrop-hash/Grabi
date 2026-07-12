@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import { Capacitor } from '@capacitor/core'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
-import { crystalSvg } from '../lib/crystals.js'
 
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A3A66" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
 const micIcon = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11 a7 7 0 0 0 14 0"></path><path d="M12 18 V21 M8.5 21 H15.5"></path></svg>`
@@ -20,10 +19,8 @@ const CHIPS = [
   { label: '🐙 Une pieuvre musicienne', bg: 'var(--yellow-soft)', text: 'Une pieuvre musicienne' },
 ]
 
-export default function Create({ storyText, setStoryText, crystals = null, onBack, onCreate, busy, error }) {
+export default function Create({ storyText, setStoryText, onBack, onCreate, busy, error }) {
   const disabled = busy || !storyText.trim()
-  // Rappel du solde de cristaux (null = brouillon admin, pas de décompte).
-  const showCrystals = crystals != null
   const [listening, setListening] = useState(false)
   const recRef = useRef(null)
   const baseRef = useRef('') // texte déjà présent avant la dictée (pour AJOUTER, pas remplacer)
@@ -91,7 +88,6 @@ export default function Create({ storyText, setStoryText, crystals = null, onBac
           <RawSvg html={backIcon} />
         </button>
         <div style={{ fontSize: 26, fontWeight: 700 }}>Crée ton histoire</div>
-        {showCrystals && <span style={{ marginLeft: 'auto', flex: 'none', background: 'var(--violet-soft)', color: '#7d5fc4', fontSize: 12.5, fontWeight: 700, padding: '6px 12px', borderRadius: 16, display: 'inline-flex', alignItems: 'center', gap: 4 }}><RawSvg html={crystalSvg(14)} /> {crystals}</span>}
       </div>
 
       <div style={{ textAlign: 'center', padding: '12px 24px 0', position: 'relative', zIndex: 2 }}>
