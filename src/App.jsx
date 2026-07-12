@@ -32,7 +32,7 @@ import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { initBilling, purchase, restore as restoreBilling, billingReady } from './lib/billing.js'
-import { normalizeCoins, applyGrants, hasCoins, spendCoin } from './lib/coins.js'
+import { normalizeCrystals, applyGrants, canCreate, spendStory } from './lib/crystals.js'
 import { fetchContent, saveContent } from './lib/content.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
@@ -192,9 +192,9 @@ export default function App() {
   // depuis l'ancien booléen « premium » (true = payant). « premium » (accès lecture) en découle.
   const [plan, setPlan] = useState(() => load('plan', load('premium', false) ? 'paid' : 'none'))
   const premium = plan === 'trial' || plan === 'paid'
-  // Solde de pièces d'or (1 pièce = 1 histoire). Accueil offert + 10/mois pour les abonnés
-  // payants + packs (voir lib/coins.js). Remplace l'ancien quota.
-  const [coins, setCoins] = useState(() => normalizeCoins(load('coins', {})))
+  // Solde de cristaux colorés (une histoire = STORY_COST cristaux). Accueil offert + bonus
+  // mensuel pour les abonnés payants + packs (voir lib/crystals.js). Remplace l'ancien quota.
+  const [crystals, setCrystals] = useState(() => normalizeCrystals(load('crystals', {})))
   const [payReason, setPayReason] = useState('subscribe') // motif d'ouverture du paywall
   // Contenu éditable à distance (événement à la une, épisodes, histoires longues) — lu au
   // démarrage depuis /api/content. adminPass = mot de passe admin en session ; adminDraft =
@@ -228,10 +228,10 @@ export default function App() {
   useEffect(() => save('musicOn', musicOn), [musicOn])
   useEffect(() => setEffectsEnabled(effectsOn), [effectsOn])
   useEffect(() => save('plan', plan), [plan])
-  useEffect(() => save('coins', coins), [coins])
-  // Crédits automatiques : pièces d'accueil (une fois) + 10 pièces/mois pour les abonnés payants.
+  useEffect(() => save('crystals', crystals), [crystals])
+  // Crédits automatiques : cristaux d'accueil (une fois) + bonus mensuel pour les abonnés payants.
   // applyGrants est idempotent (drapeaux welcomed/grantMonth) -> pas de double-crédit.
-  useEffect(() => { setCoins((c) => applyGrants(c, plan)) }, [plan])
+  useEffect(() => { setCrystals((c) => applyGrants(c, plan)) }, [plan])
   useEffect(() => save('onboarded', onboarded), [onboarded])
 
   // Facturation (RevenueCat) : au démarrage, synchronise le vrai plan (natif uniquement).
@@ -351,9 +351,9 @@ export default function App() {
     try {
       const data = await generateStory(idea, answers)
       setStory(data.story)
-      // Création réussie → on dépense 1 pièce.
+      // Création réussie → on dépense les cristaux de l'histoire.
       // Sauf pour un brouillon admin (destiné au catalogue, pas au compte perso).
-      if (!adminDraft) setCoins((c) => spendCoin(c))
+      if (!adminDraft) setCrystals((c) => spendStory(c))
       setScreen('ready')
     } catch (e) {
       setError(
@@ -414,18 +414,18 @@ export default function App() {
     openPaywall('community')
   }
 
-  // Entrée « Crée ton histoire » : il faut au moins 1 pièce, sinon → boutique.
+  // Entrée « Crée ton histoire » : il faut assez de cristaux, sinon → boutique.
   function goCreate() {
     setAdminDraft(false) // création normale (pas un brouillon catalogue)
-    if (hasCoins(coins)) { setScreen('create'); return }
+    if (canCreate(crystals)) { setScreen('create'); return }
     setScreen('boutique')
   }
 
-  // Achat d'un pack de pièces. L'achat réel (RevenueCat, produit consommable sur Android)
-  // + le crédit du solde côté serveur seront branchés à l'étape suivante, une fois les
-  // produits créés dans Play Console / RevenueCat. Pour l'instant on informe.
+  // Achat d'un pack de cristaux. L'achat réel (RevenueCat, produit consommable sur Android,
+  // DERRIÈRE le contrôle parental) + le crédit du solde côté serveur seront branchés à l'étape
+  // suivante, une fois les produits créés dans Play Console / RevenueCat. Pour l'instant on informe.
   function buyPack() {
-    window.alert('La boutique de pièces arrive très bientôt ✨\nElle s\'activera dès que les packs seront prêts côté Google Play.')
+    window.alert('La boutique de cristaux arrive très bientôt ✨\nElle s\'activera dès que les packs seront prêts côté Google Play.')
   }
 
   // --- Espace admin : contenu à distance ---
@@ -586,7 +586,7 @@ export default function App() {
           editing={editing}
           onSaveContent={persistContent}
           content={content}
-          coins={coins.balance}
+          crystals={crystals.balance}
           onGoFree={() => setScreen('free')}
           onGoLong={() => setScreen('premium')}
           onGoPremium={() => setScreen('premium')}
@@ -597,7 +597,7 @@ export default function App() {
         />
       )}
       {screen === 'create' && (
-        <Create storyText={storyText} setStoryText={setStoryText} coins={adminDraft ? null : coins.balance} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
+        <Create storyText={storyText} setStoryText={setStoryText} crystals={adminDraft ? null : crystals.balance} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
       )}
       {screen === 'qcm' && (
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
@@ -612,7 +612,7 @@ export default function App() {
         <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
       )}
       {screen === 'boutique' && (
-        <Boutique coins={coins.balance} onBuy={buyPack} onSubscribe={() => openPaywall('subscribe')} onClose={() => setScreen('home')} />
+        <Boutique crystals={crystals.balance} onBuy={buyPack} onSubscribe={() => openPaywall('subscribe')} onClose={() => setScreen('home')} />
       )}
       {screen === 'settings' && (
         <Settings
