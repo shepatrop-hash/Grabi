@@ -3,7 +3,6 @@ import RawSvg from '../components/RawSvg.jsx'
 import Grabi from '../components/Grabi.jsx'
 import BottomNav from '../components/BottomNav.jsx'
 import { newId } from '../lib/store.js'
-import { WEEKLY_STORY } from '../lib/samples.js'
 
 // Sans abonnement : on lit ce nombre de pages d'une histoire longue, puis paywall (freemium).
 const FREE_PAGES = 2
@@ -50,7 +49,7 @@ function EpisodeCard({ e, editing, onOpen }) {
 export default function Premium({ isPremium, content = {}, editing = false, onSaveContent, longStories = [], onSubscribe, onOpenReader, onHome, onCommunity, onSettings }) {
   const [epForm, setEpForm] = useState(null) // { sid, ep } quand on ajoute/édite un épisode
   const seasons = content.seasons || []
-  const longs = [WEEKLY_STORY, ...longStories] // histoires longues affichées sous les épisodes
+  const longs = longStories // histoires longues affichées sous les épisodes (publiées via l'admin)
   const openVideo = (url) => { if (url) { try { window.open(url, '_blank', 'noopener') } catch {} } }
   const save = (nextSeasons) => onSaveContent && onSaveContent({ ...content, seasons: nextSeasons })
 
@@ -138,6 +137,7 @@ export default function Premium({ isPremium, content = {}, editing = false, onSa
         )}
 
         {/* Histoires longues — affichage classique. Sans abonnement : lecture partielle (freemium). */}
+        {longs.length > 0 && (
         <div style={{ padding: '18px 24px 8px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 18, fontWeight: 800 }}>Histoires longues</div>
           {longs.map((s) => (
@@ -151,6 +151,7 @@ export default function Premium({ isPremium, content = {}, editing = false, onSa
             </button>
           ))}
         </div>
+        )}
       </div>
 
       {epForm && <EpisodeForm form={epForm} onChange={setEpForm} onSubmit={submitEp} onCancel={() => setEpForm(null)} />}
