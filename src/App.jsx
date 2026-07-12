@@ -479,6 +479,14 @@ export default function App() {
     setFavorites((f) => ({ ...f, [id]: !f[id] }))
   }
 
+  // Partage = drapeau `published` (l'histoire apparaît dans « Les histoires des enfants »).
+  // Activable/désactivable À TOUT MOMENT (depuis le lecteur ou Mes histoires) — plus de
+  // choix unique et définitif au moment de la création.
+  function togglePublish(id) {
+    if (!id) return
+    setStories((list) => list.map((s) => (s.id === id ? { ...s, published: !s.published } : s)))
+  }
+
   function deleteStory(item) {
     if (!item?.id) return
     if (!window.confirm(`Supprimer « ${item.title} » ?`)) return
@@ -678,6 +686,7 @@ export default function App() {
           favorites={favorites}
           onToggleFavorite={toggleFavorite}
           onDelete={deleteStory}
+          onTogglePublish={togglePublish}
           smilesOf={smilesOf}
           onOpenReader={(s) => openReader(s, 'mine')}
           onCreate={goCreate}
@@ -710,6 +719,8 @@ export default function App() {
           soundOn={voiceOn}
           isFavorite={!!favorites[reader?.story?.id]}
           onToggleFavorite={() => reader?.story?.id && toggleFavorite(reader.story.id)}
+          isShared={stories.some((s) => s.id === reader?.story?.id && s.published)}
+          onToggleShare={stories.some((s) => s.id === reader?.story?.id) ? () => togglePublish(reader.story.id) : undefined}
           onClose={() => setScreen(reader?.origin || 'home')}
           onSubscribe={() => openPaywall('subscribe')}
           onImage={(i, url) => persistStoryImage(reader?.story?.id, i, url)}
