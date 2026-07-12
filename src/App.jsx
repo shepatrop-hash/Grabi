@@ -414,10 +414,13 @@ export default function App() {
     openPaywall('community')
   }
 
-  // Entrée « Crée ton histoire » : il faut assez de cristaux, sinon → boutique.
+  // Entrée « Crée ton histoire ». Assez de cristaux → atelier. Sinon :
+  //  - sans abonnement → paywall abo + essai gratuit (teste 1 histoire gratos, + option cristaux) ;
+  //  - abonné à sec → boutique de cristaux.
   function goCreate() {
     setAdminDraft(false) // création normale (pas un brouillon catalogue)
     if (canCreate(crystals)) { setScreen('create'); return }
+    if (plan === 'none') { openPaywall('create'); return }
     setScreen('boutique')
   }
 
@@ -609,7 +612,7 @@ export default function App() {
         <Premium isPremium={premium} content={content} editing={editing} onSaveContent={persistContent} longStories={content.longStories} onSubscribe={() => openPaywall('subscribe')} onOpenReader={(s) => openReader(s, 'premium')} onHome={() => setScreen('home')} onCommunity={goCommunity} onSettings={() => setScreen('settings')} />
       )}
       {screen === 'subscribe' && (
-        <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
+        <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} onBuyCrystals={() => setScreen('boutique')} />
       )}
       {screen === 'boutique' && (
         <Boutique crystals={crystals.balance} onBuy={buyPack} onSubscribe={() => openPaywall('subscribe')} onClose={() => setScreen('home')} />

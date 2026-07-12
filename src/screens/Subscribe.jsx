@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import ParentCheck from '../components/ParentCheck.jsx'
+import { crystalSvg } from '../lib/crystals.js'
 
 const parentIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7d6fb0" stroke-width="2.4"><circle cx="9" cy="8" r="3.2"></circle><circle cx="16" cy="9" r="2.6"></circle><path d="M3.5 19 c0-3.5 3-5 5.5-5 s5.5 1.5 5.5 5"></path></svg>`
 const closeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9789AE" stroke-width="2.6" stroke-linecap="round"><path d="M6 6 L18 18 M18 6 L6 18"></path></svg>`
@@ -29,11 +30,12 @@ function PlanCard({ selected, onClick, title, price, per, note, badge }) {
   )
 }
 
-export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
+export default function Subscribe({ reason = 'subscribe', onClose, onStart, onBuyCrystals }) {
   const [plan, setPlan] = useState('annual') // annuel sélectionné par défaut
   const [checking, setChecking] = useState(false)
   const trialDone = reason === 'trial-done' // essai déjà utilisé → on ne repropose pas « 3 jours gratuits »
   const forCommunity = reason === 'community' // arrivé par « les histoires des copains »
+  const forCreate = reason === 'create' // a cliqué « Créer » sans abonnement → propose l'essai (+ option cristaux)
 
   if (checking) return <ParentCheck onSuccess={() => onStart(plan)} onCancel={() => setChecking(false)} />
 
@@ -48,7 +50,7 @@ export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
         <div style={{ textAlign: 'center', padding: '6px 28px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}><Grabi size={78} /></div>
           <div style={{ fontSize: 27, fontWeight: 700, marginTop: 2 }}>Grabi Premium</div>
-          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>{trialDone ? 'Tu as adoré créer ton histoire ? Abonne-toi pour en créer 10 chaque mois.' : forCommunity ? 'Découvre les histoires des autres enfants — inclus dans ton essai gratuit.' : '3 jours offerts pour créer ta première histoire, puis 10 par mois.'}</div>
+          <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.4, marginTop: 4 }}>{trialDone ? 'Tu as adoré créer ton histoire ? Abonne-toi pour en créer 10 chaque mois.' : forCommunity ? 'Découvre les histoires des autres enfants — inclus dans ton essai gratuit.' : forCreate ? "Teste la création d'une histoire, gratuitement, avec les 3 jours d'essai ✨" : '3 jours offerts pour créer ta première histoire, puis 10 par mois.'}</div>
         </div>
 
         {/* Choix de la formule — annuel par défaut */}
@@ -74,6 +76,9 @@ export default function Subscribe({ reason = 'subscribe', onClose, onStart }) {
         <div style={{ textAlign: 'center', marginTop: 12, fontSize: 12.5, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RawSvg html={lockSmall} />{trialDone ? `${plan === 'annual' ? '49,99 €/an' : '5,99 €/mois'}, sans engagement.` : `3 jours gratuits, puis ${plan === 'annual' ? '49,99 €/an' : '5,99 €/mois'}.`}</span><br />Résiliable en 1 clic à tout moment.
         </div>
+        {forCreate && onBuyCrystals && (
+          <button onClick={onBuyCrystals} style={{ width: '100%', marginTop: 12, background: 'transparent', color: 'var(--ink2)', fontSize: 13, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>Pas envie de t'abonner ?&nbsp;<span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--ink)' }}><RawSvg html={crystalSvg(15)} />Prends des cristaux</span></button>
+        )}
       </div>
     </div>
   )
