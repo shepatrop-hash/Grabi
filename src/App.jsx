@@ -26,7 +26,7 @@ import BackgroundMusic from './components/BackgroundMusic.jsx'
 import RawSvg from './components/RawSvg.jsx'
 import { generateStory, generateImage, generateQuestions, generateAudio, resolveProvider } from './lib/api.js'
 import { normalizeVoice, DEFAULT_VOICE } from './lib/voices.js'
-import { audioKey, getCachedAudio, putCachedAudio } from './lib/audioCache.js'
+import { audioKey, warmStory } from './lib/audioCache.js'
 import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
@@ -84,23 +84,19 @@ function Ready({ story, voice = 'Douce', childName = '', onKeep, onListen, onPub
 
   // Pré-génère la NARRATION de chaque page EN ARRIÈRE-PLAN (en même temps que les images)
   // et la met en cache → lecture INSTANTANÉE dans le lecteur (plus de « Grabi prépare sa voix »).
+  // warmStory vit au niveau module : le préchargement SE TERMINE et se met en cache même si
+  // on quitte cet écran pour ouvrir le lecteur (avant, tout était annulé au démontage → le
+  // résultat déjà en cours de génération était jeté → la voix se régénérait à chaque page).
   useEffect(() => {
     if (!story?.pages || !provider) return // attend que le moteur soit décidé
-    let cancelled = false
-    story.pages.forEach((p) => {
-      const text = p.texte
-      if (!text) return
-      const key = audioKey(text, voice, provider)
-      getCachedAudio(key).then((cached) => {
-        if (cancelled || cached) return // déjà en cache -> rien à faire
-        generateAudio(text, voice, provider)
-          .then((d) => { if (!cancelled && d?.url) putCachedAudio(key, d.url) })
-          .catch(() => {})
-      })
-    })
-    return () => {
-      cancelled = true
-    }
+    warmStory(
+      story.pages
+        .filter((p) => p.texte)
+        .map((p) => {
+          const text = p.texte
+          return { key: audioKey(text, voice, provider), run: () => generateAudio(text, voice, provider).then((d) => d?.url || null) }
+        })
+    )
   }, [story, voice, provider])
 
   const assemble = () => {

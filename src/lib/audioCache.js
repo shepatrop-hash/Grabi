@@ -103,3 +103,45 @@ export async function putCachedAudio(key, url) {
     /* cache best-effort : on ignore les erreurs (quota, mode privé…) */
   }
 }
+
+// --- Génération partagée + préchauffage (survivent à la navigation) -------------------
+// Bug résolu : le préchargement lancé pendant la CRÉATION était annulé dès qu'on quittait
+// l'écran (garde `cancelled`) → la génération se terminait mais son résultat était jeté →
+// rien en cache → le lecteur régénérait la voix de CHAQUE page à la 1re ouverture.
+// Ici la génération vit au niveau MODULE : elle se termine et se met en cache même si
+// l'écran d'origine est démonté, et une même page n'est générée qu'UNE fois (le
+// préchargement de la création et la lecture partagent la MÊME promesse).
+const inflight = new Map() // key -> Promise<url|null>
+
+// Renvoie l'URL audio pour `key` : cache si dispo, sinon génère via `generate` (une seule
+// fois, partagée entre appelants) et met en cache. Ne lève jamais.
+export function getOrGenerateAudio(key, generate) {
+  const running = inflight.get(key)
+  if (running) return running
+  const p = (async () => {
+    const cached = await getCachedAudio(key)
+    if (cached) return cached
+    let url = null
+    try { url = await generate() } catch { url = null }
+    if (url) await putCachedAudio(key, url) // caché MÊME si l'appelant a été démonté
+    return url
+  })()
+  inflight.set(key, p)
+  p.finally(() => { if (inflight.get(key) === p) inflight.delete(key) })
+  return p
+}
+
+// Précharge séquentiellement la narration de toute une histoire, en arrière-plan (page 1
+// d'abord → prête au plus vite ; séquentiel → pas de rafale qui déclenche des 429). Survit
+// à la navigation vers le lecteur. Un nouvel appel prend la main (une seule histoire chauffe
+// à la fois). `items` = [{ key, run }] où run() = () => Promise<url|null>.
+let warmToken = 0
+export function warmStory(items) {
+  const myToken = ++warmToken
+  ;(async () => {
+    for (const it of items || []) {
+      if (myToken !== warmToken) return // une autre histoire a pris la main
+      try { await getOrGenerateAudio(it.key, it.run) } catch {}
+    }
+  })()
+}
