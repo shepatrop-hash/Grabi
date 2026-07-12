@@ -5,6 +5,7 @@ import Create from './screens/Create.jsx'
 import Free from './screens/Free.jsx'
 import Premium from './screens/Premium.jsx'
 import Subscribe from './screens/Subscribe.jsx'
+import Boutique from './screens/Boutique.jsx'
 import Settings from './screens/Settings.jsx'
 import MonGrabi from './screens/MonGrabi.jsx'
 import EspaceParents from './screens/EspaceParents.jsx'
@@ -31,7 +32,7 @@ import { setEffectsEnabled, musicFor, MUSIC } from './lib/sounds.js'
 import { buildQcm } from './lib/qcm.js'
 import { load, save, newId } from './lib/store.js'
 import { initBilling, purchase, restore as restoreBilling, billingReady } from './lib/billing.js'
-import { creationStatus, recordCreation, normalizeCreations } from './lib/quota.js'
+import { normalizeCoins, applyGrants, hasCoins, spendCoin } from './lib/coins.js'
 import { fetchContent, saveContent } from './lib/content.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
@@ -41,7 +42,7 @@ import { FREE_STORIES, WEEKLY_STORY, SEED_COMMUNITY, FEATURED_EVENT } from './li
 // l'accueil quitte l'app). Évite que « retour » ferme l'app depuis un sous-menu.
 const BACK_TARGET = {
   create: 'home', qcm: 'create', generating: 'home', ready: 'home',
-  free: 'home', premium: 'home', subscribe: 'home', settings: 'home',
+  free: 'home', premium: 'home', subscribe: 'home', boutique: 'home', settings: 'home',
   'edit-profile': 'settings', legal: 'espace-parents', rewards: 'settings',
   'mon-grabi': 'settings', 'espace-parents': 'settings', 'mon-abonnement': 'settings',
   community: 'home', mine: 'settings', published: 'mine', admin: 'home',
@@ -191,8 +192,9 @@ export default function App() {
   // depuis l'ancien booléen « premium » (true = payant). « premium » (accès lecture) en découle.
   const [plan, setPlan] = useState(() => load('plan', load('premium', false) ? 'paid' : 'none'))
   const premium = plan === 'trial' || plan === 'paid'
-  // Compteur de créations : 1 pendant l'essai, 10 par mois en payant (voir lib/quota.js).
-  const [creations, setCreations] = useState(() => normalizeCreations(load('creations', {})))
+  // Solde de pièces d'or (1 pièce = 1 histoire). Accueil offert + 10/mois pour les abonnés
+  // payants + packs (voir lib/coins.js). Remplace l'ancien quota.
+  const [coins, setCoins] = useState(() => normalizeCoins(load('coins', {})))
   const [payReason, setPayReason] = useState('subscribe') // motif d'ouverture du paywall
   // Contenu éditable à distance (événement à la une, épisodes, histoires longues) — lu au
   // démarrage depuis /api/content. adminPass = mot de passe admin en session ; adminDraft =
@@ -226,7 +228,10 @@ export default function App() {
   useEffect(() => save('musicOn', musicOn), [musicOn])
   useEffect(() => setEffectsEnabled(effectsOn), [effectsOn])
   useEffect(() => save('plan', plan), [plan])
-  useEffect(() => save('creations', creations), [creations])
+  useEffect(() => save('coins', coins), [coins])
+  // Crédits automatiques : pièces d'accueil (une fois) + 10 pièces/mois pour les abonnés payants.
+  // applyGrants est idempotent (drapeaux welcomed/grantMonth) -> pas de double-crédit.
+  useEffect(() => { setCoins((c) => applyGrants(c, plan)) }, [plan])
   useEffect(() => save('onboarded', onboarded), [onboarded])
 
   // Facturation (RevenueCat) : au démarrage, synchronise le vrai plan (natif uniquement).
@@ -346,9 +351,9 @@ export default function App() {
     try {
       const data = await generateStory(idea, answers)
       setStory(data.story)
-      // Création réussie → on décompte du quota (1 en essai, 10/mois en payant).
+      // Création réussie → on dépense 1 pièce.
       // Sauf pour un brouillon admin (destiné au catalogue, pas au compte perso).
-      if (!adminDraft) setCreations((c) => recordCreation(plan, c))
+      if (!adminDraft) setCoins((c) => spendCoin(c))
       setScreen('ready')
     } catch (e) {
       setError(
@@ -409,16 +414,18 @@ export default function App() {
     openPaywall('community')
   }
 
-  // Entrée « Crée ton histoire » : applique le quota avant d'ouvrir l'atelier.
+  // Entrée « Crée ton histoire » : il faut au moins 1 pièce, sinon → boutique.
   function goCreate() {
     setAdminDraft(false) // création normale (pas un brouillon catalogue)
-    const st = creationStatus(plan, creations)
-    if (st.canCreate) { setScreen('create'); return }
-    if (st.reason === 'month-done') {
-      window.alert('Tu as créé tes 10 histoires ce mois-ci 🌙\nElles reviennent au début du mois prochain !')
-      return
-    }
-    openPaywall(st.reason) // 'subscribe' (pas d'abo) ou 'trial-done' (essai épuisé)
+    if (hasCoins(coins)) { setScreen('create'); return }
+    setScreen('boutique')
+  }
+
+  // Achat d'un pack de pièces. L'achat réel (RevenueCat, produit consommable sur Android)
+  // + le crédit du solde côté serveur seront branchés à l'étape suivante, une fois les
+  // produits créés dans Play Console / RevenueCat. Pour l'instant on informe.
+  function buyPack() {
+    window.alert('La boutique de pièces arrive très bientôt ✨\nElle s\'activera dès que les packs seront prêts côté Google Play.')
   }
 
   // --- Espace admin : contenu à distance ---
@@ -579,17 +586,18 @@ export default function App() {
           editing={editing}
           onSaveContent={persistContent}
           content={content}
-          createStatus={creationStatus(plan, creations)}
+          coins={coins.balance}
           onGoFree={() => setScreen('free')}
           onGoLong={() => setScreen('premium')}
           onGoPremium={() => setScreen('premium')}
           onGoCreate={goCreate}
+          onGoBoutique={() => setScreen('boutique')}
           onGoCommunity={goCommunity}
           onGoSettings={() => setScreen('settings')}
         />
       )}
       {screen === 'create' && (
-        <Create storyText={storyText} setStoryText={setStoryText} createStatus={adminDraft ? {} : creationStatus(plan, creations)} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
+        <Create storyText={storyText} setStoryText={setStoryText} coins={adminDraft ? null : coins.balance} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
       )}
       {screen === 'qcm' && (
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />
@@ -602,6 +610,9 @@ export default function App() {
       )}
       {screen === 'subscribe' && (
         <Subscribe reason={payReason} onClose={() => setScreen('home')} onStart={startSubscribe} />
+      )}
+      {screen === 'boutique' && (
+        <Boutique coins={coins.balance} onBuy={buyPack} onSubscribe={() => openPaywall('subscribe')} onClose={() => setScreen('home')} />
       )}
       {screen === 'settings' && (
         <Settings

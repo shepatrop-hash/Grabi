@@ -19,12 +19,10 @@ const CHIPS = [
   { label: '🐙 Une pieuvre musicienne', bg: 'var(--yellow-soft)', text: 'Une pieuvre musicienne' },
 ]
 
-export default function Create({ storyText, setStoryText, createStatus = {}, onBack, onCreate, busy, error }) {
+export default function Create({ storyText, setStoryText, coins = null, onBack, onCreate, busy, error }) {
   const disabled = busy || !storyText.trim()
-  // Petit rappel du quota restant (10/mois en payant, 1 pendant l'essai).
-  const quotaLabel = createStatus.plan === 'paid' ? `${createStatus.left} / 10 ce mois`
-    : createStatus.plan === 'trial' ? `${createStatus.left} histoire offerte`
-    : ''
+  // Rappel du solde de pièces (null = brouillon admin, pas de décompte).
+  const quotaLabel = coins != null ? `🪙 ${coins}` : ''
   const [listening, setListening] = useState(false)
   const recRef = useRef(null)
   const baseRef = useRef('') // texte déjà présent avant la dictée (pour AJOUTER, pas remplacer)
