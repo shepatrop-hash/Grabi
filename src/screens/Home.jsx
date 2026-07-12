@@ -17,11 +17,9 @@ const cardSub = { fontSize: 12.5, fontWeight: 600, marginTop: 4 }
 
 // Accueil = un petit lanceur : les 4 entrées principales. Le gros encart n'apparaît
 // QUE s'il y a un événement (ex. sortie d'un épisode animé Grabi) → prop `event`.
-export default function Home({ childName = 'Léa', event = null, isPremium = false, editing = false, content = {}, onSaveContent, createStatus = {}, onGoFree, onGoLong, onGoCommunity, onGoCreate, onGoPremium, onGoSettings }) {
+export default function Home({ childName = 'Léa', event = null, isPremium = false, editing = false, content = {}, onSaveContent, coins = 0, onGoFree, onGoLong, onGoCommunity, onGoCreate, onGoBoutique, onGoPremium, onGoSettings }) {
   const [evForm, setEvForm] = useState(null)
-  const createHint = createStatus.plan === 'paid' ? `${createStatus.left} / 10 ce mois`
-    : createStatus.plan === 'trial' ? (createStatus.left > 0 ? '1 histoire offerte ✨' : 'Passe au premium')
-    : '📖 ou 🎤'
+  const createHint = `🪙 ${coins} ${coins > 1 ? 'pièces' : 'pièce'}`
   const saveEvent = (ev) => { onSaveContent && onSaveContent({ ...content, featuredEvent: ev }); setEvForm(null) }
   const removeEvent = () => { if (window.confirm("Retirer l'événement de l'accueil ?")) onSaveContent && onSaveContent({ ...content, featuredEvent: null }) }
 
@@ -34,6 +32,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
         <div style={{ paddingTop: 6 }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink2)' }}>Bonsoir {childName}&nbsp;🌙</div>
           <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.12, maxWidth: 200, marginTop: 3 }}>Prêt·e pour l'histoire du soir&nbsp;?</div>
+          <button onClick={onGoBoutique} aria-label="Mes pièces d'or" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 16, padding: '6px 12px', fontSize: 14.5, fontWeight: 800 }}>🪙 {coins}<span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink2)' }}>{coins > 1 ? 'pièces' : 'pièce'}</span></button>
         </div>
         <div style={{ flex: 'none' }}><Grabi size={96} /></div>
       </div>
