@@ -597,7 +597,7 @@ export default function App() {
         />
       )}
       {screen === 'create' && (
-        <Create storyText={storyText} setStoryText={setStoryText} crystals={adminDraft ? null : crystals.balance} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
+        <Create storyText={storyText} setStoryText={setStoryText} onBack={() => setScreen(adminDraft ? 'admin' : 'home')} onCreate={startQcm} busy={false} error={error} />
       )}
       {screen === 'qcm' && (
         <QCM idea={storyText} questions={qcmQuestions} index={qcmIndex} loading={qcmLoading} onBack={() => setScreen('create')} onAnswer={answerQcm} />

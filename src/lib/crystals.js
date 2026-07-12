@@ -7,16 +7,16 @@
 //
 // ⚠️ Le prix RÉEL en euros est TOUJOURS affiché sur chaque pack (obligatoire, d'autant plus
 // pour une app enfant) : les cristaux sont une expérience de jeu, pas un moyen de masquer les prix.
-export const STORY_COST = 20        // cristaux par histoire créée
-export const WELCOME_CRYSTALS = 60  // offerts à l'arrivée (≈ 3 histoires), une seule fois
-export const MONTHLY_CRYSTALS = 200 // crédités chaque mois aux abonnés payants (≈ 10 histoires)
+export const STORY_COST = 1         // 1 cristal = 1 histoire créée
+export const WELCOME_CRYSTALS = 3   // offerts à l'arrivée (3 histoires), une seule fois
+export const MONTHLY_CRYSTALS = 10  // crédités chaque mois aux abonnés payants (10 histoires)
 
 // Packs achetables. `product` = id du produit CONSOMMABLE à créer dans Play Console + RevenueCat.
 // Les prix sont indicatifs (Google fixe le prix réel par pays via le produit).
 export const CRYSTAL_PACKS = [
-  { id: 'cristaux_150', crystals: 150, product: 'cristaux_150', price: '1,99 €' },
-  { id: 'cristaux_500', crystals: 500, product: 'cristaux_500', price: '4,99 €', tag: 'Populaire' },
-  { id: 'cristaux_1500', crystals: 1500, product: 'cristaux_1500', price: '12,99 €', tag: 'Le + avantageux' },
+  { id: 'cristaux_10', crystals: 10, product: 'cristaux_10', price: '1,99 €' },
+  { id: 'cristaux_30', crystals: 30, product: 'cristaux_30', price: '4,99 €', tag: 'Populaire' },
+  { id: 'cristaux_100', crystals: 100, product: 'cristaux_100', price: '12,99 €', tag: 'Le + avantageux' },
 ]
 
 // Petit cristal coloré (rose/violet/cyan) — style Mario Galaxy. `s` = taille en px.
