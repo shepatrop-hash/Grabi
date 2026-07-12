@@ -32,7 +32,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
         <div style={{ paddingTop: 6 }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink2)' }}>Bonsoir {childName}&nbsp;🌙</div>
           <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.12, maxWidth: 200, marginTop: 3 }}>Prêt·e pour l'histoire du soir&nbsp;?</div>
-          <button onClick={onGoBoutique} aria-label="Mes cristaux" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 16, padding: '6px 12px', fontSize: 14.5, fontWeight: 800 }}><RawSvg html={crystalSvg(17)} /> {crystals}<span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink2)' }}>cristaux</span></button>
+          <button onClick={onGoBoutique} aria-label="Mes cristaux" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--yellow-soft)', color: 'var(--ink)', borderRadius: 16, padding: '6px 12px', fontSize: 14.5, fontWeight: 800 }}><RawSvg html={crystalSvg(17)} /> {crystals}<span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink2)' }}>{crystals > 1 ? 'cristaux' : 'cristal'}</span></button>
         </div>
         <div style={{ flex: 'none' }}><Grabi size={96} /></div>
       </div>
@@ -89,7 +89,7 @@ export default function Home({ childName = 'Léa', event = null, isPremium = fal
           <button onClick={onGoCreate} style={{ ...cardBase, background: 'var(--violet-soft)', boxShadow: '0 12px 24px -14px var(--glow-create)' }}>
             <div style={iconBox}><RawSvg html={iconWand} /></div>
             <div style={cardTitle}>Crée ton<br />histoire</div>
-            <div style={{ ...cardSub, color: 'var(--create-sub)', display: 'flex', alignItems: 'center', gap: 4 }}><RawSvg html={crystalSvg(15)} /> {crystals} cristaux</div>
+            <div style={{ ...cardSub, color: 'var(--create-sub)', display: 'flex', alignItems: 'center', gap: 4 }}><RawSvg html={crystalSvg(15)} /> {crystals} {crystals > 1 ? 'cristaux' : 'cristal'}</div>
           </button>
         </div>
       </div>

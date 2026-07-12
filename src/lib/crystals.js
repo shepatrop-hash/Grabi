@@ -8,15 +8,18 @@
 // ⚠️ Le prix RÉEL en euros est TOUJOURS affiché sur chaque pack (obligatoire, d'autant plus
 // pour une app enfant) : les cristaux sont une expérience de jeu, pas un moyen de masquer les prix.
 export const STORY_COST = 1         // 1 cristal = 1 histoire créée
-export const WELCOME_CRYSTALS = 3   // offerts à l'arrivée (3 histoires), une seule fois
+export const TRIAL_CRYSTALS = 1     // 1 cristal offert au DÉMARRAGE de l'essai gratuit (une seule fois)
 export const MONTHLY_CRYSTALS = 10  // crédités chaque mois aux abonnés payants (10 histoires)
+// Aucun cristal offert « de base » : sans essai ni abonnement, le solde reste à 0.
 
-// Packs achetables. `product` = id du produit CONSOMMABLE à créer dans Play Console + RevenueCat.
-// Les prix sont indicatifs (Google fixe le prix réel par pays via le produit).
+// Packs achetables — grille pensée pour rester RENTABLE une fois la TVA (20 %), la commission
+// Google (15 %) et les cotisations retirées (on garde ~55 % du prix affiché), avec une remise
+// de volume douce qui ne passe jamais sous le coût de fabrication d'une histoire.
+// `product` = id du produit CONSOMMABLE à créer dans Play Console + RevenueCat.
 export const CRYSTAL_PACKS = [
-  { id: 'cristaux_10', crystals: 10, product: 'cristaux_10', price: '1,99 €' },
-  { id: 'cristaux_30', crystals: 30, product: 'cristaux_30', price: '4,99 €', tag: 'Populaire' },
-  { id: 'cristaux_100', crystals: 100, product: 'cristaux_100', price: '12,99 €', tag: 'Le + avantageux' },
+  { id: 'cristaux_3', crystals: 3, product: 'cristaux_3', price: '1,99 €' },
+  { id: 'cristaux_10', crystals: 10, product: 'cristaux_10', price: '4,99 €', tag: 'Populaire' },
+  { id: 'cristaux_25', crystals: 25, product: 'cristaux_25', price: '9,99 €', tag: 'Le + avantageux' },
 ]
 
 // Petit cristal coloré (rose/violet/cyan) — style Mario Galaxy. `s` = taille en px.
@@ -26,23 +29,26 @@ export const crystalSvg = (s = 20) =>
 // Mois calendaire courant, ex. « 2026-07 ».
 const monthKey = () => new Date().toISOString().slice(0, 7)
 
-// Normalise l'état persistant : { balance, welcomed, grantMonth }.
+// Normalise l'état persistant : { balance, trialGranted, grantMonth }.
 export function normalizeCrystals(raw) {
   const c = raw && typeof raw === 'object' ? raw : {}
   return {
     balance: Number.isFinite(c.balance) ? Math.max(0, Math.floor(c.balance)) : 0,
-    welcomed: !!c.welcomed,      // cristaux d'accueil déjà versés ?
+    trialGranted: !!c.trialGranted, // le cristal d'essai a-t-il déjà été versé ?
     grantMonth: typeof c.grantMonth === 'string' ? c.grantMonth : '', // dernier mois crédité (abo)
   }
 }
 
-// Crédits AUTOMATIQUES (accueil une fois + mensuel des abonnés payants). Idempotent.
+// Crédits AUTOMATIQUES. Idempotent :
+//  - 1 cristal offert au DÉMARRAGE de l'essai gratuit (une seule fois) ;
+//  - MONTHLY_CRYSTALS chaque mois pour les abonnés payants.
+// Rien pour un compte sans essai ni abonnement (solde = 0 → il faut l'essai, l'abo ou un pack).
 export function applyGrants(crystals, plan) {
-  let { balance, welcomed, grantMonth } = normalizeCrystals(crystals)
-  if (!welcomed) { balance += WELCOME_CRYSTALS; welcomed = true }
+  let { balance, trialGranted, grantMonth } = normalizeCrystals(crystals)
+  if (plan === 'trial' && !trialGranted) { balance += TRIAL_CRYSTALS; trialGranted = true }
   const m = monthKey()
   if (plan === 'paid' && grantMonth !== m) { balance += MONTHLY_CRYSTALS; grantMonth = m }
-  return { balance, welcomed, grantMonth }
+  return { balance, trialGranted, grantMonth }
 }
 
 export const canCreate = (crystals) => (crystals?.balance || 0) >= STORY_COST
