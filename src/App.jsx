@@ -15,7 +15,7 @@ import EditProfile from './screens/EditProfile.jsx'
 import Legal from './screens/Legal.jsx'
 import Rewards from './screens/Rewards.jsx'
 import ScreenLock from './screens/ScreenLock.jsx'
-import { ensurePermission, showNotification, msUntil } from './lib/notify.js'
+import { ensurePermission, showNotification, msUntil, isNative, scheduleReminder, cancelReminder } from './lib/notify.js'
 import QCM from './screens/QCM.jsx'
 import Generating from './screens/Generating.jsx'
 import Reader from './screens/Reader.jsx'
@@ -291,10 +291,15 @@ export default function App() {
   // Limite atteinte ? (screenTime en minutes, 0 = illimité ; bonus parent ajouté)
   const screenLocked = screenTime > 0 && usage.date === todayKey() && usage.seconds >= (screenTime + usage.bonus) * 60
 
-  // Rappel « histoire du soir » : tant que l'app est ouverte, on programme une
-  // notification douce à l'heure choisie (puis chaque jour). Sans backend, le
-  // rappel ne se déclenche pas application fermée.
+  // Rappel « histoire du soir ».
+  // - ANDROID : vraie notification locale planifiée par l'OS (se déclenche app fermée).
+  // - WEB : repli doux par setTimeout tant que l'app est ouverte.
   useEffect(() => {
+    if (isNative()) {
+      if (reminder.on) scheduleReminder(reminder.time)
+      else cancelReminder()
+      return
+    }
     if (!reminder.on) return
     let timer
     const schedule = () => {
@@ -573,7 +578,7 @@ export default function App() {
     }
     const ok = await ensurePermission()
     if (!ok) {
-      window.alert("Pour recevoir le rappel, autorise les notifications dans ton navigateur.")
+      window.alert("Pour recevoir le rappel, autorise les notifications pour Grabi.")
       return
     }
     setReminder((r) => ({ ...r, on: true }))

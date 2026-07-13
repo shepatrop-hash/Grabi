@@ -147,14 +147,6 @@ export default function EspaceParents({ screenTime = 30, onScreenTime, usedMin =
           </div>
           <Toggle on={voiceOn} />
         </button>
-        <button onClick={onToggleEffects} style={{ ...card, width: '100%', textAlign: 'left' }}>
-          <span style={iconBox('var(--mint-soft)')}><RawSvg html={soundIcon} /></span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 600 }}>Sons &amp; effets</div>
-            <div style={{ fontSize: 12, color: 'var(--ink2)', fontWeight: 500 }}>Bruitages et réactions de Grabi</div>
-          </div>
-          <Toggle on={effectsOn} />
-        </button>
         <button onClick={onToggleMusic} style={{ ...card, width: '100%', textAlign: 'left' }}>
           <span style={iconBox('var(--pink-soft)')}><RawSvg html={musicIcon} /></span>
           <div style={{ flex: 1 }}>
