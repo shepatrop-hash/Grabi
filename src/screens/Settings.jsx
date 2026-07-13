@@ -40,7 +40,7 @@ export default function Settings({ premium, child = { name: 'Léa', age: '5 ans'
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 12px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 2 }}>
         <CategoryCard onClick={onMine} bg="var(--card)" iconBg="var(--pink-soft)" icon={storiesIcon} title="Mes histoires" subtitle="Tes créations & tes favoris" />
-        <CategoryCard onClick={onMonGrabi} bg="var(--card)" iconBg="var(--violet-soft)" icon={grabiIcon} title="Mon Grabi" subtitle="Apparence, voix & accessoires" />
+        <CategoryCard onClick={onMonGrabi} bg="var(--card)" iconBg="var(--violet-soft)" icon={grabiIcon} title="Mon Grabi" subtitle="Voix & ambiance" />
         <CategoryCard onClick={onRewards} bg="var(--card)" iconBg="var(--yellow-soft)" icon={trophyIcon} title="Mes récompenses" subtitle="Tes badges et tes histoires" />
         <CategoryCard onClick={onEspaceParents} bg="var(--card)" iconBg="var(--sky-soft)" icon={parentIcon} title="Espace parents" subtitle="Abonnement, temps d'écran, sécurité" badge={premium ? 'Premium' : 'Gratuit'} badgeColor={premium ? '#a07d2a' : '#7d5fc4'} badgeBg={premium ? 'var(--yellow-soft)' : 'var(--violet-soft)'} />
 
