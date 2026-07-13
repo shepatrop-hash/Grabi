@@ -3,7 +3,7 @@ import Grabi from '../components/Grabi.jsx'
 import RawSvg from '../components/RawSvg.jsx'
 import BackButton from '../components/BackButton.jsx'
 import { load, save } from '../lib/store.js'
-import { ACCESSORIES, DEFAULT_ACC, VOICE_SAMPLE, DECORS, getDecor } from '../lib/grabiCustom.js'
+import { DEFAULT_ACC, VOICE_SAMPLE, DECORS, getDecor } from '../lib/grabiCustom.js'
 import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
 import { VOICES, voiceSampleUrl } from '../lib/voices.js'
 
@@ -20,7 +20,6 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
   useEffect(() => save('acc', acc), [acc])
   useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); stopSpeak() }, [])
 
-  const toggleAcc = (key) => setAcc((a) => ({ ...a, [key]: !a[key] }))
   const d = getDecor(decor)
   const previewBg = d.bg !== 'transparent' ? d.bg : 'var(--card-soft)'
 
@@ -48,7 +47,7 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
         <BackButton onClick={onBack} />
         <div>
           <div style={{ fontSize: 24, fontWeight: 700 }}>Mon Grabi</div>
-          <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>Apparence, voix &amp; ambiance</div>
+          <div style={{ fontSize: 13, color: 'var(--ink2)', fontWeight: 500 }}>Voix &amp; ambiance</div>
         </div>
       </div>
 
@@ -56,20 +55,6 @@ export default function MonGrabi({ voice, onVoice, voiceOn = true, onToggleVoice
         {/* Aperçu de la mascotte (avec accessoires) dans son décor */}
         <div style={{ borderRadius: 26, background: previewBg, padding: '18px 0', display: 'flex', justifyContent: 'center', boxShadow: 'inset 0 2px 10px rgba(74,58,102,.08)' }}>
           <Grabi size={150} acc={acc} />
-        </div>
-
-        {/* Apparence */}
-        <div style={sectionTitle}>Apparence</div>
-        <div style={{ ...card, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10 }}>
-          {ACCESSORIES.map((a) => (
-            <button key={a.key} onClick={() => toggleAcc(a.key)} style={{ position: 'relative', background: acc[a.key] ? 'var(--violet-soft)' : 'var(--card-soft)', borderRadius: 18, padding: '12px 4px', textAlign: 'center', transition: 'background .15s ease' }}>
-              {acc[a.key] && (
-                <span style={{ position: 'absolute', top: 5, right: 5, width: 18, height: 18, borderRadius: '50%', background: 'var(--mint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={checkBadge} /></span>
-              )}
-              <div style={{ fontSize: 26, lineHeight: 1 }}>{a.emoji}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, marginTop: 3 }}>{a.label}</div>
-            </button>
-          ))}
         </div>
 
         {/* Décor */}
