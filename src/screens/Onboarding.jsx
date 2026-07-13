@@ -5,12 +5,15 @@ import { VOICE_SAMPLE } from '../lib/grabiCustom.js'
 import { speak, ttsSupported, stopSpeak } from '../lib/tts.js'
 import { VOICES, voiceSampleUrl } from '../lib/voices.js'
 import AgeStepper from '../components/AgeStepper.jsx'
+import { save } from '../lib/store.js'
 
 // Premier lancement : bienvenue -> comment ça marche -> prénom/âge -> voix -> (paywall).
 // Chaque voix a SON moteur : l'aperçu utilise ce moteur -> ce qu'on entend = ce qu'on aura vraiment.
 
 const playMini = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#7d5fc4"><path d="M8 5 L19 12 L8 19 Z"></path></svg>`
 const backIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>`
+const lockBig = `<svg width="40" height="46" viewBox="0 0 40 46"><path d="M11,20 V14 a9,9 0 0 1 18,0 V20" fill="none" stroke="#A98CFF" stroke-width="4.5" stroke-linecap="round"></path><rect x="6" y="19" width="28" height="22" rx="7" fill="#A98CFF"></rect><circle cx="20" cy="28" r="3.6" fill="#fff"></circle><rect x="18.3" y="29" width="3.4" height="8" rx="1.6" fill="#fff"></rect></svg>`
+const backspaceIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7d5fc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5 H8 L3 12 L8 19 H21 Z"></path><path d="M12 9.5 L17 14.5 M17 9.5 L12 14.5"></path></svg>`
 
 const STEPS_HOW = [
   { emoji: '💡', title: 'Raconte une idée', text: "Ton enfant décrit ce qu'il imagine : un dragon, une fusée, un doudou perdu…" },
@@ -53,7 +56,7 @@ export default function Onboarding({ voice = 'Aria', onVoice, onFinish, backRef 
     }
   }
 
-  const TOTAL = 4
+  const TOTAL = 5
   const next = () => { stopPreview(); setStep((s) => Math.min(TOTAL - 1, s + 1)) }
   const back = () => { stopPreview(); setStep((s) => Math.max(0, s - 1)) }
 
@@ -64,6 +67,26 @@ export default function Onboarding({ voice = 'Aria', onVoice, onFinish, backRef 
     return () => { if (backRef) backRef.current = null }
   }, [step, backRef])
   const finish = () => { stopPreview(); onFinish && onFinish({ name: name.trim() || 'Mon enfant', age: `${age} ${age <= 1 ? 'an' : 'ans'}` }) }
+
+  // Étape « code parent » (dernière étape) : création d'un PIN à 4 chiffres (saisie + confirmation).
+  const [pinStep, setPinStep] = useState('create') // create -> confirm
+  const [pinEntered, setPinEntered] = useState('')
+  const [pinFirst, setPinFirst] = useState('')
+  const [pinError, setPinError] = useState('')
+  // Repart d'une saisie vierge à chaque arrivée sur l'étape code.
+  useEffect(() => { if (step === TOTAL - 1) { setPinStep('create'); setPinEntered(''); setPinFirst(''); setPinError('') } }, [step])
+  const pinSubmit = (code) => {
+    if (pinStep === 'create') { setPinFirst(code); setPinEntered(''); setPinStep('confirm') }
+    else if (code === pinFirst) { save('parentPin', code); finish() }
+    else { setPinError('Les codes ne correspondent pas, recommence.'); setPinEntered(''); setPinFirst(''); setPinStep('create') }
+  }
+  const pinPress = (d) => {
+    if (pinEntered.length >= 4) return
+    const nextVal = pinEntered + d
+    setPinError(''); setPinEntered(nextVal)
+    if (nextVal.length === 4) setTimeout(() => pinSubmit(nextVal), 130)
+  }
+  const pinDel = () => { setPinError(''); setPinEntered((e) => e.slice(0, -1)) }
 
   const Dots = () => (
     <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '4px 0 2px' }}>
@@ -159,14 +182,37 @@ export default function Onboarding({ voice = 'Aria', onVoice, onFinish, backRef 
             </div>
           </div>
         )}
+
+        {step === 4 && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 6 }}>
+            <RawSvg html={lockBig} />
+            <div style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>{pinStep === 'create' ? 'Crée le code parent 🔒' : 'Confirme le code'}</div>
+            <div style={{ fontSize: 14, color: 'var(--ink2)', fontWeight: 500, lineHeight: 1.45, maxWidth: 300 }}>{pinStep === 'create' ? "Un code à 4 chiffres pour protéger l'espace parents et les réglages. L'enfant ne doit pas le connaître." : 'Saisis-le une deuxième fois pour vérifier.'}</div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 18 }}>
+              {[0, 1, 2, 3].map((i) => (
+                <span key={i} style={{ width: 18, height: 18, borderRadius: '50%', background: i < pinEntered.length ? 'var(--violet)' : 'var(--track-off)', transition: 'background .15s ease' }} />
+              ))}
+            </div>
+            <div style={{ minHeight: 20, marginTop: 8 }}>{pinError && <div style={{ fontSize: 13.5, color: '#C24A7A', fontWeight: 600 }}>{pinError}</div>}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 66px)', gap: 12, marginTop: 2 }}>
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((k, i) => {
+                if (k === '') return <span key={i} />
+                if (k === 'del') return <button key={i} onClick={pinDel} style={{ width: 66, height: 66, borderRadius: 22, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><RawSvg html={backspaceIcon} /></button>
+                return <button key={i} onClick={() => pinPress(k)} style={{ width: 66, height: 66, borderRadius: 22, background: 'var(--card)', fontSize: 24, fontWeight: 700, color: 'var(--ink)', boxShadow: '0 8px 18px -12px rgba(74,58,102,.35)' }}>{k}</button>
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bas : progression + bouton d'action */}
       <div style={{ flex: 'none', padding: '6px 26px calc(env(safe-area-inset-bottom, 0px) + 20px)', position: 'relative', zIndex: 2 }}>
         <Dots />
-        <button onClick={step < TOTAL - 1 ? next : finish} style={{ ...primaryBtn, marginTop: 12 }}>
-          {step === 0 ? "C'est parti ✨" : step < TOTAL - 1 ? 'Suivant' : 'Continuer'}
-        </button>
+        {step < TOTAL - 1 ? (
+          <button onClick={next} style={{ ...primaryBtn, marginTop: 12 }}>{step === 0 ? "C'est parti ✨" : 'Suivant'}</button>
+        ) : (
+          <button onClick={finish} style={{ marginTop: 14, width: '100%', textAlign: 'center', fontSize: 13.5, fontWeight: 600, color: 'var(--ink2)', background: 'none' }}>Plus tard</button>
+        )}
       </div>
     </div>
   )
