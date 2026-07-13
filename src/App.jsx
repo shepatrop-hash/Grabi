@@ -597,25 +597,32 @@ export default function App() {
   // Navigation vers un onglet (navbar OU swipe). Copains est gaté (abo requis).
   const navTab = (target) => { if (target === 'community') goCommunity(); else setScreen(target) }
   // Swipe horizontal (droite ↔ gauche) = changer d'onglet, comme cliquer sur la navbar.
-  // Seulement quand on est sur un onglet, et seulement pour un geste franchement horizontal.
+  // Seulement sur un onglet, et seulement pour un geste franchement horizontal.
+  // ⚠️ On écoute les événements TACTILES (touchstart/touchend) : sur mobile, le navigateur
+  // annule la séquence *pointer* dès qu'il gère le défilement, donc onPointerUp ne se
+  // déclenchait pas. touchend, lui, se déclenche toujours. Le pointer ne sert que pour la SOURIS.
   const swipeRef = useRef(null)
   const justSwipedRef = useRef(false)
-  const onSwipeStart = (e) => { justSwipedRef.current = false; swipeRef.current = TAB_INDEX[screen] != null ? { x: e.clientX, y: e.clientY } : null }
-  const onSwipeEnd = (e) => {
+  const beginSwipe = (x, y) => { justSwipedRef.current = false; swipeRef.current = TAB_INDEX[screen] != null ? { x, y } : null }
+  const endSwipe = (x, y) => {
     const s = swipeRef.current
     swipeRef.current = null
     if (!s) return
-    const dx = e.clientX - s.x
-    const dy = e.clientY - s.y
-    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.4) return // pas un swipe horizontal franc
+    const dx = x - s.x
+    const dy = y - s.y
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.3) return // pas un swipe horizontal franc
     const next = TAB_ORDER[TAB_INDEX[screen] + (dx < 0 ? 1 : -1)] // vers la gauche → onglet suivant
     if (next) { justSwipedRef.current = true; navTab(next) }
   }
+  const onTouchStart = (e) => { const t = e.touches && e.touches[0]; if (t) beginSwipe(t.clientX, t.clientY) }
+  const onTouchEnd = (e) => { const t = e.changedTouches && e.changedTouches[0]; if (t) endSwipe(t.clientX, t.clientY) }
+  const onPointerDown = (e) => { if (e.pointerType === 'mouse') beginSwipe(e.clientX, e.clientY) }
+  const onPointerUp = (e) => { if (e.pointerType === 'mouse') endSwipe(e.clientX, e.clientY) }
   // Après un swipe, on annule le clic qui suivrait (sinon on ouvrirait aussi la carte sous le doigt).
   const onSwipeClickCapture = (e) => { if (justSwipedRef.current) { justSwipedRef.current = false; e.preventDefault(); e.stopPropagation() } }
 
   return (
-    <div className="app-shell" data-theme={darkMode ? 'dark' : 'light'} onPointerDown={onSwipeStart} onPointerUp={onSwipeEnd} onClickCapture={onSwipeClickCapture}>
+    <div className="app-shell" data-theme={darkMode ? 'dark' : 'light'} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onClickCapture={onSwipeClickCapture}>
       <BackgroundMusic track={musicTrack} enabled={musicOn} />
       <div style={{ display: 'contents' }} className={screenAnim || undefined}>
       {screen === 'onboarding' && (
