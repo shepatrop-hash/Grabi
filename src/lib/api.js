@@ -1,11 +1,20 @@
 import { engineOf } from './voices.js'
+import { deviceId } from './store.js'
+
+// En-têtes communs aux appels de génération : type JSON + identifiant d'appareil anonyme
+// (x-grabi-device) lu par le quota anti-abus côté serveur.
+function genHeaders() {
+  const h = { 'Content-Type': 'application/json' }
+  try { h['x-grabi-device'] = deviceId() } catch { /* localStorage indispo : tant pis */ }
+  return h
+}
 
 // Appelle le backend (fonction serverless Vercel) qui génère l'histoire avec Claude.
 // En local, ce endpoint n'existe que via « vercel dev » (pas le simple « npm run dev »).
 export async function generateStory(idea, answers = {}) {
   const res = await fetch('/api/generate-story', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: genHeaders(),
     body: JSON.stringify({ idea, answers }),
   })
   if (!res.ok) {
@@ -28,7 +37,7 @@ export async function generateStory(idea, answers = {}) {
 export async function generateImage(prompt, imageUrls) {
   const sub = await fetch('/api/generate-image', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: genHeaders(),
     body: JSON.stringify({ prompt, image_urls: Array.isArray(imageUrls) ? imageUrls : [] }),
   })
   if (!sub.ok) {
@@ -53,7 +62,7 @@ export async function generateImage(prompt, imageUrls) {
     try {
       st = await fetch('/api/image-status', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: genHeaders(),
         body: JSON.stringify({ request_id, model }),
       })
     } catch {
@@ -72,7 +81,7 @@ export async function generateImage(prompt, imageUrls) {
 export async function generateQuestions(idea) {
   const res = await fetch('/api/generate-questions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: genHeaders(),
     body: JSON.stringify({ idea }),
   })
   if (!res.ok) {
@@ -92,7 +101,7 @@ export async function generateQuestions(idea) {
 export async function generateAudio(text, voice, provider) {
   const res = await fetch('/api/generate-audio', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: genHeaders(),
     body: JSON.stringify({ text, voice, provider }),
   })
   if (!res.ok) {
@@ -114,7 +123,7 @@ export async function audioPlan(chars, admin = false) {
   try {
     const res = await fetch('/api/audio-plan', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: genHeaders(),
       body: JSON.stringify({ chars, admin }),
     })
     if (!res.ok) return { provider: 'eleven' }

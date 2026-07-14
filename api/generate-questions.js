@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { abuseBlocked } from './_guard.js'
+import { quotaBlocked } from './_quota.js'
 
 // Modèle pour les questions (rapide). Par défaut : celui des histoires, sinon Opus 4.8.
 const MODEL = process.env.QUESTIONS_MODEL || process.env.STORY_MODEL || 'claude-haiku-4-5'
@@ -53,6 +54,7 @@ export default async function handler(req, res) {
     return
   }
   if (abuseBlocked(req, res)) return
+  if (await quotaBlocked(req, res, 1)) return
   if (!process.env.ANTHROPIC_API_KEY) {
     res.status(500).json({ error: 'ANTHROPIC_API_KEY manquante (voir .env.example).' })
     return

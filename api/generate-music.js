@@ -1,4 +1,5 @@
 import { abuseBlocked } from './_guard.js'
+import { quotaBlocked } from './_quota.js'
 // Vraie musique via l'API ElevenLabs Music (et non les SFX, qui sonnaient bizarre
 // pour de la musique). Sert à générer les boucles de fond agréables.
 // POST { prompt, ms? } -> { url: data-URL mp3 }
@@ -10,6 +11,7 @@ export default async function handler(req, res) {
     return
   }
   if (abuseBlocked(req, res)) return
+  if (await quotaBlocked(req, res, 3)) return
   if (!process.env.ELEVENLABS_API_KEY) {
     res.status(500).json({ error: 'ELEVENLABS_API_KEY manquante (voir .env.example).' })
     return

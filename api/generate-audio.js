@@ -1,5 +1,6 @@
 import { put, list } from '@vercel/blob'
 import { abuseBlocked } from './_guard.js'
+import { quotaBlocked } from './_quota.js'
 
 // Narration des histoires. Deux fournisseurs :
 // - AUDIO_PROVIDER=gemini (défaut) -> Gemini TTS (gemini-2.5-pro-preview-tts), ~8× moins cher.
@@ -102,6 +103,7 @@ async function genEleven(text, voiceKey) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Méthode non autorisée.' }); return }
   if (abuseBlocked(req, res)) return
+  if (await quotaBlocked(req, res, 2)) return
   const { text, voice, provider: forced } = req.body || {}
   if (!text || typeof text !== 'string') { res.status(400).json({ error: 'Texte à lire manquant.' }); return }
 
