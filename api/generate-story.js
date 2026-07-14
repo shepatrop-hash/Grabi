@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { abuseBlocked } from './_guard.js'
+import { quotaBlocked } from './_quota.js'
 
 // Modèle configurable. Défaut : Opus 4.8 (qualité max).
 // Pour réduire le coût à l'échelle : STORY_MODEL=claude-sonnet-4-6
@@ -101,6 +102,7 @@ export default async function handler(req, res) {
     return
   }
   if (abuseBlocked(req, res)) return
+  if (await quotaBlocked(req, res, 3)) return
   if (!process.env.ANTHROPIC_API_KEY) {
     res.status(500).json({ error: 'ANTHROPIC_API_KEY manquante (voir .env.example).' })
     return

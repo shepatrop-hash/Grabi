@@ -1,5 +1,6 @@
 import { fal } from '@fal-ai/client'
 import { abuseBlocked } from './_guard.js'
+import { quotaBlocked } from './_quota.js'
 
 // Génération d'illustration. Deux fournisseurs :
 // - PROVIDER=gemini  -> Nano Banana 2 (gemini-3.1-flash-image), synchrone, renvoie l'image direct.
@@ -96,6 +97,7 @@ export default async function handler(req, res) {
     return
   }
   if (abuseBlocked(req, res)) return
+  if (await quotaBlocked(req, res, 2)) return
 
   const { prompt, image_urls } = req.body || {}
   if (!prompt || typeof prompt !== 'string') {
